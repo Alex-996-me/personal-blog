@@ -1,0 +1,41 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CategoryGrid from "../components/CategoryGrid.astro";
+import PostCard from "../components/PostCard.astro";
+import { siteConfig } from "../data/site";
+import { getAllPosts, getCategoryCounts } from "../lib/blog";
+
+const posts = await getAllPosts();
+const latestPosts = posts.slice(0, 5);
+const categoryCounts = getCategoryCounts(posts);
+---
+
+<BaseLayout>
+  <section class="hero">
+    <span class="hero__eyebrow">个人博客</span>
+    <h1>{siteConfig.title}</h1>
+    <p>{siteConfig.tagline}</p>
+  </section>
+
+  <section class="section-block">
+    <h2 class="section-title">最新文章</h2>
+    <div class="post-list">
+      {latestPosts.map((post) => (
+        <PostCard post={post} />
+      ))}
+    </div>
+  </section>
+
+  <section class="section-block">
+    <h2 class="section-title">分类入口</h2>
+    <p class="section-intro">围绕日志、读书、健康、训练、脑科学和工具，持续更新。</p>
+    <CategoryGrid categories={categoryCounts} />
+  </section>
+
+  <section class="section-block">
+    <h2 class="section-title">关于作者</h2>
+    <div class="about-card">
+      <p>{siteConfig.author.bio}</p>
+    </div>
+  </section>
+</BaseLayout>

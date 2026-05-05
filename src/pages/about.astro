@@ -1,0 +1,20 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteConfig } from "../data/site";
+---
+
+<BaseLayout title="关于" description="关于作者与这个博客的简单介绍。">
+  <section class="page-header">
+    <h1>关于</h1>
+    <p>这是一个长期写下去的个人空间，不急着正确，只希望持续诚实。</p>
+  </section>
+
+  <div class="about-card">
+    <p><strong>{siteConfig.author.name}</strong></p>
+    <p>{siteConfig.author.bio}</p>
+    <p>
+      这里会写个人日志、读书笔记、训练记录、健康实验、脑科学兴趣和工具心得。比起做成
+      一个“项目展示页”，我更希望它像一张慢慢变厚的纸质卡片盒，装下阶段性的判断与变化。
+    </p>
+  </div>
+</BaseLayout>

@@ -1,0 +1,102 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getAllPosts, getPostHref } from "../lib/blog";
+
+const posts = await getAllPosts();
+const searchEntries = posts.map((post) => ({
+  title: post.data.title,
+  description: post.data.description,
+  date: post.data.date.toISOString().slice(0, 10),
+  category: post.data.category,
+  tags: post.data.tags,
+  url: getPostHref(post),
+}));
+---
+
+<BaseLayout title="搜索" description="搜索博客文章。">
+  <section class="page-header">
+    <h1>搜索文章</h1>
+    <p>可以按标题、摘要、分类或标签搜索。</p>
+  </section>
+
+  <section class="search-page__panel sidebar-section">
+    <form class="search-page__form" action="/search/" method="get">
+      <input id="search-input" type="search" name="q" placeholder="输入关键词" />
+      <button type="submit">搜索</button>
+    </form>
+    <p id="search-summary" class="search-page__summary">输入关键词后会实时筛选文章。</p>
+    <div id="search-results" class="post-list"></div>
+  </section>
+
+  <script define:vars={{ searchEntries }}>
+    const entries = searchEntries;
+    const input = document.querySelector("#search-input");
+    const results = document.querySelector("#search-results");
+    const summary = document.querySelector("#search-summary");
+    const params = new URLSearchParams(window.location.search);
+    const initialQuery = params.get("q") ?? "";
+
+    const escapeHtml = (value) =>
+      value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+
+    const renderResults = (query) => {
+      const normalized = query.trim().toLowerCase();
+      input.value = query;
+
+      if (!normalized) {
+        summary.textContent = "输入关键词后会实时筛选文章。";
+        results.innerHTML = "";
+        return;
+      }
+
+      const filtered = entries.filter((entry) => {
+        const haystack = [
+          entry.title,
+          entry.description,
+          entry.category,
+          entry.tags.join(" "),
+        ]
+          .join(" ")
+          .toLowerCase();
+
+        return haystack.includes(normalized);
+      });
+
+      summary.textContent = `找到 ${filtered.length} 篇和“${query}”相关的文章。`;
+
+      if (filtered.length === 0) {
+        results.innerHTML = '<div class="empty-state">没有找到匹配结果，可以换个关键词试试。</div>';
+        return;
+      }
+
+      results.innerHTML = filtered
+        .map(
+          (entry) => `
+            <article class="post-card">
+              <div class="post-card__content">
+                <div class="post-card__meta">
+                  <span>${escapeHtml(entry.date)}</span>
+                  <span>${escapeHtml(entry.category)}</span>
+                </div>
+                <h2 class="post-card__title">
+                  <a href="${entry.url}">${escapeHtml(entry.title)}</a>
+                </h2>
+                <p class="post-card__description">${escapeHtml(entry.description)}</p>
+              </div>
+            </article>
+          `,
+        )
+        .join("");
+    };
+
+    input.addEventListener("input", (event) => {
+      renderResults(event.currentTarget.value);
+    });
+
+    renderResults(initialQuery);
+  </script>
+</BaseLayout>

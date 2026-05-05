@@ -1,0 +1,41 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostCard from "../../components/PostCard.astro";
+import { categories } from "../../data/site";
+import { getAllPosts, getCategoryBySlug } from "../../lib/blog";
+
+export async function getStaticPaths() {
+  return categories.map((category) => ({
+    params: { slug: category.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const category = getCategoryBySlug(slug ?? "");
+
+if (!category) {
+  throw new Error(`Unknown category slug: ${slug}`);
+}
+
+const posts = await getAllPosts();
+const filteredPosts = posts.filter((post) => post.data.category === category.name);
+---
+
+<BaseLayout title={category.name} description={category.description}>
+  <section class="page-header">
+    <h1>{category.name}</h1>
+    <p>{category.description}</p>
+  </section>
+
+  {filteredPosts.length > 0 ? (
+    <div class="post-list">
+      {filteredPosts.map((post) => (
+        <PostCard post={post} />
+      ))}
+    </div>
+  ) : (
+    <div class="empty-state">
+      这个分类暂时还没有文章，之后会慢慢补上。
+    </div>
+  )}
+</BaseLayout>

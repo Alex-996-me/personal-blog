@@ -1,0 +1,23 @@
+---
+import type { CategoryDefinition } from "../data/site";
+
+interface CategoryWithCount extends CategoryDefinition {
+  count: number;
+}
+
+interface Props {
+  categories: CategoryWithCount[];
+}
+
+const { categories } = Astro.props;
+---
+
+<div class="category-grid">
+  {categories.map((category) => (
+    <a class="category-card" href={`/categories/${category.slug}/`}>
+      <h3>{category.name}</h3>
+      <p>{category.description}</p>
+      <span class="category-card__count">{category.count} 篇文章</span>
+    </a>
+  ))}
+</div>

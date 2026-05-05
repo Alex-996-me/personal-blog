@@ -1,0 +1,56 @@
+---
+import { siteConfig } from "../data/site";
+import {
+  formatDate,
+  getAllPosts,
+  getCategoryCounts,
+  getCategoryHref,
+  getPostHref,
+} from "../lib/blog";
+
+const posts = await getAllPosts();
+const recentPosts = posts.slice(0, 5);
+const categoryCounts = getCategoryCounts(posts);
+const currentQuery = Astro.url.searchParams.get("q") ?? "";
+---
+
+<aside class="sidebar" aria-label="侧栏">
+  <section class="sidebar-section">
+    <h2>搜索</h2>
+    <form class="search-form" action="/search/" method="get">
+      <input type="search" name="q" value={currentQuery} placeholder="搜索标题、标签或摘要" />
+      <button type="submit">搜索</button>
+    </form>
+  </section>
+
+  <section class="sidebar-section">
+    <h2>关于作者</h2>
+    <p>{siteConfig.author.shortBio}</p>
+  </section>
+
+  <section class="sidebar-section">
+    <h2>最近文章</h2>
+    <ul class="plain-list">
+      {recentPosts.map((post) => (
+        <li>
+          <a href={getPostHref(post)}>{post.data.title}</a>
+          <br />
+          <small>{formatDate(post.data.date)}</small>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="sidebar-section">
+    <h2>分类</h2>
+    <ul class="plain-list">
+      {categoryCounts.map((category) => (
+        <li>
+          <a href={getCategoryHref(category.name)}>
+            {category.name}（{category.count}）
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</aside>
