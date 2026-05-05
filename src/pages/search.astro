@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getAllPosts, getPostHref } from "../lib/blog";
+import { withBasePath } from "../lib/paths";
 
 const posts = await getAllPosts();
 const searchEntries = posts.map((post) => ({
@@ -9,7 +10,7 @@ const searchEntries = posts.map((post) => ({
   date: post.data.date.toISOString().slice(0, 10),
   category: post.data.category,
   tags: post.data.tags,
-  url: getPostHref(post),
+  url: withBasePath(getPostHref(post)),
 }));
 ---
 
@@ -20,7 +21,7 @@ const searchEntries = posts.map((post) => ({
   </section>
 
   <section class="search-page__panel sidebar-section">
-    <form class="search-page__form" action="/search/" method="get">
+    <form class="search-page__form" action={withBasePath("/search/")} method="get">
       <input id="search-input" type="search" name="q" placeholder="输入关键词" />
       <button type="submit">搜索</button>
     </form>

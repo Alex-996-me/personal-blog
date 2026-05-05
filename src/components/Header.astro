@@ -1,22 +1,24 @@
 ---
 import { navigation, siteConfig } from "../data/site";
+import { withBasePath } from "../lib/paths";
 
 const pathname = Astro.url.pathname;
 
 function isActive(href: string) {
+  const target = withBasePath(href);
   if (href === "/") {
-    return pathname === "/";
+    return pathname === target;
   }
-  return pathname.startsWith(href);
+  return pathname.startsWith(target);
 }
 ---
 
 <header class="site-header">
   <div class="site-header__inner">
-    <a class="site-brand" href="/">{siteConfig.title}</a>
+    <a class="site-brand" href={withBasePath("/")}>{siteConfig.title}</a>
     <nav class="site-nav" aria-label="顶部导航">
       {navigation.map((item) => (
-        <a href={item.href} class={isActive(item.href) ? "is-active" : undefined}>
+        <a href={withBasePath(item.href)} class={isActive(item.href) ? "is-active" : undefined}>
           {item.label}
         </a>
       ))}

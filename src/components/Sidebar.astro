@@ -7,6 +7,7 @@ import {
   getCategoryHref,
   getPostHref,
 } from "../lib/blog";
+import { withBasePath } from "../lib/paths";
 
 const posts = await getAllPosts();
 const recentPosts = posts.slice(0, 5);
@@ -17,7 +18,7 @@ const currentQuery = Astro.url.searchParams.get("q") ?? "";
 <aside class="sidebar" aria-label="侧栏">
   <section class="sidebar-section">
     <h2>搜索</h2>
-    <form class="search-form" action="/search/" method="get">
+    <form class="search-form" action={withBasePath("/search/")} method="get">
       <input type="search" name="q" value={currentQuery} placeholder="搜索标题、标签或摘要" />
       <button type="submit">搜索</button>
     </form>
@@ -33,7 +34,7 @@ const currentQuery = Astro.url.searchParams.get("q") ?? "";
     <ul class="plain-list">
       {recentPosts.map((post) => (
         <li>
-          <a href={getPostHref(post)}>{post.data.title}</a>
+          <a href={withBasePath(getPostHref(post))}>{post.data.title}</a>
           <br />
           <small>{formatDate(post.data.date)}</small>
         </li>
@@ -46,7 +47,7 @@ const currentQuery = Astro.url.searchParams.get("q") ?? "";
     <ul class="plain-list">
       {categoryCounts.map((category) => (
         <li>
-          <a href={getCategoryHref(category.name)}>
+          <a href={withBasePath(getCategoryHref(category.name))}>
             {category.name}（{category.count}）
           </a>
         </li>

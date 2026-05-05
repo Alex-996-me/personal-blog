@@ -1,5 +1,6 @@
 ---
 import type { CategoryDefinition } from "../data/site";
+import { withBasePath } from "../lib/paths";
 
 interface CategoryWithCount extends CategoryDefinition {
   count: number;
@@ -14,7 +15,7 @@ const { categories } = Astro.props;
 
 <div class="category-grid">
   {categories.map((category) => (
-    <a class="category-card" href={`/categories/${category.slug}/`}>
+    <a class="category-card" href={withBasePath(`/categories/${category.slug}/`)}>
       <h3>{category.name}</h3>
       <p>{category.description}</p>
       <span class="category-card__count">{category.count} 篇文章</span>
