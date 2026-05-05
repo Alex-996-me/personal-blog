@@ -5,9 +5,9 @@ export type CategoryDefinition = {
 };
 
 export const siteConfig = {
-  title: "留白博客",
+  title: "N=1 Lab",
   description: "记录个人日志、读书、健康、训练、脑科学与工具实践的中文博客。",
-  tagline: "一个大二学生的公开日记本，写身体、训练、学习、迷茫和一些暂时没有答案的问题。",
+  tagline: "要实践，不要幻想；要思考，不要盲从。",
   author: {
     name: "海粟",
     shortBio: "大二学生。关心身体、营养、训练、脑科学、学习和生活意义，慢慢把自己的困惑和记录写下来。",
