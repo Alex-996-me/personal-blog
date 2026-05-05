@@ -11,11 +11,6 @@ const { post } = Astro.props;
 ---
 
 <article class="post-card">
-  {post.data.cover && (
-    <a href={withBasePath(getPostHref(post))}>
-      <img class="post-card__cover" src={withBasePath(post.data.cover)} alt={post.data.title} />
-    </a>
-  )}
   <div class="post-card__content">
     <div class="post-card__meta">
       <span>{formatDate(post.data.date)}</span>
@@ -26,4 +21,9 @@ const { post } = Astro.props;
     </h2>
     <p class="post-card__description">{post.data.description}</p>
   </div>
+  {post.data.cover && (
+    <a class="post-card__media" href={withBasePath(getPostHref(post))} aria-hidden="true" tabindex="-1">
+      <img class="post-card__cover" src={withBasePath(post.data.cover)} alt="" />
+    </a>
+  )}
 </article>
