@@ -11,8 +11,10 @@ function escapeHtml(value: string) {
 export function normalizeMarkdownForDiff(input: string) {
   return input
     .replace(/\r\n/g, "\n")
+    .replace(/<!--\s*(?:full|section)-summary:start\s*-->[\s\S]*?<!--\s*(?:full|section)-summary:end\s*-->/g, "")
     .replace(/!\[([^\]]*)\]\([^)]+\)/g, "[$1]")
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/<\/?(?:figure|figcaption|section|div|details|summary|span|img)[^>]*>/g, "")
     .replace(/^#{1,6}\s*/gm, "")
     .replace(/^\s*[-*+]\s+/gm, "• ")
     .replace(/^\s*\d+\.\s+/gm, "")

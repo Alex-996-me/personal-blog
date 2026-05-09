@@ -7,6 +7,17 @@ const changeLogEntrySchema = z.object({
   summary: z.array(z.string()).default([]),
 });
 
+const sectionSummarySchema = z.object({
+  heading: z.string(),
+  summary: z.array(z.string()).default([]),
+});
+
+const notionImportSchema = z.object({
+  source: z.literal("notion").default("notion"),
+  importedAt: z.coerce.date(),
+  originalFile: z.string().optional(),
+});
+
 const postSchema = z.object({
   title: z.string(),
   date: z.coerce.date(),
@@ -18,6 +29,9 @@ const postSchema = z.object({
   youtube: z.string().optional(),
   version: z.number().int().positive().default(1),
   changeLog: z.array(changeLogEntrySchema).default([]),
+  fullSummary: z.array(z.string()).default([]),
+  sectionSummaries: z.array(sectionSummarySchema).default([]),
+  notionImport: notionImportSchema.optional(),
 });
 
 const posts = defineCollection({

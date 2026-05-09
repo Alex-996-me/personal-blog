@@ -1,5 +1,11 @@
 // @ts-check
 import { defineConfig } from "astro/config";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+import {
+  rehypeEnhanceBlogContent,
+  remarkEnhanceBlogMarkdown,
+} from "./src/lib/markdown-pipeline.mjs";
 
 const username = "Alex-996-me";
 const repository = "personal-blog";
@@ -48,11 +54,11 @@ function rehypePrefixBasePaths() {
   };
 }
 
-// https://astro.build/config
 export default defineConfig({
   site,
   ...(base ? { base } : {}),
   markdown: {
-    rehypePlugins: [rehypePrefixBasePaths],
+    remarkPlugins: [remarkGfm, remarkEnhanceBlogMarkdown],
+    rehypePlugins: [rehypeRaw, rehypeEnhanceBlogContent, rehypePrefixBasePaths],
   },
 });
