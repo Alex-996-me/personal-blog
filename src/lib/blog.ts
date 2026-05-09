@@ -1,7 +1,8 @@
-import { getCollection, type CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
 import { categories } from "../data/site";
+import { type Post, getPostSlug as getNormalizedPostSlug } from "./postVersions";
 
-export type Post = CollectionEntry<"posts">;
+export type { Post } from "./postVersions";
 
 export async function getAllPosts() {
   const posts = await getCollection("posts");
@@ -34,7 +35,7 @@ export function getCategoryHref(categoryName: string) {
 }
 
 export function getPostSlug(post: Post) {
-  return post.id.replace(/\.(md|mdx)$/i, "");
+  return getNormalizedPostSlug(post);
 }
 
 export function getPostHref(post: Post) {

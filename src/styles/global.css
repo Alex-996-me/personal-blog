@@ -344,6 +344,123 @@ footer {
   margin-top: 0.8rem;
 }
 
+.version-card,
+.version-note,
+.history-entry,
+.diff-card {
+  border: 1px solid var(--line);
+  background: #ffffff;
+}
+
+.version-card {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem 0.95rem;
+  font-size: 0.94rem;
+}
+
+.version-card__title {
+  margin: 0.35rem 0 0.6rem;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.version-summary {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.version-summary li + li {
+  margin-top: 0.32rem;
+}
+
+.version-links,
+.post-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem 1rem;
+  margin-top: 0.8rem;
+  font-size: 0.94rem;
+}
+
+.version-links a,
+.post-footer-links a,
+.history-backlink a {
+  color: var(--accent);
+}
+
+.version-note {
+  margin-bottom: 1.25rem;
+  padding: 0.8rem 0.95rem;
+  background: #f6f6f6;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+.version-note a {
+  margin-left: 0.7rem;
+  color: var(--accent);
+}
+
+.history-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.history-entry {
+  padding: 0.95rem 1rem 1rem;
+}
+
+.history-entry__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.history-entry__header h2 {
+  margin: 0;
+  font-size: 1.04rem;
+}
+
+.history-entry__badge {
+  color: var(--accent);
+  font-size: 0.85rem;
+}
+
+.history-backlink {
+  margin-top: 1rem;
+}
+
+.post-footer-links {
+  margin-top: 2rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line);
+}
+
+.diff-card {
+  padding: 1rem 1.05rem;
+}
+
+.diff-prose {
+  font-size: 1.05rem;
+  line-height: 1.95;
+  word-break: break-word;
+}
+
+.diff-added {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.diff-removed {
+  color: #b91c1c;
+  text-decoration: line-through;
+  background: #fee2e2;
+}
+
 .tag {
   padding: 0.16rem 0.58rem;
   background: var(--surface);
@@ -521,5 +638,16 @@ footer {
 
   .prose {
     font-size: 1.04rem;
+  }
+
+  .history-entry__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .version-links,
+  .post-footer-links {
+    flex-direction: column;
+    gap: 0.45rem;
   }
 }

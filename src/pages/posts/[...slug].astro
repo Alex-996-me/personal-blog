@@ -1,12 +1,16 @@
 ---
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { formatDate, getCategoryHref, getYoutubeEmbedUrl } from "../../lib/blog";
 import {
-  formatDate,
-  getCategoryHref,
+  getChangeLogSummary,
+  getCompareHrefFromSlug,
+  getHistoryHrefFromSlug,
   getPostSlug,
-  getYoutubeEmbedUrl,
-} from "../../lib/blog";
+  getUpdatedDate,
+  getVersionNumber,
+  getVersionTimeline,
+} from "../../lib/postVersions";
 import { withBasePath } from "../../lib/paths";
 
 export async function getStaticPaths() {
@@ -20,6 +24,12 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await render(post);
 const youtubeEmbedUrl = getYoutubeEmbedUrl(post.data.youtube);
+const slug = getPostSlug(post);
+const version = getVersionNumber(post);
+const updated = getUpdatedDate(post);
+const timeline = await getVersionTimeline(post);
+const hasPreviousVersion = timeline.some((entry) => entry.version === version - 1);
+const currentSummary = getChangeLogSummary(post, version);
 ---
 
 <BaseLayout
@@ -31,9 +41,32 @@ const youtubeEmbedUrl = getYoutubeEmbedUrl(post.data.youtube);
     <header class="post-header">
       <h1>{post.data.title}</h1>
       <div class="post-meta">
-        <span>{formatDate(post.data.date)}</span>
+        <span>发布于：{formatDate(post.data.date)}</span>
+        <span>最后更新：{formatDate(updated)}</span>
+        <span>当前版本：v{version}</span>
         <a href={withBasePath(getCategoryHref(post.data.category))}>{post.data.category}</a>
       </div>
+      {version > 1 && (
+        <div class="version-card">
+          <p class="version-card__title">本次更新</p>
+          {currentSummary.length > 0 && (
+            <ul class="version-summary">
+              {currentSummary.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          )}
+          <div class="version-links">
+            <a href={withBasePath(getHistoryHrefFromSlug(slug))}>查看更新记录</a>
+            <a href={withBasePath(getHistoryHrefFromSlug(slug))}>查看历史版本</a>
+            {hasPreviousVersion && (
+              <a href={withBasePath(getCompareHrefFromSlug(slug, version - 1, version))}>
+                查看与上一版差异
+              </a>
+            )}
+          </div>
+        </div>
+      )}
       {post.data.tags.length > 0 && (
         <div class="tag-list" aria-label="标签">
           {post.data.tags.map((tag) => (
@@ -62,5 +95,17 @@ const youtubeEmbedUrl = getYoutubeEmbedUrl(post.data.youtube);
     <div class="prose">
       <Content />
     </div>
+
+    {version > 1 && (
+      <footer class="post-footer-links">
+        <a href={withBasePath(getHistoryHrefFromSlug(slug))}>查看更新记录</a>
+        <a href={withBasePath(getHistoryHrefFromSlug(slug))}>查看历史版本</a>
+        {hasPreviousVersion && (
+          <a href={withBasePath(getCompareHrefFromSlug(slug, version - 1, version))}>
+            查看与上一版差异
+          </a>
+        )}
+      </footer>
+    )}
   </article>
 </BaseLayout>

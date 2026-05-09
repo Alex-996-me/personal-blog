@@ -9,10 +9,13 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "snapshot": "node scripts/snapshot-post.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.12",
-    "astro": "^6.2.2"
+    "astro": "^6.2.2",
+    "diff": "^8.0.2",
+    "gray-matter": "^4.0.3"
   }
 }

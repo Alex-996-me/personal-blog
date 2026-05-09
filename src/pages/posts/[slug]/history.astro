@@ -1,0 +1,61 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { formatDate } from "../../../lib/blog";
+import {
+  getPostHrefFromSlug,
+  getPostSlug,
+  getVersionTimeline,
+} from "../../../lib/postVersions";
+import { withBasePath } from "../../../lib/paths";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+  return posts.map((post) => ({
+    params: { slug: getPostSlug(post) },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const timeline = await getVersionTimeline(post);
+const currentVersion = timeline[0]?.version ?? 1;
+---
+
+<BaseLayout
+  title={`${post.data.title} · 更新记录`}
+  description={`${post.data.title} 的历史版本与更新记录。`}
+>
+  <section class="page-header">
+    <h1>{post.data.title}</h1>
+    <p>当前版本：v{currentVersion}</p>
+  </section>
+
+  <section class="history-list">
+    {timeline.map((entry) => (
+      <article class="history-entry">
+        <header class="history-entry__header">
+          <h2>v{entry.version} · {formatDate(entry.updated)}</h2>
+          {entry.isLatest && <span class="history-entry__badge">当前版本</span>}
+        </header>
+        <ul class="version-summary">
+          {(entry.summary.length > 0 ? entry.summary : ["初始发布版本。"]).map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+        <div class="version-links">
+          <a href={withBasePath(entry.href)}>阅读 v{entry.version}</a>
+          {entry.compareHref && (
+            <a href={withBasePath(entry.compareHref)}>
+              查看 v{entry.version} 与 v{entry.version - 1} 差异
+            </a>
+          )}
+        </div>
+      </article>
+    ))}
+  </section>
+
+  <p class="history-backlink">
+    <a href={withBasePath(getPostHrefFromSlug(getPostSlug(post)))}>返回最新版</a>
+  </p>
+</BaseLayout>
