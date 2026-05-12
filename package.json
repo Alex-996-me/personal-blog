@@ -12,13 +12,16 @@
     "astro": "astro",
     "snapshot": "node scripts/snapshot-post.mjs",
     "import:notion": "node scripts/import-notion.mjs",
-    "summarize": "node scripts/generate-section-summaries.mjs"
+    "publish:notion": "node scripts/import-notion.mjs",
+    "summarize": "node scripts/generate-section-summaries.mjs",
+    "check:post": "node scripts/check-post.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.12",
     "astro": "^6.2.2",
     "csv-parse": "^6.1.0",
     "diff": "^8.0.2",
+    "extract-zip": "^2.0.1",
     "gray-matter": "^4.0.3",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",

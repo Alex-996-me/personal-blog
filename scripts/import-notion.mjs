@@ -2,6 +2,7 @@ import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
 import { parse as parseCsv } from "csv-parse/sync";
+import extract from "extract-zip";
 import TurndownService from "turndown";
 import { gfm as turndownGfm } from "turndown-plugin-gfm";
 import {
@@ -15,20 +16,38 @@ import {
   tryReadPostBySlug,
   writePostFile,
 } from "./utils/post-files.mjs";
+import { auditAndFixPost, VALID_CATEGORIES } from "./utils/post-audit.mjs";
 import { generateSummaryData } from "./utils/summaries.mjs";
 
-const VALID_CATEGORIES = new Set(["日志", "读书", "健康", "训练", "脑科学", "工具"]);
 const slug = process.argv[2];
 
 if (!slug) {
-  console.error("请提供导入 slug，例如：npm run import:notion -- example");
+  console.error("Usage: npm run import:notion -- your-slug");
   process.exit(1);
 }
 
-const importDir = path.join(notionImportsDir, slug);
-if (!(await fileExists(importDir))) {
-  console.error(`没有找到导入目录：imports/notion/${slug}/`);
-  process.exit(1);
+function cleanupLinkTarget(target) {
+  return target.trim().replace(/^<|>$/g, "");
+}
+
+function sanitizeExtension(value) {
+  const extension = path.extname(value).toLowerCase();
+  if (extension && /^[.][a-z0-9]+$/i.test(extension)) {
+    return extension;
+  }
+  return ".png";
+}
+
+function isRemoteUrl(target) {
+  return /^https?:\/\//i.test(target);
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
 }
 
 async function walkFiles(targetDir) {
@@ -47,11 +66,40 @@ async function walkFiles(targetDir) {
   return files;
 }
 
+async function ensureImportSource(slugValue) {
+  const directDir = path.join(notionImportsDir, slugValue);
+  const rootZip = path.join(notionImportsDir, `${slugValue}.zip`);
+
+  if (await fileExists(directDir)) {
+    const existingFiles = await walkFiles(directDir);
+    const hasSourceFile = existingFiles.some((file) => /\.(md|markdown|html?)$/i.test(file));
+    if (hasSourceFile) {
+      return directDir;
+    }
+
+    const nestedZip = existingFiles.find((file) => /\.zip$/i.test(file));
+    if (nestedZip) {
+      await extract(nestedZip, { dir: directDir });
+      return directDir;
+    }
+  }
+
+  if (await fileExists(rootZip)) {
+    await mkdir(directDir, { recursive: true });
+    await extract(rootZip, { dir: directDir });
+    return directDir;
+  }
+
+  throw new Error(
+    `No import source found. Expected either imports/notion/${slugValue}/ or imports/notion/${slugValue}.zip`,
+  );
+}
+
 function getRelativeDepth(root, target) {
   return path.relative(root, target).split(path.sep).length;
 }
 
-function pickMainSourceFile(allFiles) {
+function pickMainSourceFile(importDir, allFiles, slugValue) {
   const markdownFiles = allFiles.filter((file) => /\.(md|markdown)$/i.test(file));
   const htmlFiles = allFiles.filter((file) => /\.html?$/i.test(file));
 
@@ -59,7 +107,7 @@ function pickMainSourceFile(allFiles) {
     const base = path.basename(file).toLowerCase();
     const depth = getRelativeDepth(importDir, file);
     const mdBonus = /\.(md|markdown)$/i.test(file) ? 0 : 1000;
-    const nameBonus = base.includes(slug.toLowerCase()) ? -20 : 0;
+    const nameBonus = base.includes(slugValue.toLowerCase()) ? -20 : 0;
     const exportNoise = /(index|readme|_all|archive)/i.test(base) ? 15 : 0;
     return mdBonus + depth + exportNoise + nameBonus + base.length / 100;
   };
@@ -70,12 +118,9 @@ function pickMainSourceFile(allFiles) {
 
 function normalizeMarkdownText(markdown) {
   let value = markdown.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n");
-
   value = value.replace(/\n{3,}/g, "\n\n");
   value = value.replace(/[ \t]+\n/g, "\n");
   value = value.replace(/\u00a0/g, " ");
-  value = value.replace(/\s+([，。！？；：、])/g, "$1");
-
   return value.trim();
 }
 
@@ -106,55 +151,6 @@ function demoteBodyH1(markdown) {
       return line;
     })
     .join("\n");
-}
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
-}
-
-function sanitizeExtension(value) {
-  const extension = path.extname(value).toLowerCase();
-  if (extension && /^[.][a-z0-9]+$/i.test(extension)) {
-    return extension;
-  }
-  return ".png";
-}
-
-function cleanupLinkTarget(target) {
-  return target.trim().replace(/^<|>$/g, "");
-}
-
-function isRemoteUrl(target) {
-  return /^https?:\/\//i.test(target);
-}
-
-async function resolveLocalAsset(target, sourceDir, allFiles) {
-  const cleaned = cleanupLinkTarget(target);
-  const decoded = (() => {
-    try {
-      return decodeURIComponent(cleaned);
-    } catch {
-      return cleaned;
-    }
-  })();
-
-  const directCandidates = [
-    path.resolve(sourceDir, decoded),
-    path.resolve(importDir, decoded),
-  ];
-
-  for (const candidate of directCandidates) {
-    if (await fileExists(candidate)) {
-      return candidate;
-    }
-  }
-
-  const baseName = path.basename(decoded).toLowerCase();
-  return allFiles.find((file) => path.basename(file).toLowerCase() === baseName) ?? "";
 }
 
 function renderMarkdownTable(rows) {
@@ -188,27 +184,42 @@ function renderMarkdownTable(rows) {
   ].join("\n");
 }
 
-async function convertCsvLinks(markdown, sourceDir, allFiles) {
-  return markdown.replaceAll(
-    /\[([^\]]+)\]\(([^)]+\.csv)\)/gi,
-    (match, label, csvTarget) => `__CSV_PLACEHOLDER__${Buffer.from(JSON.stringify({ label, csvTarget })).toString("base64")}__`,
-  );
+async function resolveLocalAsset(target, sourceDir, importDir, allFiles) {
+  const cleaned = cleanupLinkTarget(target);
+  const decoded = (() => {
+    try {
+      return decodeURIComponent(cleaned);
+    } catch {
+      return cleaned;
+    }
+  })();
+
+  const directCandidates = [
+    path.resolve(sourceDir, decoded),
+    path.resolve(importDir, decoded),
+  ];
+
+  for (const candidate of directCandidates) {
+    if (await fileExists(candidate)) {
+      return candidate;
+    }
+  }
+
+  const baseName = path.basename(decoded).toLowerCase();
+  return allFiles.find((file) => path.basename(file).toLowerCase() === baseName) ?? "";
 }
 
-async function expandCsvPlaceholders(markdown, sourceDir, allFiles) {
-  const matches = [...markdown.matchAll(/__CSV_PLACEHOLDER__([A-Za-z0-9+/=]+)__/g)];
+async function convertCsvLinks(markdown, sourceDir, importDir, allFiles) {
+  const csvLinkPattern = /\[([^\]]+)\]\(([^)]+\.csv)\)/gi;
+  const matches = [...markdown.matchAll(csvLinkPattern)];
   let output = markdown;
 
   for (const match of matches) {
-    const payload = JSON.parse(Buffer.from(match[1], "base64").toString("utf8"));
-    const csvPath = await resolveLocalAsset(payload.csvTarget, sourceDir, allFiles);
+    const label = match[1];
+    const csvTarget = match[2];
+    const csvPath = await resolveLocalAsset(csvTarget, sourceDir, importDir, allFiles);
 
     if (!csvPath) {
-      console.warn(`未找到 CSV 文件，已保留原链接：${payload.csvTarget}`);
-      output = output.replace(
-        match[0],
-        `[${payload.label}](${payload.csvTarget})`,
-      );
       continue;
     }
 
@@ -218,7 +229,7 @@ async function expandCsvPlaceholders(markdown, sourceDir, allFiles) {
       relax_column_count: true,
     });
     const table = renderMarkdownTable(rows);
-    const block = [`**${payload.label}**`, "", table].join("\n");
+    const block = [`**${label}**`, "", table].join("\n");
     output = output.replace(match[0], block);
   }
 
@@ -228,7 +239,7 @@ async function expandCsvPlaceholders(markdown, sourceDir, allFiles) {
 async function downloadRemoteAsset(url, targetPath) {
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(`下载失败：${response.status}`);
+    throw new Error(`Failed to download asset: ${response.status}`);
   }
 
   const arrayBuffer = await response.arrayBuffer();
@@ -236,115 +247,75 @@ async function downloadRemoteAsset(url, targetPath) {
   await writeFile(targetPath, Buffer.from(arrayBuffer));
 }
 
-async function rewriteImages(markdown, sourceDir, allFiles) {
-  const assetDir = path.join(publicImagesDir, slug);
+async function rewriteImages(markdown, slugValue, sourceDir, importDir, allFiles) {
+  const assetDir = path.join(publicImagesDir, slugValue);
   await mkdir(assetDir, { recursive: true });
 
   const seen = new Map();
   let assetIndex = 0;
   let firstLocalImage = "";
 
-  const replaceAsync = async (input, matcher, replacer) => {
-    const matches = [...input.matchAll(matcher)];
-    let output = input;
+  const matches = [...markdown.matchAll(/!\[([^\]]*)\]\(([^)]+)\)/g)];
+  let output = markdown;
 
-    for (const match of matches) {
-      const replacement = await replacer(match);
-      output = output.replace(match[0], replacement);
+  for (const match of matches) {
+    const alt = match[1];
+    const rawTarget = cleanupLinkTarget(match[2]);
+
+    if (seen.has(rawTarget)) {
+      output = output.replace(match[0], `![${alt}](${seen.get(rawTarget)})`);
+      continue;
     }
 
-    return output;
-  };
+    assetIndex += 1;
+    const extension = sanitizeExtension(rawTarget);
+    const fileName = `image-${String(assetIndex).padStart(2, "0")}${extension}`;
+    const publicPath = `/images/posts/${slugValue}/${fileName}`;
+    const targetPath = path.join(assetDir, fileName);
 
-  const updatedMarkdown = await replaceAsync(
-    markdown,
-    /!\[([^\]]*)\]\(([^)]+)\)/g,
-    async (match) => {
-      const alt = match[1];
-      const rawTarget = cleanupLinkTarget(match[2]);
-      const cacheKey = rawTarget;
-
-      if (seen.has(cacheKey)) {
-        return `![${alt}](${seen.get(cacheKey)})`;
+    if (isRemoteUrl(rawTarget)) {
+      try {
+        await downloadRemoteAsset(rawTarget, targetPath);
+        seen.set(rawTarget, publicPath);
+        firstLocalImage ||= publicPath;
+        output = output.replace(match[0], `![${alt}](${publicPath})`);
+      } catch (error) {
+        console.warn(`Warning: failed to download remote image ${rawTarget}: ${error.message}`);
       }
+      continue;
+    }
 
-      assetIndex += 1;
-      const extension = sanitizeExtension(rawTarget);
-      const publicPath = `/images/posts/${slug}/image-${String(assetIndex).padStart(2, "0")}${extension}`;
-      const targetPath = path.join(assetDir, path.basename(publicPath));
+    const localSource = await resolveLocalAsset(rawTarget, sourceDir, importDir, allFiles);
+    if (!localSource) {
+      console.warn(`Warning: image not found, keeping original path: ${rawTarget}`);
+      continue;
+    }
 
-      if (isRemoteUrl(rawTarget)) {
-        try {
-          await downloadRemoteAsset(rawTarget, targetPath);
-          seen.set(cacheKey, publicPath);
-          firstLocalImage ||= publicPath;
-          return `![${alt}](${publicPath})`;
-        } catch (error) {
-          console.warn(`远程图片下载失败，已保留原链接：${rawTarget} (${error.message})`);
-          return match[0];
-        }
-      }
+    await copyAsset(localSource, targetPath);
+    seen.set(rawTarget, publicPath);
+    firstLocalImage ||= publicPath;
+    output = output.replace(match[0], `![${alt}](${publicPath})`);
+  }
 
-      const localSource = await resolveLocalAsset(rawTarget, sourceDir, allFiles);
-      if (!localSource) {
-        console.warn(`未找到图片资源，已保留原路径：${rawTarget}`);
-        return match[0];
-      }
+  output = output.replace(/^!\[([^\]]*)\]\(([^)]+)\)\s*$/gm, (_, altText, imageTarget) => {
+    if (!altText.trim()) {
+      return `![](${imageTarget})`;
+    }
 
-      await copyAsset(localSource, targetPath);
-      seen.set(cacheKey, publicPath);
-      firstLocalImage ||= publicPath;
-      return `![${alt}](${publicPath})`;
-    },
-  );
-
-  const withFigures = updatedMarkdown.replace(
-    /^!\[([^\]]*)\]\(([^)]+)\)\s*$/gm,
-    (_, altText, imageTarget) => {
-      if (!altText.trim()) {
-        return `![](${imageTarget})`;
-      }
-
-      return [
-        "",
-        '<figure class="post-figure">',
-        `<img src="${escapeHtml(imageTarget)}" alt="${escapeHtml(altText)}" />`,
-        `<figcaption>${escapeHtml(altText)}</figcaption>`,
-        "</figure>",
-        "",
-      ].join("\n");
-    },
-  );
+    return [
+      "",
+      '<figure class="post-figure">',
+      `<img src="${escapeHtml(imageTarget)}" alt="${escapeHtml(altText)}" />`,
+      `<figcaption>${escapeHtml(altText)}</figcaption>`,
+      "</figure>",
+      "",
+    ].join("\n");
+  });
 
   return {
-    markdown: withFigures,
+    markdown: normalizeMarkdownText(output),
     firstLocalImage,
   };
-}
-
-function extractDescription(markdown) {
-  const lines = markdown
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(
-      (line) =>
-        line &&
-        !line.startsWith("#") &&
-        !line.startsWith("!") &&
-        !line.startsWith("|") &&
-        !line.startsWith("```") &&
-        !line.startsWith("<"),
-    );
-
-  const paragraph = lines[0] ?? "";
-  return paragraph.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").slice(0, 120);
-}
-
-function normalizeCategory(value, fallback = "日志") {
-  if (VALID_CATEGORIES.has(value)) {
-    return value;
-  }
-  return fallback;
 }
 
 function normalizeTags(value) {
@@ -366,6 +337,48 @@ function serializeDateValue(value, fallback) {
   return String(value).slice(0, 10);
 }
 
+function extractDescription(markdown) {
+  const lines = markdown
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(
+      (line) =>
+        line &&
+        !line.startsWith("#") &&
+        !line.startsWith("!") &&
+        !line.startsWith("|") &&
+        !line.startsWith("```") &&
+        !line.startsWith("<"),
+    );
+
+  const paragraph = lines[0] ?? "";
+  return paragraph.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").slice(0, 120);
+}
+
+function normalizeCategory(value, fallbackTitle, markdown, previousCategory = "") {
+  const raw = String(value ?? previousCategory ?? "").trim();
+  if (VALID_CATEGORIES.includes(raw)) {
+    return raw;
+  }
+
+  const combined = `${fallbackTitle}\n${markdown}`.toLowerCase();
+  const keywordMap = [
+    ["健康", ["健康", "饮食", "营养", "体检", "睡眠", "恢复", "补剂"]],
+    ["训练", ["训练", "力量", "壶铃", "健身", "跑步", "肌肉", "有氧"]],
+    ["脑科学", ["脑科学", "神经", "认知", "大脑", "记忆", "注意力"]],
+    ["读书", ["读书", "阅读", "书摘", "书评", "播客", "课程笔记"]],
+    ["工具", ["工具", "工作流", "AI", "软件", "效率", "自动化"]],
+  ];
+
+  for (const [category, keywords] of keywordMap) {
+    if (keywords.some((keyword) => combined.includes(keyword))) {
+      return category;
+    }
+  }
+
+  return "日志";
+}
+
 async function loadSourceMarkdown(sourceFile) {
   const raw = await readFile(sourceFile, "utf8");
 
@@ -373,7 +386,9 @@ async function loadSourceMarkdown(sourceFile) {
     const parsed = matter(raw);
     return {
       frontmatter: parsed.data,
-      title: String(parsed.data.title ?? deriveTitleFromMarkdown(parsed.content, path.parse(sourceFile).name)),
+      title: String(
+        parsed.data.title ?? deriveTitleFromMarkdown(parsed.content, path.parse(sourceFile).name),
+      ),
       markdown: parsed.content,
       originalFile: path.basename(sourceFile),
     };
@@ -393,79 +408,76 @@ async function loadSourceMarkdown(sourceFile) {
   };
 }
 
-const allFiles = await walkFiles(importDir);
-const sourceFile = pickMainSourceFile(allFiles);
+async function main() {
+  const importDir = await ensureImportSource(slug);
+  const allFiles = await walkFiles(importDir);
+  const sourceFile = pickMainSourceFile(importDir, allFiles, slug);
 
-if (!sourceFile) {
-  console.error("没有找到可导入的 Markdown 或 HTML 主文件。");
-  process.exit(1);
-}
-
-const loaded = await loadSourceMarkdown(sourceFile);
-const sourceDir = path.dirname(sourceFile);
-let content = normalizeMarkdownText(loaded.markdown);
-const title = String(loaded.frontmatter.title ?? loaded.title ?? slug).trim();
-
-content = removeLeadingH1(content);
-content = demoteBodyH1(content);
-content = await convertCsvLinks(content, sourceDir, allFiles);
-content = await expandCsvPlaceholders(content, sourceDir, allFiles);
-
-const rewrittenImages = await rewriteImages(content, sourceDir, allFiles);
-content = normalizeMarkdownText(rewrittenImages.markdown);
-
-const existingPost = await tryReadPostBySlug(slug);
-if (existingPost) {
-  const snapshot = await snapshotExistingPost(slug);
-  if (snapshot?.created) {
-    console.log(`已备份旧文章版本：${snapshot.targetPath}`);
+  if (!sourceFile) {
+    throw new Error("No Markdown or HTML source file found in this Notion export.");
   }
-}
 
-const today = toIsoDate();
-const previousData = existingPost?.parsed.data ?? {};
-const previousVersion = Number(previousData.version ?? 0);
-const nextVersion = existingPost ? previousVersion + 1 : 1;
-const description = String(loaded.frontmatter.description ?? "").trim() || extractDescription(content);
-const category = normalizeCategory(
-  String(loaded.frontmatter.category ?? previousData.category ?? "日志").trim(),
-  "日志",
-);
-const importedTags = normalizeTags(loaded.frontmatter.tags);
-const tags = importedTags.length > 0 ? importedTags : normalizeTags(previousData.tags);
+  const loaded = await loadSourceMarkdown(sourceFile);
+  const sourceDir = path.dirname(sourceFile);
+  const title = String(loaded.frontmatter.title ?? loaded.title ?? slug).trim();
 
-const summaryData = await generateSummaryData(content, { title });
+  let content = normalizeMarkdownText(loaded.markdown);
+  content = removeLeadingH1(content);
+  content = demoteBodyH1(content);
+  content = await convertCsvLinks(content, sourceDir, importDir, allFiles);
 
-const nextChangeLog = existingPost
-  ? [
-      {
-        version: nextVersion,
-        date: today,
-        summary: ["从 Notion 文档重新导入并更新内容。"],
-      },
-      ...(Array.isArray(previousData.changeLog) ? previousData.changeLog : []),
-    ]
-  : [
-      {
-        version: 1,
-        date: today,
-        summary: ["初始发布版本。"],
-      },
-    ];
+  const rewrittenImages = await rewriteImages(content, slug, sourceDir, importDir, allFiles);
+  content = rewrittenImages.markdown;
 
-await writePostFile(
-  slug,
-  {
+  const existingPost = await tryReadPostBySlug(slug);
+  if (existingPost) {
+    const snapshot = await snapshotExistingPost(slug);
+    if (snapshot?.created) {
+      console.log(`Snapshot created: ${snapshot.targetPath}`);
+    }
+  }
+
+  const today = toIsoDate();
+  const previousData = existingPost?.parsed.data ?? {};
+  const previousVersion = Number(previousData.version ?? 0);
+  const nextVersion = existingPost ? previousVersion + 1 : 1;
+  const importedTags = normalizeTags(loaded.frontmatter.tags);
+  const tags = importedTags.length > 0 ? importedTags : normalizeTags(previousData.tags);
+  const summaryData = await generateSummaryData(content, { title });
+
+  const frontmatter = {
     title,
     date: serializeDateValue(previousData.date, today),
     updated: today,
-    category,
+    category: normalizeCategory(
+      loaded.frontmatter.category,
+      title,
+      content,
+      String(previousData.category ?? ""),
+    ),
     tags,
-    description,
-    cover: String(previousData.cover ?? "").trim() || rewrittenImages.firstLocalImage,
-    youtube: String(previousData.youtube ?? "").trim(),
+    description: String(loaded.frontmatter.description ?? "").trim() || extractDescription(content),
+    cover: String(loaded.frontmatter.cover ?? "").trim() ||
+      String(previousData.cover ?? "").trim() ||
+      rewrittenImages.firstLocalImage,
+    youtube: String(loaded.frontmatter.youtube ?? previousData.youtube ?? "").trim(),
     version: nextVersion,
-    changeLog: nextChangeLog,
+    changeLog: existingPost
+      ? [
+          {
+            version: nextVersion,
+            date: today,
+            summary: ["从 Notion 文档重新导入并更新内容。"],
+          },
+          ...(Array.isArray(previousData.changeLog) ? previousData.changeLog : []),
+        ]
+      : [
+          {
+            version: 1,
+            date: today,
+            summary: ["初始发布版本。"],
+          },
+        ],
     fullSummary: summaryData.fullSummary,
     sectionSummaries: summaryData.sectionSummaries,
     notionImport: {
@@ -473,21 +485,38 @@ await writePostFile(
       importedAt: today,
       originalFile: loaded.originalFile,
     },
-  },
-  content,
-);
+  };
 
-console.log(`已生成文章：src/content/posts/${slug}.md`);
-if (rewrittenImages.firstLocalImage) {
-  console.log(`已同步图片到：public/images/posts/${slug}/`);
+  await writePostFile(slug, frontmatter, content);
+
+  const auditResult = await auditAndFixPost(slug, {
+    ensureSummaries: true,
+    today,
+  });
+
+  console.log(`Post generated: src/content/posts/${slug}.md`);
+  if (rewrittenImages.firstLocalImage) {
+    console.log(`Imported images: public/images/posts/${slug}/`);
+  }
+  if (auditResult.changed) {
+    console.log("Auto-fix applied: cover/frontmatter/summaries were normalized.");
+  }
+
+  await runCommand("npm", ["run", "build"]);
+
+  console.log("");
+  console.log("Import complete.");
+  console.log(`Preview locally: npm run dev`);
+  console.log(`Article path: /posts/${slug}/`);
+  console.log("Recommended quick check:");
+  console.log("- title");
+  console.log("- category");
+  console.log("- cover image");
+  console.log("- description");
+  console.log("- section summaries");
 }
 
-console.log(
-  summaryData.usedAI
-    ? "已使用 OPENAI_API_KEY 自动生成分节总结。"
-    : "没有可用的 OPENAI_API_KEY，已生成可手动调整的总结占位内容。",
-);
-
-await runCommand("npm", ["run", "build"]);
-
-console.log("导入完成。建议手动检查标题、分类、描述、长表格和 sectionSummaries 是否符合你的写作习惯。");
+await main().catch((error) => {
+  console.error(error.message);
+  process.exit(1);
+});

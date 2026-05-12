@@ -1,248 +1,243 @@
-# 极简中文个人博客
+# N=1 Lab
 
-一个基于 Astro 的静态中文个人博客，风格偏传统个人站：白底、黑色顶部导航、清晰分类、文章列表、右侧栏、搜索框、关于作者区域，并内置 RSS、基础 SEO、文章版本历史、差异对比，以及 Notion 导入工作流。
+一个基于 Astro 的极简中文个人博客，适合长期写日志、读书、训练、健康和工具类文章。
 
-## 如何安装
+## 安装
 
 ```bash
 npm install
 ```
 
-## 如何本地运行
+## 本地运行
 
 ```bash
 npm run dev
 ```
 
-默认访问地址为 `http://localhost:4321`。
+默认地址：
 
-## 如何新增文章
+```text
+http://localhost:4321/personal-blog/
+```
 
-1. 在 `src/content/posts/` 下新建一个 Markdown 文件，例如 `my-new-post.md`。
-2. 按下面的 frontmatter 格式填写文章信息：
+## 新增普通文章
+
+在 `src/content/posts/` 下新建一个 `.md` 文件，frontmatter 至少包含这些字段：
 
 ```md
 ---
 title: "文章标题"
-date: 2026-05-05
-updated: 2026-05-05
+date: "2026-05-12"
+updated: "2026-05-12"
 category: "日志"
 tags:
-  - 个人成长
   - 记录
-description: "用一句话概括这篇文章。"
-cover: "/images/covers/journal-cover.svg"
+description: "一句话摘要。"
+cover: ""
 youtube: ""
 version: 1
 changeLog:
   - version: 1
-    date: 2026-05-05
+    date: "2026-05-12"
     summary:
       - "初始发布版本。"
 fullSummary: []
 sectionSummaries: []
 ---
-
-这里开始写正文。
 ```
 
-3. `category` 可选值：
-   - `日志`
-   - `读书`
-   - `健康`
-   - `训练`
-   - `脑科学`
-   - `工具`
-4. `cover` 和 `youtube` 是可选字段。
-5. 如果填写 `youtube`，文章页会在正文顶部自动显示响应式视频播放器。
+可用分类：
 
-## 如何更新一篇已有文章并保留历史版本
+- `日志`
+- `读书`
+- `健康`
+- `训练`
+- `脑科学`
+- `工具`
 
-1. 在修改文章前，先把当前文章复制到 `src/content/post-versions/[slug]/v当前版本号.md`。
-2. 也可以直接运行：
+## 最省事的 Notion 导入方式
+
+### 你只需要做的事
+
+1. 在 Notion 里导出页面，优先选 `Markdown & CSV`。
+2. 把导出的内容放到这两个位置中的任意一个：
+
+- 文件夹方式：`imports/notion/你的-slug/`
+- 压缩包方式：`imports/notion/你的-slug.zip`
+
+3. 运行一条命令：
 
 ```bash
-npm run snapshot -- your-post-slug
+npm run publish:notion -- 你的-slug
 ```
 
-3. 修改 `src/content/posts/` 下的最新版文章。
-4. 把 `version` 加 1。
-5. 更新 `updated` 日期。
-6. 在 `changeLog` 里新增本次更新说明。
-7. 运行 `npm run build`。
-8. build 成功后 commit 和 push。
-9. GitHub Actions 会自动重新部署。
+`publish:notion` 和 `import:notion` 是同一个流程，你用哪个都可以：
 
-## 如何从 Notion 导入文章
+```bash
+npm run import:notion -- 你的-slug
+```
 
-### 1. 从 Notion 导出
+### 这个命令会自动做什么
 
-优先使用 Notion 的 `Markdown & CSV` 导出方式。导出后，把整包文件放到：
+它会尽量自动完成下面这些事：
+
+1. 自动识别文件夹或 zip。
+2. 如果是 zip，自动解压到 `imports/notion/你的-slug/`。
+3. 自动找到主 Markdown 或 HTML 文件。
+4. 转成适合博客的 Markdown。
+5. 清理多余空行和标题层级。
+6. 复制本地图片到 `public/images/posts/你的-slug/`。
+7. 重写图片路径。
+8. 保留普通超链接。
+9. 把长表格交给现有的折叠渲染逻辑。
+10. 自动补全 frontmatter。
+11. 自动生成或补齐 `fullSummary` / `sectionSummaries`。
+12. 自动修复常见问题：
+
+- `cover` 为空
+- `cover` 还指向旧的默认封面
+- `category` 缺失或不合法
+- `description` 为空
+- `updated` 缺失
+- `changeLog` 缺失
+
+13. 最后自动运行 `npm run build`。
+
+## 白痴版导入步骤
+
+### 如果你拿到的是 zip
+
+1. 把 zip 放到：
 
 ```text
-imports/notion/[slug]/
+imports/notion/sleep-notes.zip
 ```
 
-例如：
+2. 运行：
+
+```bash
+npm run publish:notion -- sleep-notes
+```
+
+### 如果你拿到的是解压后的文件夹
+
+1. 把整个文件夹内容放到：
 
 ```text
-imports/notion/diet-experiment/
-  我的饮食实验.md
-  assets/
-  images/
-  tables/
-  long-table.csv
+imports/notion/sleep-notes/
 ```
 
-如果你拿到的是 HTML 导出，也可以放进去，导入脚本会尽量转换成 Markdown。
-
-### 2. 运行导入命令
+2. 运行：
 
 ```bash
-npm run import:notion -- slug
+npm run publish:notion -- sleep-notes
 ```
 
-例如：
+### 导入完成后怎么看
+
+1. 本地预览：
 
 ```bash
-npm run import:notion -- diet-experiment
+npm run dev
 ```
 
-这个命令会尽量自动完成：
+2. 浏览器打开：
 
-1. 读取 `imports/notion/[slug]/`。
-2. 自动识别主 Markdown 或 HTML 文件。
-3. 转换为适合博客的 Markdown。
-4. 输出到 `src/content/posts/[slug].md`。
-5. 把引用到的图片复制到 `public/images/posts/[slug]/`。
-6. 重写图片路径为 `/images/posts/[slug]/...`。
-7. 保留普通超链接。
-8. 单独成行的 YouTube / Bilibili 链接会在文章页自动嵌入。
-9. 自动补全 frontmatter、版本号和 `changeLog`。
-10. 尽量生成 `fullSummary` 和 `sectionSummaries`。
-11. 自动运行 `npm run build`。
+```text
+http://localhost:4321/personal-blog/posts/sleep-notes/
+```
 
-### 3. 图片如何处理
+## 如果你直接手改了 `.md`
 
-1. 相对路径图片会复制到 `public/images/posts/[slug]/`。
-2. 远程图片会尽量下载到本地；如果下载失败，会保留原链接并在终端输出 warning。
-3. 图片文件名会被清理成 `image-01.png` 这类稳定格式，避免中文乱码和空格问题。
-4. 图片默认居中，最大宽度不会超过正文宽度。
-5. 导入后的图片如果有 alt 文本，会显示成图注。
-
-### 4. 大表格如何处理
-
-导入后的 Markdown 表格或 CSV 转换表格，满足以下任一条件时会自动折叠：
-
-1. 行数超过 8 行。
-2. 列数超过 5 列。
-3. 表格文本总长度超过 1200 字符。
-
-短表格会正常展开显示。长表格会自动包进 `details / summary`，默认折叠，并显示类似 `共 18 行，6 列。` 的摘要。
-
-### 5. 如何生成 AI 总结
-
-如果你希望单独为已有文章重生成摘要，可以运行：
+有时候你会直接改 `src/content/posts/xxx.md`，这时可以跑一条自检修复命令：
 
 ```bash
-npm run summarize -- slug
+npm run check:post -- xxx
 ```
 
-例如：
+它会尽量自动修复这些基础问题：
+
+- 分类字段不合法
+- 封面为空
+- 封面还停留在旧默认图
+- 摘要为空
+- `updated` 没补
+- `changeLog` 没补
+- 总结字段缺失
+
+然后会自动重新 build。
+
+## 如果你想单独重生文章总结
 
 ```bash
-npm run summarize -- diet-experiment
+npm run summarize -- 你的-slug
 ```
 
-这个命令会：
+如果环境里有 `OPENAI_API_KEY`，脚本会尝试自动生成更像样的总结。  
+如果没有，也不会报错，只会写入可手改的占位总结。
 
-1. 读取 `src/content/posts/[slug].md`。
-2. 按 H2 拆分文章。
-3. 先备份当前文章到历史版本目录。
-4. 如果有 `OPENAI_API_KEY`，尝试调用 OpenAI 接口生成总结。
-5. 如果没有 `OPENAI_API_KEY`，或者调用失败，则写入可手动调整的占位总结。
-6. 写回 `fullSummary` 和 `sectionSummaries`。
-7. 自动运行 `npm run build`。
+## 如何更新一篇已有文章并保留快照
 
-### 6. 如何手动补充 sectionSummaries
+如果你不是从 Notion 导入，而是手改旧文章：
 
-直接编辑文章 frontmatter 里的 `fullSummary` 和 `sectionSummaries` 即可：
+1. 先备份当前版本：
 
-```yaml
-fullSummary:
-  - "这一篇主要是在整理饮食实验的阶段性观察。"
-  - "更像读者导览，不是替代正文。"
-
-sectionSummaries:
-  - heading: "为什么要记录饮食实验"
-    summary:
-      - "这一节主要在解释动机。"
-      - "重点不是做内容，而是保留自己的实验过程。"
-  - heading: "一张更长的数据表"
-    summary:
-      - "这部分是一张原始数据表，建议先看表头。"
-      - "如果想突出结论，可以再补 1 到 2 条观察。"
+```bash
+npm run snapshot -- 你的-slug
 ```
 
-保存后运行一次：
+2. 修改 `src/content/posts/你的-slug.md`
+3. 把 `version` 加 1
+4. 更新 `updated`
+5. 在 `changeLog` 里补这次改了什么
+6. 运行：
 
 ```bash
 npm run build
 ```
 
-### 7. 从 Notion 更新一篇旧文章时会发生什么
+## 图片、链接、表格怎么处理
 
-如果 `src/content/posts/[slug].md` 已经存在，`npm run import:notion -- slug` 会自动：
+### 图片
 
-1. 先把当前文章备份到 `src/content/post-versions/[slug]/v当前版本.md`。
-2. 保留原来的 `date`。
-3. 把 `version` 加 1。
-4. 把 `updated` 改成当天日期。
-5. 在 `changeLog` 里追加 `从 Notion 文档重新导入并更新内容。`
-6. 尽量重建 `fullSummary` 和 `sectionSummaries`。
+- 相对路径图片会复制到 `public/images/posts/你的-slug/`
+- 远程图片会尽量下载到本地
+- 下载失败就保留原链接，并在终端提示 warning
+- 如果导入文章里有本地图片，系统会优先把第一张图当成封面候选
 
-### 8. 常见错误
+### 链接
 
-`找不到 Markdown 文件`
+- 普通链接会保留
+- YouTube / Bilibili 单独成行时，会走现有文章渲染逻辑
+- 其他链接按普通链接处理
 
-- 检查 `imports/notion/[slug]/` 里是否真的有 `.md` 或 `.html` 主文件。
+### 表格
 
-`图片路径失效`
+长表格会在前端自动折叠，短表格正常显示。  
+当前折叠规则：
 
-- 先确认导出包里的图片文件和 Markdown 引用路径仍然对应。
-- 如果是外链图片，检查终端 warning，看是否下载失败。
+- 行数大于 `8`
+- 或列数大于 `5`
+- 或表格字符长度大于 `1200`
 
-`表格太宽`
+## 常用命令
 
-- 正常情况会自动横向滚动；如果还是不理想，可以在导入后手动删减列，或者补一段表格说明。
-
-`没有 OPENAI_API_KEY`
-
-- 不会报错崩溃，只会写入可手动调整的总结占位内容。
-
-`build 失败`
-
-- 先看终端报错位置，再检查 frontmatter、表格格式、原始 HTML 或图片路径。
-- 导入脚本和总结脚本本身都会在最后自动跑 `npm run build`。
-
-## 如何部署到 Cloudflare Pages
-
-1. 将仓库推送到 GitHub。
-2. 在 Cloudflare Pages 中连接该仓库。
-3. 构建设置填写：
-   - Build command: `npm run build`
-   - Build output directory: `dist`
-4. 建议在 Cloudflare Pages 的环境变量中添加：
-   - `SITE_URL=https://你的域名`
-
-## 项目命令
-
-| 命令 | 说明 |
+| 命令 | 作用 |
 | --- | --- |
 | `npm install` | 安装依赖 |
-| `npm run dev` | 启动本地开发环境 |
-| `npm run build` | 构建生产版本到 `dist/` |
-| `npm run preview` | 预览生产构建结果 |
-| `npm run snapshot -- slug` | 为指定文章创建当前版本快照 |
-| `npm run import:notion -- slug` | 从 `imports/notion/[slug]/` 导入 Notion 导出内容 |
-| `npm run summarize -- slug` | 为指定文章生成或更新 `fullSummary` / `sectionSummaries` |
+| `npm run dev` | 本地预览 |
+| `npm run build` | 生产构建 |
+| `npm run publish:notion -- slug` | 一键导入并发布一篇 Notion 文章 |
+| `npm run import:notion -- slug` | 和上面相同 |
+| `npm run check:post -- slug` | 自检并自动修复一篇文章的基础元数据 |
+| `npm run summarize -- slug` | 重写文章总结 |
+| `npm run snapshot -- slug` | 先给旧文章打快照 |
+
+## 部署到 GitHub Pages
+
+推到 `main` 分支后，GitHub Actions 会自动部署。  
+默认访问地址：
+
+```text
+https://alex-996-me.github.io/personal-blog/
+```
