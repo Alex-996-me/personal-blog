@@ -44,6 +44,13 @@ function extractLocalImagePaths(markdown, slug) {
   return [...new Set(markdown.match(pattern) ?? [])];
 }
 
+function normalizePublicImagePaths(markdown) {
+  return markdown.replace(
+    /(["'(])(?:public[\\/])?images[\\/]posts[\\/]/gi,
+    (_, prefix) => `${prefix}/images/posts/`,
+  );
+}
+
 function normalizeCategory(category, title, markdown) {
   const candidate = String(category ?? "").trim();
   if (VALID_CATEGORIES.includes(candidate)) {
@@ -120,7 +127,7 @@ export async function auditAndFixPost(slug, options = {}) {
   }
 
   const data = current.parsed.data ?? {};
-  const content = current.parsed.content ?? "";
+  const content = normalizePublicImagePaths(current.parsed.content ?? "");
   const updated = String(data.updated ?? data.date ?? options.today ?? toIsoDate()).slice(0, 10);
   const title = String(data.title ?? slug).trim();
   const category = normalizeCategory(data.category, title, content);

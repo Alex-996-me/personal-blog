@@ -8,7 +8,20 @@ tags:
   - 恢复
   - 习惯
 description: 动物食材为主，低碳高脂
-
+cover: /images/posts/diet-experiment/image-01.jpg
+youtube: ''
+version: 2
+changeLog:
+  - version: 2
+    date: '2026-05-09'
+    summary:
+      - 从 Notion 文档重新导入并更新内容。
+      - 手工重写了导览总结，整理了标题层级。
+      - 调整了体检图片的展示方式，让长文阅读更安静。
+  - version: 1
+    date: 2026-04-20T00:00:00.000Z
+    summary:
+      - 初始发布版本。
 fullSummary:
   - 这篇文章记录我当前的饮食框架，不是给所有人的标准答案。
   - 核心思路是以动物性食物为主，保留少量服务训练和恢复的干净碳水。
