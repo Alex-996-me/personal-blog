@@ -6,7 +6,7 @@ category: "健康"
 tags:
   - 健康
 description: "为啥我服用这些补剂的个人心得体会"
-cover: "/images/covers/journal-cover.svg"
+cover: "public/images/covers/屏幕截图 2026-05-12 182756.png"
 version: 1
 changeLog:
   - version: 1
