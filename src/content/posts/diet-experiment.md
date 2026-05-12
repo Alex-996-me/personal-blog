@@ -292,3 +292,9 @@ notionImport:
 2. 尿素(BUN) 由 8.41 ↑ 回落至 7.37 (完全正常)
 3. FT3（游离三碘甲状腺原氨酸） 3.00 ↓ (参考值 3.50-6.50)
 4. 肌酐(CREA) 98.1 ↑ 97.64 ↑ （常年轻微偏高），但 eGFR 肾小球过滤率 98.07（极度优异）——溢出效应，肾小球过滤率证明人体过滤系统正常
+
+#### 4.2.3 第三次体检
+<figure class="post-figure post-figure--report">
+<img src="public/images/posts/diet-experiment/2e643698d6df1c873f836b90886a825e.png" alt="第三次体检报告" />
+<figcaption>第三次体检报告</figcaption>
+</figure>
