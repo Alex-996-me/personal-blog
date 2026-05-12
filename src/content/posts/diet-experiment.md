@@ -295,6 +295,6 @@ notionImport:
 
 #### 4.2.3 第三次体检
 <figure class="post-figure post-figure--report">
-<img src="public/images/posts/diet-experiment/2e643698d6df1c873f836b90886a825e.png" alt="第三次体检报告" />
+<img src="images/posts/diet-experiment/2e643698d6df1c873f836b90886a825e.png" alt="第三次体检报告" />
 <figcaption>第三次体检报告</figcaption>
 </figure>
