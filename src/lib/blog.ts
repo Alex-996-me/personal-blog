@@ -10,7 +10,11 @@ export async function getAllPosts() {
 }
 
 export function sortPosts(posts: Post[]) {
-  return posts.sort((left, right) => right.data.date.valueOf() - left.data.date.valueOf());
+  return posts.sort((left, right) => {
+    const rightTime = (right.data.updated ?? right.data.date).valueOf();
+    const leftTime = (left.data.updated ?? left.data.date).valueOf();
+    return rightTime - leftTime;
+  });
 }
 
 export function formatDate(date: Date) {

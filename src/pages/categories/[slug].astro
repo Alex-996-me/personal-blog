@@ -34,8 +34,6 @@ const filteredPosts = posts.filter((post) => post.data.category === category.nam
       ))}
     </div>
   ) : (
-    <div class="empty-state">
-      这个分类暂时还没有文章，之后会慢慢补上。
-    </div>
+    <div class="empty-state">这个分类暂时还没有文章，之后会慢慢补上。</div>
   )}
 </BaseLayout>
