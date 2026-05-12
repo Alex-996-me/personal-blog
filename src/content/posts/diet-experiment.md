@@ -8,7 +8,6 @@ tags:
   - 恢复
   - 习惯
 description: 我把这套饮食当成一个长期实验：目标不是极端，而是维持体重、稳定精力、支持训练表现。
-cover: /images/posts/diet-experiment/image-01.jpg
 youtube: ''
 version: 2
 changeLog:
