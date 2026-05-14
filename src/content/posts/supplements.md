@@ -6,7 +6,7 @@ category: "健康"
 tags:
   - 健康
 description: "服用补剂的心得体会"
-cover: "images/covers/屏幕截图 2026-05-12 182756.png"
+cover: "images/covers/b63ee7b52944ac7a.webp"
 version: 1
 changeLog:
   - version: 1
