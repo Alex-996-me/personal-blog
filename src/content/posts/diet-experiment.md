@@ -1,5 +1,5 @@
 ---
-title: 低碳高脂、animal-based：我的饮食框架
+title: 饮食框架
 date: '2026-04-20'
 updated: '2026-05-09'
 category: 健康
@@ -7,7 +7,7 @@ tags:
   - 饮食
   - 恢复
   - 习惯
-description: 怎么吃——我的个人经验
+description: 动物食材为主，低碳高脂
 
 fullSummary:
   - 这篇文章记录我当前的饮食框架，不是给所有人的标准答案。
@@ -283,6 +283,6 @@ notionImport:
 
 #### 4.2.3 第三次体检
 <figure class="post-figure post-figure--report">
-<img src="/images/posts/diet-experiment/2e643698d6df1c873f836b90886a825e.png" alt="第三次体检报告" />
+<img src="/images/posts/diet-experiment/血脂.png" alt="第三次体检报告" />
 <figcaption>第三次体检报告</figcaption>
 </figure>
