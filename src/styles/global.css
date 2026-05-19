@@ -570,6 +570,31 @@ footer {
   width: 100%;
 }
 
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 1.7rem;
+  align-items: start;
+}
+
+.report-grid .post-figure {
+  max-width: none;
+  margin: 0;
+}
+
+.report-grid .post-figure:last-child {
+  grid-column: 1 / -1;
+  max-width: min(100%, 420px);
+  justify-self: center;
+}
+
+.report-grid .post-figure--report img {
+  max-height: 320px;
+  object-fit: contain;
+  width: 100%;
+}
+
 .prose code {
   background: #f1f1f1;
   padding: 0.08rem 0.35rem;
@@ -788,6 +813,15 @@ footer {
 
   .prose {
     font-size: 1.04rem;
+  }
+
+  .report-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-grid .post-figure:last-child {
+    grid-column: auto;
+    max-width: none;
   }
 
   .collapsible-table summary {
