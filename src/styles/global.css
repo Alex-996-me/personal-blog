@@ -547,6 +547,18 @@ footer {
   margin: 1.9rem auto;
 }
 
+.post-figure--wide {
+  max-width: min(100%, 720px);
+}
+
+.post-figure--medium {
+  max-width: min(100%, 560px);
+}
+
+.post-figure--narrow {
+  max-width: min(100%, 480px);
+}
+
 .prose figure img,
 .post-figure img {
   margin: 0 auto;
