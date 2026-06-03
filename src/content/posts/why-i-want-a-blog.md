@@ -1,19 +1,16 @@
 ---
-title: "为什么我想建一个个人博客"
-date: 2026-05-05
-updated: 2026-05-05
-category: "日志"
+title: 为什么我想建一个个人博客
+date: Tue May 05
+updated: Tue May 05
+category: 日志
 tags:
   - 写作
   - 个人网站
-description: "把零散想法沉淀成长期资产，是我重新开始写博客的主要原因。"
-cover: "/images/covers/journal-cover.svg"
-version: 1
-changeLog:
-  - version: 1
-    date: 2026-05-05
-    summary:
-      - "初始发布版本。"
+description: 把零散想法沉淀成长期资产，是我重新开始写博客的主要原因。
+cover: /images/covers/journal-cover.svg
+youtube: ''
+fullSummary: []
+sectionSummaries: []
 ---
 
 我想重新拥有一个自己的空间。

@@ -4,6 +4,7 @@ import {
   fileExists,
   postsDir,
   publicImagesDir,
+  serializePostFile,
   toIsoDate,
   tryReadPostBySlug,
   writePostFile,
@@ -67,26 +68,6 @@ function normalizeCategory(category, title, markdown) {
   return "日志";
 }
 
-function ensureCurrentChangeLog(changeLog, version, updated, isImportedUpdate) {
-  const entries = Array.isArray(changeLog) ? [...changeLog] : [];
-  const hasCurrentVersion = entries.some((entry) => Number(entry?.version) === Number(version));
-
-  if (hasCurrentVersion) {
-    return entries;
-  }
-
-  return [
-    {
-      version,
-      date: updated,
-      summary: [
-        isImportedUpdate ? "从 Notion 文档重新导入并更新内容。" : "初始发布版本。",
-      ],
-    },
-    ...entries,
-  ];
-}
-
 async function resolveCoverPath({ cover, slug, markdown, notionImport }) {
   const localImages = extractLocalImagePaths(markdown, slug);
   const firstLocalImage = localImages[0] ?? "";
@@ -133,7 +114,6 @@ export async function auditAndFixPost(slug, options = {}) {
   const category = normalizeCategory(data.category, title, content);
   const notionImport = data.notionImport ?? null;
   const description = String(data.description ?? "").trim() || extractDescription(content);
-  const version = Number(data.version ?? 1);
   const cover = await resolveCoverPath({
     cover: data.cover,
     slug,
@@ -158,20 +138,12 @@ export async function auditAndFixPost(slug, options = {}) {
     category,
     description,
     cover,
-    version,
-    changeLog: ensureCurrentChangeLog(
-      data.changeLog,
-      version,
-      updated,
-      Boolean(notionImport && version > 1),
-    ),
     fullSummary,
     sectionSummaries,
   });
 
-  const before = JSON.stringify(buildPostFrontmatter(data));
-  const after = JSON.stringify(nextFrontmatter);
-  const changed = before !== after;
+  const nextFile = serializePostFile(nextFrontmatter, content);
+  const changed = current.raw !== nextFile;
 
   if (changed) {
     await writePostFile(slug, nextFrontmatter, content);

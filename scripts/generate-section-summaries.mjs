@@ -1,7 +1,6 @@
 import {
   readPostByInput,
   runCommand,
-  snapshotExistingPost,
   writePostFile,
 } from "./utils/post-files.mjs";
 import { auditAndFixPost } from "./utils/post-audit.mjs";
@@ -20,11 +19,6 @@ try {
 } catch {
   console.error(`Post not found: src/content/posts/${input}`);
   process.exit(1);
-}
-
-const snapshot = await snapshotExistingPost(currentPost.slug);
-if (snapshot?.created) {
-  console.log(`Snapshot created: ${snapshot.targetPath}`);
 }
 
 const summaryData = await generateSummaryData(currentPost.parsed.content, {

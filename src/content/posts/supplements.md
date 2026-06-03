@@ -1,19 +1,13 @@
 ---
-title: "补给指南"
-date: 2026-05-12
-updated: 2026-05-20
-category: "健康"
+title: 补给指南
+date: Tue May 12
+updated: Wed May 20
+category: 健康
 tags:
   - 健康
-description: "几种常用补剂的服用心得和取舍。"
-cover: "/images/covers/supplements-guide-cover.jpg"
-version: 1
-changeLog:
-  - version: 1
-    date: 2026-05-19
-    summary:
-      - "初始发布版本。"
-      - "润色了措辞，并更新了封面。"
+description: 几种常用补剂的服用心得和取舍。
+cover: /images/covers/supplements-guide-cover.jpg
+youtube: ''
 fullSummary: []
 sectionSummaries: []
 ---

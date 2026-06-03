@@ -1,52 +1,69 @@
 # N=1 Lab
 
-一个基于 Astro 的极简中文个人博客，适合长期写日志、读书、训练、健康和工具类文章。
+一个基于 Astro 的中文个人博客。风格偏长期写作，适合发日志、读书、健康、训练、脑科学和工具类文章。
 
-## 安装
+## 1. 先安装
+
+在项目目录打开 `cmd` 或 PowerShell，然后运行：
 
 ```bash
 npm install
 ```
 
-## 本地运行
+## 2. 本地预览
+
+运行：
 
 ```bash
 npm run dev
 ```
 
-默认地址：
+浏览器打开：
 
 ```text
 http://localhost:4321/personal-blog/
 ```
 
-## 新增普通文章
+## 3. 最简单的发文方式：手动新建一篇 Markdown
 
-在 `src/content/posts/` 下新建一个 `.md` 文件，frontmatter 至少包含这些字段：
+### 第一步：新建文章文件
+
+去这个目录：
+
+```text
+src/content/posts/
+```
+
+新建一个文件，比如：
+
+```text
+src/content/posts/my-new-post.md
+```
+
+### 第二步：把 frontmatter 填好
+
+最小可用模板：
 
 ```md
 ---
 title: "文章标题"
-date: "2026-05-12"
-updated: "2026-05-12"
-category: "日志"
+date: "2026-06-03"
+updated: "2026-06-03"
+category: "健康"
 tags:
-  - 记录
-description: "一句话摘要。"
-cover: ""
+  - "饮食"
+  - "实验"
+description: "一句话概括这篇文章。"
+cover: "/images/covers/example-cover.jpg"
 youtube: ""
-version: 1
-changeLog:
-  - version: 1
-    date: "2026-05-12"
-    summary:
-      - "初始发布版本。"
 fullSummary: []
 sectionSummaries: []
 ---
+
+正文从这里开始。
 ```
 
-可用分类：
+可用分类只有这 6 个：
 
 - `日志`
 - `读书`
@@ -55,188 +72,275 @@ sectionSummaries: []
 - `脑科学`
 - `工具`
 
-## 最省事的 Notion 导入方式
+## 4. 怎么加图片
 
-### 你只需要做的事
+### 方法 A：给正文加图片
 
-1. 在 Notion 里导出页面，优先选 `Markdown & CSV`。
-2. 把导出的内容放到这两个位置中的任意一个：
+1. 先把图片放到这个目录：
 
-- 文件夹方式：`imports/notion/你的-slug/`
-- 压缩包方式：`imports/notion/你的-slug.zip`
+```text
+public/images/posts/你的文章-slug/
+```
 
-3. 运行一条命令：
+比如：
+
+```text
+public/images/posts/my-new-post/photo-01.jpg
+```
+
+2. 然后在正文里这样写：
+
+```md
+![图片说明](/images/posts/my-new-post/photo-01.jpg)
+```
+
+如果你写了 `![图片说明]`，页面会自动把这句说明当作图注显示。
+
+### 方法 B：给文章设置封面
+
+把封面图放到：
+
+```text
+public/images/covers/
+```
+
+比如：
+
+```text
+public/images/covers/my-new-post-cover.jpg
+```
+
+frontmatter 里这样写：
+
+```md
+cover: "/images/covers/my-new-post-cover.jpg"
+```
+
+注意：
+
+- 封面只在首页、分类页、搜索结果等列表位置显示
+- 打开具体文章后，不再显示封面
+
+## 5. 怎么插普通链接、YouTube、Bilibili
+
+### 普通链接
+
+直接写 Markdown 链接：
+
+```md
+[这是一篇参考文章](https://example.com)
+```
+
+外链会自动新标签页打开。
+
+### YouTube
+
+如果你想在文章顶部嵌入 YouTube，可以在 frontmatter 里写：
+
+```md
+youtube: "https://www.youtube.com/watch?v=xxxxxxx"
+```
+
+### 正文里单独嵌入 YouTube 或 Bilibili
+
+如果正文里有一整行只有视频链接，系统会自动把它渲染成播放器。
+
+例如：
+
+```md
+https://www.youtube.com/watch?v=xxxxxxx
+```
+
+或者：
+
+```md
+https://www.bilibili.com/video/BVxxxxxxxx
+```
+
+## 6. 搜索是怎么工作的
+
+博客现在支持关键词检索，搜索范围包括：
+
+- 标题
+- 正文
+- 摘要
+- 分类
+- 标签
+- 文章总结
+
+你在右侧栏或 `/search/` 页输入关键词后，会直接筛出包含这个词的文章。
+
+## 7. 目录是自动生成的
+
+每篇文章开头都会自动出现一个折叠目录。
+
+规则：
+
+- 自动读取正文里的 `##`、`###`
+- 自动生成锚点
+- 默认折叠
+- 以后你手动写文章或用 Notion 导入文章，都会自动有目录
+
+所以你只需要正常写标题层级就行：
+
+```md
+## 第一部分
+### 小节 A
+## 第二部分
+```
+
+## 8. 如果你是从 Notion 导入
+
+### 第一步：导出
+
+在 Notion 里选择：
+
+```text
+Export -> Markdown & CSV
+```
+
+### 第二步：把导出文件放进项目
+
+你有两种放法。
+
+如果你拿到的是 zip：
+
+```text
+imports/notion/你的-slug.zip
+```
+
+如果你已经解压好了：
+
+```text
+imports/notion/你的-slug/
+```
+
+### 第三步：运行导入命令
 
 ```bash
 npm run publish:notion -- 你的-slug
 ```
 
-`publish:notion` 和 `import:notion` 是同一个流程，你用哪个都可以：
+例如：
 
 ```bash
-npm run import:notion -- 你的-slug
+npm run publish:notion -- sleep-notes
 ```
 
 ### 这个命令会自动做什么
 
-它会尽量自动完成下面这些事：
+- 找到主 Markdown 或 HTML 文件
+- 复制文章里的图片到 `public/images/posts/你的-slug/`
+- 重写图片路径
+- 清理标题层级和多余空行
+- 自动补齐 frontmatter
+- 自动生成全文总结和分节总结
+- 自动跑 `npm run build`
 
-1. 自动识别文件夹或 zip。
-2. 如果是 zip，自动解压到 `imports/notion/你的-slug/`。
-3. 自动找到主 Markdown 或 HTML 文件。
-4. 转成适合博客的 Markdown。
-5. 清理多余空行和标题层级。
-6. 复制本地图片到 `public/images/posts/你的-slug/`。
-7. 重写图片路径。
-8. 保留普通超链接。
-9. 把长表格交给现有的折叠渲染逻辑。
-10. 自动补全 frontmatter。
-11. 自动生成或补齐 `fullSummary` / `sectionSummaries`。
-12. 自动修复常见问题：
+## 9. 如果你只想检查某篇文章
 
-- `cover` 为空
-- `cover` 还指向旧的默认封面
-- `category` 缺失或不合法
+```bash
+npm run check:post -- 文章-slug
+```
+
+它会尽量自动修这些问题：
+
+- `category` 不合法
+- `cover` 为空或路径不对
 - `description` 为空
 - `updated` 缺失
-- `changeLog` 缺失
-
-13. 最后自动运行 `npm run build`。
-
-## 白痴版导入步骤
-
-### 如果你拿到的是 zip
-
-1. 把 zip 放到：
-
-```text
-imports/notion/sleep-notes.zip
-```
-
-2. 运行：
-
-```bash
-npm run publish:notion -- sleep-notes
-```
-
-### 如果你拿到的是解压后的文件夹
-
-1. 把整个文件夹内容放到：
-
-```text
-imports/notion/sleep-notes/
-```
-
-2. 运行：
-
-```bash
-npm run publish:notion -- sleep-notes
-```
-
-### 导入完成后怎么看
-
-1. 本地预览：
-
-```bash
-npm run dev
-```
-
-2. 浏览器打开：
-
-```text
-http://localhost:4321/personal-blog/posts/sleep-notes/
-```
-
-## 如果你直接手改了 `.md`
-
-有时候你会直接改 `src/content/posts/xxx.md`，这时可以跑一条自检修复命令：
-
-```bash
-npm run check:post -- xxx
-```
-
-它会尽量自动修复这些基础问题：
-
-- 分类字段不合法
-- 封面为空
-- 封面还停留在旧默认图
-- 摘要为空
-- `updated` 没补
-- `changeLog` 没补
 - 总结字段缺失
+- 正文里误写成 `public/images/...`
 
-然后会自动重新 build。
-
-## 如果你想单独重生文章总结
-
-```bash
-npm run summarize -- 你的-slug
-```
-
-如果环境里有 `OPENAI_API_KEY`，脚本会尝试自动生成更像样的总结。  
-如果没有，也不会报错，只会写入可手改的占位总结。
-
-## 如何更新一篇已有文章并保留快照
-
-如果你不是从 Notion 导入，而是手改旧文章：
-
-1. 先备份当前版本：
+## 10. 如果你想重生成文章总结
 
 ```bash
-npm run snapshot -- 你的-slug
+npm run summarize -- 文章-slug
 ```
 
-2. 修改 `src/content/posts/你的-slug.md`
-3. 把 `version` 加 1
-4. 更新 `updated`
-5. 在 `changeLog` 里补这次改了什么
-6. 运行：
+如果你本地配置了 `OPENAI_API_KEY`，它会尝试自动生成更像样的总结；没有的话也不会报错，只会生成可手动修改的占位总结。
+
+## 11. 我自己发一篇文章的完整傻瓜流程
+
+### 场景 A：手动写
+
+1. 打开 `cmd`
+2. 进入项目目录
+
+```cmd
+cd /d C:\Users\栗海粟\Documents\Codex\2026-05-05\github-plugin-github-openai-curated-personal
+```
+
+3. 新建文章文件到 `src/content/posts/`
+4. 如果有图片，复制到 `public/images/posts/你的-slug/`
+5. 如果有封面，复制到 `public/images/covers/`
+6. 运行本地检查
 
 ```bash
 npm run build
 ```
 
-## 图片、链接、表格怎么处理
+7. 本地预览
 
-### 图片
+```bash
+npm run dev
+```
 
-- 相对路径图片会复制到 `public/images/posts/你的-slug/`
-- 远程图片会尽量下载到本地
-- 下载失败就保留原链接，并在终端提示 warning
-- 如果导入文章里有本地图片，系统会优先把第一张图当成封面候选
+8. 确认没问题后提交并推送
 
-### 链接
+```bash
+git add .
+git commit -m "add new post"
+git push origin main
+```
 
-- 普通链接会保留
-- YouTube / Bilibili 单独成行时，会走现有文章渲染逻辑
-- 其他链接按普通链接处理
+### 场景 B：从 Notion 导入
 
-### 表格
+1. 从 Notion 导出 `Markdown & CSV`
+2. 把 zip 或文件夹放到 `imports/notion/你的-slug/` 或 `imports/notion/你的-slug.zip`
+3. 运行
 
-长表格会在前端自动折叠，短表格正常显示。  
-当前折叠规则：
+```bash
+npm run publish:notion -- 你的-slug
+```
 
-- 行数大于 `8`
-- 或列数大于 `5`
-- 或表格字符长度大于 `1200`
+4. 再运行
 
-## 常用命令
+```bash
+npm run dev
+```
+
+5. 浏览器打开
+
+```text
+http://localhost:4321/personal-blog/posts/你的-slug/
+```
+
+6. 确认没问题后推送
+
+```bash
+git add .
+git commit -m "import notion post"
+git push origin main
+```
+
+## 12. 常用命令
 
 | 命令 | 作用 |
 | --- | --- |
 | `npm install` | 安装依赖 |
 | `npm run dev` | 本地预览 |
 | `npm run build` | 生产构建 |
-| `npm run publish:notion -- slug` | 一键导入并发布一篇 Notion 文章 |
+| `npm run publish:notion -- slug` | 一键导入 Notion 文章 |
 | `npm run import:notion -- slug` | 和上面相同 |
-| `npm run check:post -- slug` | 自检并自动修复一篇文章的基础元数据 |
-| `npm run summarize -- slug` | 重写文章总结 |
-| `npm run snapshot -- slug` | 先给旧文章打快照 |
+| `npm run summarize -- slug` | 重生成文章总结 |
+| `npm run check:post -- slug` | 检查并自动修文章元数据 |
 
-## 部署到 GitHub Pages
+## 13. 部署
 
-推到 `main` 分支后，GitHub Actions 会自动部署。  
-默认访问地址：
+推到 `main` 分支后，GitHub Actions 会自动部署到 GitHub Pages。
+
+公网地址：
 
 ```text
 https://alex-996-me.github.io/personal-blog/

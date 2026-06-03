@@ -11,7 +11,6 @@ import {
   notionImportsDir,
   publicImagesDir,
   runCommand,
-  snapshotExistingPost,
   toIsoDate,
   tryReadPostBySlug,
   writePostFile,
@@ -430,17 +429,8 @@ async function main() {
   content = rewrittenImages.markdown;
 
   const existingPost = await tryReadPostBySlug(slug);
-  if (existingPost) {
-    const snapshot = await snapshotExistingPost(slug);
-    if (snapshot?.created) {
-      console.log(`Snapshot created: ${snapshot.targetPath}`);
-    }
-  }
-
   const today = toIsoDate();
   const previousData = existingPost?.parsed.data ?? {};
-  const previousVersion = Number(previousData.version ?? 0);
-  const nextVersion = existingPost ? previousVersion + 1 : 1;
   const importedTags = normalizeTags(loaded.frontmatter.tags);
   const tags = importedTags.length > 0 ? importedTags : normalizeTags(previousData.tags);
   const summaryData = await generateSummaryData(content, { title });
@@ -461,23 +451,6 @@ async function main() {
       String(previousData.cover ?? "").trim() ||
       rewrittenImages.firstLocalImage,
     youtube: String(loaded.frontmatter.youtube ?? previousData.youtube ?? "").trim(),
-    version: nextVersion,
-    changeLog: existingPost
-      ? [
-          {
-            version: nextVersion,
-            date: today,
-            summary: ["从 Notion 文档重新导入并更新内容。"],
-          },
-          ...(Array.isArray(previousData.changeLog) ? previousData.changeLog : []),
-        ]
-      : [
-          {
-            version: 1,
-            date: today,
-            summary: ["初始发布版本。"],
-          },
-        ],
     fullSummary: summaryData.fullSummary,
     sectionSummaries: summaryData.sectionSummaries,
     notionImport: {

@@ -19,7 +19,7 @@ const currentQuery = Astro.url.searchParams.get("q") ?? "";
   <section class="sidebar-section">
     <h2>搜索</h2>
     <form class="search-form" action={withBasePath("/search/")} method="get">
-      <input type="search" name="q" value={currentQuery} placeholder="搜索标题、标签或摘要" />
+      <input type="search" name="q" value={currentQuery} placeholder="搜索标题、正文、标签或摘要" />
       <button type="submit">搜索</button>
     </form>
   </section>

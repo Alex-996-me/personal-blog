@@ -1,8 +1,13 @@
 ---
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { formatDate, getCategoryHref, getYoutubeEmbedUrl } from "../../lib/blog";
-import { getUpdatedDate, getPostSlug } from "../../lib/postVersions";
+import {
+  formatDate,
+  getCategoryHref,
+  getPostSlug,
+  getUpdatedDate,
+  getYoutubeEmbedUrl,
+} from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
 
 export async function getStaticPaths() {
@@ -17,6 +22,7 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 const youtubeEmbedUrl = getYoutubeEmbedUrl(post.data.youtube);
 const updated = getUpdatedDate(post);
+const categoryHref = withBasePath(getCategoryHref(post.data.category));
 ---
 
 <BaseLayout
@@ -25,12 +31,16 @@ const updated = getUpdatedDate(post);
   ogImage={post.data.cover}
 >
   <article>
+    <a class="post-backlink" href={categoryHref}>
+      ← 返回{post.data.category}
+    </a>
+
     <header class="post-header">
       <h1>{post.data.title}</h1>
       <div class="post-meta">
         <span>发布于：{formatDate(post.data.date)}</span>
         <span>最后更新：{formatDate(updated)}</span>
-        <a href={withBasePath(getCategoryHref(post.data.category))}>{post.data.category}</a>
+        <a href={categoryHref}>{post.data.category}</a>
       </div>
       {post.data.tags.length > 0 && (
         <div class="tag-list" aria-label="标签">
@@ -51,10 +61,6 @@ const updated = getUpdatedDate(post);
           allowfullscreen
         ></iframe>
       </div>
-    )}
-
-    {post.data.cover && (
-      <img class="post-cover" src={withBasePath(post.data.cover)} alt={post.data.title} />
     )}
 
     <div class="prose">

@@ -1,8 +1,15 @@
-import { getCollection } from "astro:content";
+import { getCollection, type CollectionEntry } from "astro:content";
 import { categories } from "../data/site";
-import { type Post, getPostSlug as getNormalizedPostSlug } from "./postVersions";
 
-export type { Post } from "./postVersions";
+export type Post = CollectionEntry<"posts">;
+
+export function getPostSlug(post: Post) {
+  return post.id.replace(/\.(md|mdx)$/i, "");
+}
+
+export function getUpdatedDate(post: Post) {
+  return post.data.updated ?? post.data.date;
+}
 
 export async function getAllPosts() {
   const posts = await getCollection("posts");
@@ -11,8 +18,8 @@ export async function getAllPosts() {
 
 export function sortPosts(posts: Post[]) {
   return posts.sort((left, right) => {
-    const rightTime = (right.data.updated ?? right.data.date).valueOf();
-    const leftTime = (left.data.updated ?? left.data.date).valueOf();
+    const rightTime = getUpdatedDate(right).valueOf();
+    const leftTime = getUpdatedDate(left).valueOf();
     return rightTime - leftTime;
   });
 }
@@ -38,10 +45,6 @@ export function getCategoryHref(categoryName: string) {
   return category ? `/categories/${category.slug}/` : "/categories/";
 }
 
-export function getPostSlug(post: Post) {
-  return getNormalizedPostSlug(post);
-}
-
 export function getPostHref(post: Post) {
   return `/posts/${getPostSlug(post)}/`;
 }
@@ -51,6 +54,44 @@ export function getCategoryCounts(posts: Post[]) {
     ...category,
     count: posts.filter((post) => post.data.category === category.name).length,
   }));
+}
+
+export function stripMarkdownToText(value: string) {
+  return value
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`[^`]+`/g, " ")
+    .replace(/!\[([^\]]*)]\([^)]+\)/g, " $1 ")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, " $1 ")
+    .replace(/<\/?[^>]+>/g, " ")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/^[>*+-]\s+/gm, "")
+    .replace(/^\d+\.\s+/gm, "")
+    .replace(/\|/g, " ")
+    .replace(/\r?\n+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function extractSearchText(post: Post) {
+  const sectionSummaryText = (post.data.sectionSummaries ?? [])
+    .flatMap((entry) => [entry.heading, ...entry.summary])
+    .join(" ");
+
+  return stripMarkdownToText(
+    [
+      post.data.title,
+      post.data.description,
+      post.data.category,
+      post.data.tags.join(" "),
+      (post.data.fullSummary ?? []).join(" "),
+      sectionSummaryText,
+      post.body,
+    ].join("\n\n"),
+  ).toLowerCase();
+}
+
+export function extractSearchSnippet(post: Post) {
+  return stripMarkdownToText(post.body);
 }
 
 export function extractYoutubeId(value: string) {

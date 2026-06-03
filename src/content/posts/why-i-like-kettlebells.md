@@ -1,20 +1,16 @@
 ---
-title: "我为什么喜欢壶铃训练"
-date: 2026-04-13
-updated: 2026-04-13
-category: "训练"
+title: 我为什么喜欢壶铃训练
+date: Mon Apr 13
+updated: Mon Apr 13
+category: 训练
 tags:
   - 壶铃
   - 力量训练
-description: "壶铃训练让我重新感受到力量、节奏和专注之间的连接。"
-cover: "/images/covers/training-cover.svg"
-youtube: "https://www.youtube.com/watch?v=YSxHifyIrv0"
-version: 1
-changeLog:
-  - version: 1
-    date: 2026-04-13
-    summary:
-      - "初始发布版本。"
+description: 壶铃训练让我重新感受到力量、节奏和专注之间的连接。
+cover: /images/covers/training-cover.svg
+youtube: 'https://www.youtube.com/watch?v=YSxHifyIrv0'
+fullSummary: []
+sectionSummaries: []
 ---
 
 我喜欢壶铃，不只是因为它“有效”，还因为它很诚实。

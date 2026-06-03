@@ -1,12 +1,6 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 
-const changeLogEntrySchema = z.object({
-  version: z.number().int().positive(),
-  date: z.coerce.date(),
-  summary: z.array(z.string()).default([]),
-});
-
 const sectionSummarySchema = z.object({
   heading: z.string(),
   summary: z.array(z.string()).default([]),
@@ -27,8 +21,6 @@ const postSchema = z.object({
   description: z.string(),
   cover: z.string().optional(),
   youtube: z.string().optional(),
-  version: z.number().int().positive().default(1),
-  changeLog: z.array(changeLogEntrySchema).default([]),
   fullSummary: z.array(z.string()).default([]),
   sectionSummaries: z.array(sectionSummarySchema).default([]),
   notionImport: notionImportSchema.optional(),
@@ -39,12 +31,6 @@ const posts = defineCollection({
   schema: postSchema,
 });
 
-const postVersions = defineCollection({
-  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/post-versions" }),
-  schema: postSchema,
-});
-
 export const collections = {
   posts,
-  postVersions,
 };

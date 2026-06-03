@@ -10,6 +10,36 @@ function normalizeSummaryHeading(value) {
   return String(value).trim().replace(/\s+/g, " ");
 }
 
+function normalizeAnchorSlug(value) {
+  const normalized = String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{Letter}\p{Number}\s-]+/gu, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return normalized || "section";
+}
+
+function createSlugger() {
+  const counts = new Map();
+
+  return (value) => {
+    const base = normalizeAnchorSlug(value);
+    const current = counts.get(base) ?? 0;
+    counts.set(base, current + 1);
+    return current === 0 ? base : `${base}-${current + 1}`;
+  };
+}
+
+function createTextNode(value) {
+  return {
+    type: "text",
+    value,
+  };
+}
+
 function getMdastText(node) {
   if (!node || typeof node !== "object") {
     return "";
@@ -251,11 +281,81 @@ function getTableMetrics(tableNode) {
   return { rowCount, columnCount, textLength };
 }
 
+function buildTocList(items) {
+  const rootItems = [];
+  let currentParent = null;
+
+  for (const item of items) {
+    const listItem = createElement("li", {}, [
+      createElement("a", { href: `#${item.id}` }, [createTextNode(item.text)]),
+    ]);
+
+    if (item.depth === 2 || !currentParent) {
+      rootItems.push(listItem);
+      currentParent = item.depth === 2 ? listItem : currentParent;
+      continue;
+    }
+
+    let sublist = currentParent.children.find(
+      (child) => child.type === "element" && child.tagName === "ul",
+    );
+
+    if (!sublist) {
+      sublist = createElement("ul", { className: ["article-toc__sublist"] }, []);
+      currentParent.children.push(sublist);
+    }
+
+    sublist.children.push(listItem);
+  }
+
+  return createElement("ul", { className: ["article-toc__list"] }, rootItems);
+}
+
+function createTocBlock(items) {
+  if (!Array.isArray(items) || items.length === 0) {
+    return null;
+  }
+
+  return createElement("details", { className: ["article-toc"] }, [
+    createElement("summary", { className: ["article-toc__summary"] }, [
+      createTextNode("目录"),
+    ]),
+    createElement("div", { className: ["article-toc__body"] }, [buildTocList(items)]),
+  ]);
+}
+
 export function rehypeEnhanceBlogContent() {
   return (tree) => {
+    const makeSlug = createSlugger();
+    const tocItems = [];
+
     const visit = (node, parent = null, index = -1) => {
       if (!node || typeof node !== "object") {
         return;
+      }
+
+      if (node.type === "element" && /^h[2-4]$/.test(node.tagName)) {
+        const headingText = getHastText(node).replace(/\s+/g, " ").trim();
+        if (headingText) {
+          const depth = Number(node.tagName.replace("h", ""));
+          const id =
+            typeof node.properties?.id === "string" && node.properties.id.trim()
+              ? node.properties.id.trim()
+              : makeSlug(headingText);
+
+          node.properties = {
+            ...node.properties,
+            id,
+          };
+
+          if (depth <= 3) {
+            tocItems.push({
+              id,
+              text: headingText,
+              depth,
+            });
+          }
+        }
       }
 
       if (node.type === "element" && node.tagName === "a") {
@@ -285,10 +385,10 @@ export function rehypeEnhanceBlogContent() {
           ? createElement("details", { className: ["collapsible-table"] }, [
               createElement("summary", {}, [
                 createElement("span", { className: ["collapsible-table__title"] }, [
-                  { type: "text", value: "展开查看数据表格" },
+                  createTextNode("展开查看数据表格"),
                 ]),
                 createElement("span", { className: ["collapsible-table__meta"] }, [
-                  { type: "text", value: `共 ${metrics.rowCount} 行，${metrics.columnCount} 列。` },
+                  createTextNode(`共 ${metrics.rowCount} 行，${metrics.columnCount} 列。`),
                 ]),
               ]),
               wrappedTable,
@@ -305,5 +405,10 @@ export function rehypeEnhanceBlogContent() {
     };
 
     visit(tree);
+
+    const tocBlock = createTocBlock(tocItems);
+    if (tocBlock) {
+      tree.children.unshift(tocBlock);
+    }
   };
 }

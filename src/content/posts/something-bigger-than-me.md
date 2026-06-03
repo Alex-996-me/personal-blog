@@ -1,19 +1,16 @@
 ---
-title: "寻找 something bigger than me"
-date: 2026-04-05
-updated: 2026-04-05
-category: "读书"
+title: 寻找 something bigger than me
+date: Sun Apr 05
+updated: Sun Apr 05
+category: 读书
 tags:
   - 阅读
   - 意义感
-description: "我越来越在意，一个人是否能找到比自己当下情绪更大的东西。"
-cover: "/images/covers/reading-cover.svg"
-version: 1
-changeLog:
-  - version: 1
-    date: 2026-04-05
-    summary:
-      - "初始发布版本。"
+description: 我越来越在意，一个人是否能找到比自己当下情绪更大的东西。
+cover: /images/covers/reading-cover.svg
+youtube: ''
+fullSummary: []
+sectionSummaries: []
 ---
 
 最近读书时，我反复被一个问题击中：人到底要靠什么，才能穿过那些没有即时答案的阶段？

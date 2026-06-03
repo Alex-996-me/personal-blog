@@ -1,6 +1,12 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getAllPosts, getPostHref } from "../lib/blog";
+import {
+  extractSearchSnippet,
+  extractSearchText,
+  getAllPosts,
+  getPostHref,
+  getUpdatedDate,
+} from "../lib/blog";
 import { withBasePath } from "../lib/paths";
 
 const posts = await getAllPosts();
@@ -8,8 +14,11 @@ const searchEntries = posts.map((post) => ({
   title: post.data.title,
   description: post.data.description,
   date: post.data.date.toISOString().slice(0, 10),
+  updated: getUpdatedDate(post).toISOString().slice(0, 10),
   category: post.data.category,
   tags: post.data.tags,
+  text: extractSearchText(post),
+  snippet: extractSearchSnippet(post),
   url: withBasePath(getPostHref(post)),
 }));
 ---
@@ -17,7 +26,7 @@ const searchEntries = posts.map((post) => ({
 <BaseLayout title="搜索" description="搜索博客文章。">
   <section class="page-header">
     <h1>搜索文章</h1>
-    <p>可以按标题、摘要、分类或标签搜索。</p>
+    <p>可以按标题、正文、摘要、分类或标签搜索。</p>
   </section>
 
   <section class="search-page__panel sidebar-section">
@@ -44,27 +53,65 @@ const searchEntries = posts.map((post) => ({
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;");
 
+    const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    const normalizeKeywords = (value) =>
+      value
+        .trim()
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(Boolean);
+
+    const highlightTerms = (text, keywords) => {
+      if (!text || keywords.length === 0) {
+        return escapeHtml(text);
+      }
+
+      const pattern = new RegExp(`(${keywords.map(escapeRegExp).join("|")})`, "gi");
+      return escapeHtml(text).replace(pattern, '<mark class="search-hit">$1</mark>');
+    };
+
+    const createSnippet = (entry, keywords) => {
+      if (keywords.length === 0) {
+        return entry.description;
+      }
+
+      const source = entry.snippet || entry.description;
+      const lowerSource = source.toLowerCase();
+      const firstIndex = keywords.reduce((current, keyword) => {
+        const index = lowerSource.indexOf(keyword);
+        if (index === -1) {
+          return current;
+        }
+        if (current === -1) {
+          return index;
+        }
+        return Math.min(current, index);
+      }, -1);
+
+      if (firstIndex === -1) {
+        return entry.description;
+      }
+
+      const start = Math.max(0, firstIndex - 30);
+      const end = Math.min(source.length, firstIndex + 90);
+      const prefix = start > 0 ? "..." : "";
+      const suffix = end < source.length ? "..." : "";
+      return `${prefix}${source.slice(start, end).trim()}${suffix}`;
+    };
+
     const renderResults = (query) => {
-      const normalized = query.trim().toLowerCase();
+      const keywords = normalizeKeywords(query);
       input.value = query;
 
-      if (!normalized) {
+      if (keywords.length === 0) {
         summary.textContent = "输入关键词后会实时筛选文章。";
         results.innerHTML = "";
         return;
       }
 
       const filtered = entries.filter((entry) => {
-        const haystack = [
-          entry.title,
-          entry.description,
-          entry.category,
-          entry.tags.join(" "),
-        ]
-          .join(" ")
-          .toLowerCase();
-
-        return haystack.includes(normalized);
+        return keywords.every((keyword) => entry.text.includes(keyword));
       });
 
       summary.textContent = `找到 ${filtered.length} 篇和“${query}”相关的文章。`;
@@ -80,13 +127,14 @@ const searchEntries = posts.map((post) => ({
             <article class="post-card">
               <div class="post-card__content">
                 <div class="post-card__meta">
-                  <span>${escapeHtml(entry.date)}</span>
+                  <span>发布：${escapeHtml(entry.date)}</span>
+                  <span>更新：${escapeHtml(entry.updated)}</span>
                   <span>${escapeHtml(entry.category)}</span>
                 </div>
                 <h2 class="post-card__title">
-                  <a href="${entry.url}">${escapeHtml(entry.title)}</a>
+                  <a href="${entry.url}">${highlightTerms(entry.title, keywords)}</a>
                 </h2>
-                <p class="post-card__description">${escapeHtml(entry.description)}</p>
+                <p class="post-card__description">${highlightTerms(createSnippet(entry, keywords), keywords)}</p>
               </div>
             </article>
           `,

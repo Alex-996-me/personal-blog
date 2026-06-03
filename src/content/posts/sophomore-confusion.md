@@ -1,19 +1,16 @@
 ---
-title: "大二阶段的迷茫"
-date: 2026-04-28
-updated: 2026-04-28
-category: "日志"
+title: 大二阶段的迷茫
+date: Tue Apr 28
+updated: Tue Apr 28
+category: 日志
 tags:
   - 大学生活
   - 方向选择
-description: "当课程、能力、未来想象彼此拉扯时，迷茫也许不是失败，而是重建坐标的过程。"
-cover: "/images/covers/journal-cover-2.svg"
-version: 1
-changeLog:
-  - version: 1
-    date: 2026-04-28
-    summary:
-      - "初始发布版本。"
+description: 当课程、能力、未来想象彼此拉扯时，迷茫也许不是失败，而是重建坐标的过程。
+cover: /images/covers/journal-cover-2.svg
+youtube: ''
+fullSummary: []
+sectionSummaries: []
 ---
 
 大二像一个尴尬的路口。

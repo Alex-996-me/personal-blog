@@ -8,21 +8,8 @@ tags:
   - 恢复
   - 习惯
 description: 动物食材为主，低碳高脂
-cover: /images/covers/diet-framework-cover.jpg
+cover: /images/posts/diet-experiment/image-01.jpg
 youtube: ''
-version: 2
-changeLog:
-  - version: 2
-    date: '2026-05-19'
-    summary:
-      - 从 Notion 文档重新导入并更新内容。
-      - 手工重写了导览总结，整理了标题层级。
-      - 调整了体检图片的展示方式，让长文阅读更安静。
-      - 润色了措辞，更新了封面与体检图版式。
-  - version: 1
-    date: 2026-04-20T00:00:00.000Z
-    summary:
-      - 初始发布版本。
 fullSummary:
   - 这篇文章记录我当前的饮食框架，不是给所有人的标准答案。
   - 核心思路是以动物性食物为主，保留少量服务训练和恢复的干净碳水。
@@ -293,4 +280,3 @@ notionImport:
 2. 尿素(BUN) 由 8.41 ↑ 回落至 7.37 (完全正常)
 3. FT3（游离三碘甲状腺原氨酸） 3.00 ↓ (参考值 3.50-6.50)
 4. 肌酐(CREA) 98.1 ↑ 97.64 ↑ （常年轻微偏高），但 eGFR 肾小球过滤率 98.07（极度优异）——溢出效应，肾小球过滤率证明人体过滤系统正常
-

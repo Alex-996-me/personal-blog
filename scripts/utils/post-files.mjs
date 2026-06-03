@@ -5,16 +5,11 @@ import { spawn } from "node:child_process";
 
 export const rootDir = process.cwd();
 export const postsDir = path.join(rootDir, "src", "content", "posts");
-export const postVersionsDir = path.join(rootDir, "src", "content", "post-versions");
 export const notionImportsDir = path.join(rootDir, "imports", "notion");
 export const publicImagesDir = path.join(rootDir, "public", "images", "posts");
 
 export function toIsoDate(date = new Date()) {
   return new Date(date).toISOString().slice(0, 10);
-}
-
-export function sortChangeLog(entries = []) {
-  return [...entries].sort((left, right) => Number(right.version) - Number(left.version));
 }
 
 export async function fileExists(targetPath) {
@@ -68,31 +63,8 @@ export async function tryReadPostBySlug(slug) {
   };
 }
 
-export async function snapshotRawPost({ slug, raw, version }) {
-  const targetDir = path.join(postVersionsDir, slug);
-  const targetPath = path.join(targetDir, `v${version}.md`);
-
-  if (await fileExists(targetPath)) {
-    return { created: false, targetPath };
-  }
-
-  await mkdir(targetDir, { recursive: true });
-  await writeFile(targetPath, raw, "utf8");
-  return { created: true, targetPath };
-}
-
-export async function snapshotExistingPost(slug) {
-  const current = await tryReadPostBySlug(slug);
-  if (!current) {
-    return null;
-  }
-
-  const version = Number(current.parsed.data.version ?? 1);
-  return snapshotRawPost({ slug, raw: current.raw, version });
-}
-
 export function buildPostFrontmatter(frontmatter) {
-  const payload = {
+  return {
     title: frontmatter.title ?? "",
     date: frontmatter.date ?? toIsoDate(),
     updated: frontmatter.updated ?? frontmatter.date ?? toIsoDate(),
@@ -101,21 +73,21 @@ export function buildPostFrontmatter(frontmatter) {
     description: frontmatter.description ?? "",
     cover: frontmatter.cover ?? "",
     youtube: frontmatter.youtube ?? "",
-    version: Number(frontmatter.version ?? 1),
-    changeLog: sortChangeLog(frontmatter.changeLog ?? []),
     fullSummary: Array.isArray(frontmatter.fullSummary) ? frontmatter.fullSummary : [],
     sectionSummaries: Array.isArray(frontmatter.sectionSummaries)
       ? frontmatter.sectionSummaries
       : [],
     ...(frontmatter.notionImport ? { notionImport: frontmatter.notionImport } : {}),
   };
+}
 
-  return payload;
+export function serializePostFile(frontmatter, content) {
+  return matter.stringify(content.trimEnd() + "\n", buildPostFrontmatter(frontmatter));
 }
 
 export async function writePostFile(slug, frontmatter, content) {
   const targetPath = path.join(postsDir, `${slug}.md`);
-  const file = matter.stringify(content.trimEnd() + "\n", buildPostFrontmatter(frontmatter));
+  const file = serializePostFile(frontmatter, content);
   await writeFile(targetPath, file, "utf8");
   return targetPath;
 }
