@@ -8,7 +8,7 @@ tags:
   - 饮食
   - 内脏
 description: 这篇文章讨论心、肝、骨髓和肾脏的营养价值，以及内脏真正合适的吃法：少量、低频、看来源。
-cover: /images/posts/why-eat-organs/image-01.jpg
+cover: /images/covers/why-eat-organs-cover.jpg
 youtube: ''
 fullSummary:
   - 内脏的价值不在于吃得多，而在于用很小的食用量换取更高的营养密度。
