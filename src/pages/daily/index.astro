@@ -1,0 +1,26 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import InspirationCard from "../../components/InspirationCard.astro";
+import { getAllInspirations } from "../../lib/blog";
+
+const inspirations = await getAllInspirations();
+---
+
+<BaseLayout title="每日灵感" description="短想法、随手记和公开留下来的片段记录。">
+  <section class="page-header">
+    <h1>每日灵感</h1>
+    <p>这里不放长文，只放短小、直接、值得留下的一句话或一段话。</p>
+  </section>
+
+  {inspirations.length > 0 ? (
+    <div class="inspiration-list">
+      {inspirations.map((inspiration) => (
+        <InspirationCard inspiration={inspiration} />
+      ))}
+    </div>
+  ) : (
+    <div class="empty-state">
+      这里暂时还是空的。以后你发来的感想、片段记录、突然想明白的一句话，都会集中出现在这里。
+    </div>
+  )}
+</BaseLayout>

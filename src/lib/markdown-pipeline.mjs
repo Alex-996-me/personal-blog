@@ -126,16 +126,14 @@ function renderSummaryBlock(items, title, variant) {
     return "";
   }
 
-  const list = items
-    .map((item) => `<li>${escapeHtml(item)}</li>`)
-    .join("");
+  const list = items.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
 
   return [
     `<!-- ${variant}-summary:start -->`,
     `<section class="section-summary section-summary--${variant}">`,
     `<p class="section-summary__title">${escapeHtml(title)}</p>`,
     `<ul>${list}</ul>`,
-    `</section>`,
+    "</section>",
     `<!-- ${variant}-summary:end -->`,
   ].join("");
 }
@@ -317,9 +315,7 @@ function createTocBlock(items) {
   }
 
   return createElement("details", { className: ["article-toc"] }, [
-    createElement("summary", { className: ["article-toc__summary"] }, [
-      createTextNode("目录"),
-    ]),
+    createElement("summary", { className: ["article-toc__summary"] }, [createTextNode("目录")]),
     createElement("div", { className: ["article-toc__body"] }, [buildTocList(items)]),
   ]);
 }

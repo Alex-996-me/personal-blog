@@ -25,11 +25,7 @@ const updated = getUpdatedDate(post);
 const categoryHref = withBasePath(getCategoryHref(post.data.category));
 ---
 
-<BaseLayout
-  title={post.data.title}
-  description={post.data.description}
-  ogImage={post.data.cover}
->
+<BaseLayout title={post.data.title} description={post.data.description} ogImage={post.data.cover}>
   <article>
     <a class="post-backlink" href={categoryHref}>
       ← 返回{post.data.category}

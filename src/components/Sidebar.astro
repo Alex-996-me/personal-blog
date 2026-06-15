@@ -1,16 +1,19 @@
 ---
-import { siteConfig } from "../data/site";
+import { modules, siteConfig } from "../data/site";
 import {
   formatDate,
+  getAllInspirations,
   getAllPosts,
   getCategoryCounts,
   getCategoryHref,
+  getInspirationHref,
   getPostHref,
 } from "../lib/blog";
 import { withBasePath } from "../lib/paths";
 
-const posts = await getAllPosts();
+const [posts, inspirations] = await Promise.all([getAllPosts(), getAllInspirations()]);
 const recentPosts = posts.slice(0, 5);
+const recentInspirations = inspirations.slice(0, 5);
 const categoryCounts = getCategoryCounts(posts);
 const currentQuery = Astro.url.searchParams.get("q") ?? "";
 ---
@@ -19,7 +22,7 @@ const currentQuery = Astro.url.searchParams.get("q") ?? "";
   <section class="sidebar-section">
     <h2>搜索</h2>
     <form class="search-form" action={withBasePath("/search/")} method="get">
-      <input type="search" name="q" value={currentQuery} placeholder="搜索标题、正文、标签或摘要" />
+      <input type="search" name="q" value={currentQuery} placeholder="搜索标题、正文、标签或资料" />
       <button type="submit">搜索</button>
     </form>
   </section>
@@ -27,6 +30,19 @@ const currentQuery = Astro.url.searchParams.get("q") ?? "";
   <section class="sidebar-section">
     <h2>关于作者</h2>
     <p>{siteConfig.author.shortBio}</p>
+  </section>
+
+  <section class="sidebar-section">
+    <h2>栏目</h2>
+    <ul class="plain-list">
+      {modules.map((module) => (
+        <li>
+          <a href={withBasePath(module.href)}>{module.name}</a>
+          <br />
+          <small>{module.description}</small>
+        </li>
+      ))}
+    </ul>
   </section>
 
   <section class="sidebar-section">
@@ -40,6 +56,23 @@ const currentQuery = Astro.url.searchParams.get("q") ?? "";
         </li>
       ))}
     </ul>
+  </section>
+
+  <section class="sidebar-section">
+    <h2>最新灵感</h2>
+    {recentInspirations.length > 0 ? (
+      <ul class="plain-list">
+        {recentInspirations.map((inspiration) => (
+          <li>
+            <a href={withBasePath(getInspirationHref(inspiration))}>{inspiration.data.title}</a>
+            <br />
+            <small>{formatDate(inspiration.data.date)}</small>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="muted">这里会放短想法、随手记和还没长成文章的念头。</p>
+    )}
   </section>
 
   <section class="sidebar-section">

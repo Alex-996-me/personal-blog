@@ -1,0 +1,50 @@
+---
+import {
+  formatDate,
+  getResourceHref,
+  type ResourceDocument,
+} from "../lib/blog";
+import { withBasePath } from "../lib/paths";
+
+interface Props {
+  resource: ResourceDocument;
+}
+
+const { resource } = Astro.props;
+const cover = resource.data.cover ? withBasePath(resource.data.cover) : "";
+const fileUrl = withBasePath(resource.data.file);
+---
+
+<article class="resource-card">
+  <div class="resource-card__content">
+    <div class="post-card__meta">
+      <span>{formatDate(resource.data.date)}</span>
+      <span>资料</span>
+    </div>
+    <h2 class="post-card__title">
+      <a href={withBasePath(getResourceHref(resource))}>{resource.data.title}</a>
+    </h2>
+    <p class="post-card__description">{resource.data.description}</p>
+    {resource.data.tags.length > 0 && (
+      <div class="tag-list" aria-label="资料标签">
+        {resource.data.tags.map((tag) => (
+          <span class="tag">#{tag}</span>
+        ))}
+      </div>
+    )}
+    <div class="resource-card__actions">
+      <a href={withBasePath(getResourceHref(resource))}>查看详情</a>
+      <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+        在线阅读
+      </a>
+      <a href={fileUrl} download>
+        下载
+      </a>
+    </div>
+  </div>
+  {cover && (
+    <a class="post-card__media" href={withBasePath(getResourceHref(resource))} aria-hidden="true" tabindex="-1">
+      <img class="post-card__cover" src={cover} alt="" />
+    </a>
+  )}
+</article>

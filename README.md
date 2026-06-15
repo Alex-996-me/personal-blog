@@ -1,8 +1,12 @@
 # N=1 Lab
 
-一个基于 Astro 的中文个人博客。风格偏长期写作，适合发日志、读书、健康、训练、脑科学和工具类文章。
+一个基于 Astro 的中文个人博客，偏长期写作和资料沉淀。现在分成三类内容：
 
-## 1. 先安装
+- `文章`：完整长文，按读书、健康、训练、脑科学、工具等分类归档
+- `每日灵感`：短想法、随手记、片段文字
+- `资料`：PDF、讲义、课程资料、可在线阅读和下载的文件
+
+## 1. 安装依赖
 
 在项目目录打开 `cmd` 或 PowerShell，然后运行：
 
@@ -12,7 +16,7 @@ npm install
 
 ## 2. 本地预览
 
-运行：
+启动开发服务器：
 
 ```bash
 npm run dev
@@ -24,37 +28,47 @@ npm run dev
 http://localhost:4321/personal-blog/
 ```
 
-## 3. 最简单的发文方式：手动新建一篇 Markdown
+## 3. 构建检查
 
-### 第一步：新建文章文件
+上线前建议先跑一遍：
 
-去这个目录：
-
-```text
-src/content/posts/
+```bash
+npm run build
 ```
 
-新建一个文件，比如：
+## 4. 项目里最常用的目录
+
+```text
+src/content/posts/          长文文章
+src/content/inspirations/   每日灵感
+src/content/resources/      资料说明页
+public/images/covers/       文章或资料封面
+public/images/posts/        正文插图
+public/resources/           PDF / 讲义 / 资料文件
+imports/notion/             Notion 导入源文件
+```
+
+## 5. 新增一篇长文章
+
+去这里新建一个 Markdown 文件：
 
 ```text
 src/content/posts/my-new-post.md
 ```
 
-### 第二步：把 frontmatter 填好
-
-最小可用模板：
+最小模板：
 
 ```md
 ---
 title: "文章标题"
-date: "2026-06-03"
-updated: "2026-06-03"
+date: "2026-06-15"
+updated: "2026-06-15"
 category: "健康"
 tags:
   - "饮食"
   - "实验"
-description: "一句话概括这篇文章。"
-cover: "/images/covers/example-cover.jpg"
+description: "一句话摘要。"
+cover: "/images/covers/my-new-post-cover.jpg"
 youtube: ""
 fullSummary: []
 sectionSummaries: []
@@ -63,7 +77,7 @@ sectionSummaries: []
 正文从这里开始。
 ```
 
-可用分类只有这 6 个：
+可用分类：
 
 - `日志`
 - `读书`
@@ -72,68 +86,64 @@ sectionSummaries: []
 - `脑科学`
 - `工具`
 
-## 4. 怎么加图片
+说明：
 
-### 方法 A：给正文加图片
+- `日志` 是旧分类，保留给历史文章
+- 首页和导航现在主推的是 `每日灵感`，不是旧日志栏目
 
-1. 先把图片放到这个目录：
+## 6. 给文章加图片
+
+先把图片放到：
 
 ```text
 public/images/posts/你的文章-slug/
 ```
 
-比如：
+例如：
 
 ```text
 public/images/posts/my-new-post/photo-01.jpg
 ```
 
-2. 然后在正文里这样写：
+然后在正文里这样写：
 
 ```md
 ![图片说明](/images/posts/my-new-post/photo-01.jpg)
 ```
 
-如果你写了 `![图片说明]`，页面会自动把这句说明当作图注显示。
+如果你写了 `![图片说明]`，页面会把它当成图注显示。
 
-### 方法 B：给文章设置封面
+## 7. 设置文章封面
 
-把封面图放到：
+把封面放到：
 
 ```text
 public/images/covers/
 ```
 
-比如：
+例如：
 
 ```text
 public/images/covers/my-new-post-cover.jpg
 ```
 
-frontmatter 里这样写：
+frontmatter 里写：
 
 ```md
 cover: "/images/covers/my-new-post-cover.jpg"
 ```
 
-注意：
+封面只会出现在首页、搜索结果、列表页和资料卡片里。打开文章正文后，不再显示封面图。
 
-- 封面只在首页、分类页、搜索结果等列表位置显示
-- 打开具体文章后，不再显示封面
+## 8. 插入链接、YouTube、Bilibili
 
-## 5. 怎么插普通链接、YouTube、Bilibili
-
-### 普通链接
-
-直接写 Markdown 链接：
+普通链接直接写：
 
 ```md
-[这是一篇参考文章](https://example.com)
+[参考资料](https://example.com)
 ```
 
 外链会自动新标签页打开。
-
-### YouTube
 
 如果你想在文章顶部嵌入 YouTube，可以在 frontmatter 里写：
 
@@ -141,47 +151,112 @@ cover: "/images/covers/my-new-post-cover.jpg"
 youtube: "https://www.youtube.com/watch?v=xxxxxxx"
 ```
 
-### 正文里单独嵌入 YouTube 或 Bilibili
+如果正文里有单独一行的 YouTube 或 Bilibili 链接，系统也会自动渲染成播放器。
 
-如果正文里有一整行只有视频链接，系统会自动把它渲染成播放器。
+## 9. 新增一条“每日灵感”
+
+去这里新建文件：
+
+```text
+src/content/inspirations/my-thought.md
+```
+
+模板：
+
+```md
+---
+title: "今天的一句话"
+date: "2026-06-15"
+updated: "2026-06-15"
+tags:
+  - "灵感"
+description: "一句话摘要。"
+published: true
+---
+
+这里写正文。可以很短，一段就够。
+```
+
+效果：
+
+- 会出现在首页的“每日灵感”区块
+- 会出现在 `/daily/`
+- 会参与搜索
+- 样式是短文本流，不会做成大文章卡片
+
+## 10. 新增一份“资料”
+
+第一步，把 PDF 或资料文件放进：
+
+```text
+public/resources/
+```
 
 例如：
 
-```md
-https://www.youtube.com/watch?v=xxxxxxx
+```text
+public/resources/my-notes.pdf
 ```
 
-或者：
+第二步，去这里新建资料说明页：
 
-```md
-https://www.bilibili.com/video/BVxxxxxxxx
+```text
+src/content/resources/my-notes.md
 ```
 
-## 6. 搜索是怎么工作的
+模板：
 
-博客现在支持关键词检索，搜索范围包括：
+```md
+---
+title: "我的一份资料"
+date: "2026-06-15"
+updated: "2026-06-15"
+tags:
+  - "PDF"
+  - "课程"
+description: "这份资料的大致内容。"
+file: "/resources/my-notes.pdf"
+cover: "/images/covers/my-notes-cover.jpg"
+published: true
+---
 
-- 标题
-- 正文
-- 摘要
-- 分类
+这里可以补一段说明，比如适合谁看、重点是什么、为什么值得存。
+```
+
+效果：
+
+- 会出现在 `/resources/`
+- 详情页会提供 `在线阅读` 和 `下载资料`
+- 如果文件是 PDF，会直接站内预览
+- 如果是图片文件，会直接显示图片预览
+
+## 11. 搜索怎么用
+
+站点搜索现在会一起检索：
+
+- 文章标题
+- 文章正文
 - 标签
-- 文章总结
+- 摘要
+- 每日灵感内容
+- 资料说明
 
-你在右侧栏或 `/search/` 页输入关键词后，会直接筛出包含这个词的文章。
+入口：
 
-## 7. 目录是自动生成的
+- 右侧栏搜索框
+- `/search/`
 
-每篇文章开头都会自动出现一个折叠目录。
+## 12. 目录是自动生成的
+
+每篇 Markdown 文章开头都会自动生成一个可折叠目录。
 
 规则：
 
-- 自动读取正文里的 `##`、`###`
+- 自动读取正文里的 `##` 和 `###`
 - 自动生成锚点
 - 默认折叠
-- 以后你手动写文章或用 Notion 导入文章，都会自动有目录
 
-所以你只需要正常写标题层级就行：
+所以你只需要正常写标题层级：
 
 ```md
 ## 第一部分
@@ -189,80 +264,50 @@ https://www.bilibili.com/video/BVxxxxxxxx
 ## 第二部分
 ```
 
-## 8. 如果你是从 Notion 导入
+## 13. 如果你从 Notion 导入
 
-### 第一步：导出
-
-在 Notion 里选择：
-
-```text
-Export -> Markdown & CSV
-```
-
-### 第二步：把导出文件放进项目
-
-你有两种放法。
-
-如果你拿到的是 zip：
+把 Notion 导出的 `zip` 或文件夹放进：
 
 ```text
 imports/notion/你的-slug.zip
 ```
 
-如果你已经解压好了：
+或：
 
 ```text
 imports/notion/你的-slug/
 ```
 
-### 第三步：运行导入命令
+然后运行：
 
 ```bash
 npm run publish:notion -- 你的-slug
 ```
 
-例如：
+这个命令会尽量自动完成：
 
-```bash
-npm run publish:notion -- sleep-notes
-```
-
-### 这个命令会自动做什么
-
-- 找到主 Markdown 或 HTML 文件
-- 复制文章里的图片到 `public/images/posts/你的-slug/`
+- 找主 Markdown / HTML
+- 复制图片到 `public/images/posts/`
 - 重写图片路径
-- 清理标题层级和多余空行
-- 自动补齐 frontmatter
-- 自动生成全文总结和分节总结
-- 自动跑 `npm run build`
+- 清理排版
+- 自动补 frontmatter
+- 自动跑构建
 
-## 9. 如果你只想检查某篇文章
-
-```bash
-npm run check:post -- 文章-slug
-```
-
-它会尽量自动修这些问题：
-
-- `category` 不合法
-- `cover` 为空或路径不对
-- `description` 为空
-- `updated` 缺失
-- 总结字段缺失
-- 正文里误写成 `public/images/...`
-
-## 10. 如果你想重生成文章总结
+## 14. 常用命令
 
 ```bash
-npm run summarize -- 文章-slug
+npm install
+npm run dev
+npm run build
+npm run publish:notion -- slug
+npm run import:notion -- slug
+npm run summarize -- slug
+npm run check:post -- slug
 ```
 
-如果你本地配置了 `OPENAI_API_KEY`，它会尝试自动生成更像样的总结；没有的话也不会报错，只会生成可手动修改的占位总结。
+## 15. 最简单的本地发文流程
 
-## 11. 我自己发一篇文章的完整傻瓜流程
-
-### 场景 A：手动写
+如果你只是想自己发一篇文章、加图片、然后推上 GitHub，可以按这个顺序来：
 
 1. 打开 `cmd`
 2. 进入项目目录
@@ -271,74 +316,32 @@ npm run summarize -- 文章-slug
 cd /d C:\Users\栗海粟\Documents\Codex\2026-05-05\github-plugin-github-openai-curated-personal
 ```
 
-3. 新建文章文件到 `src/content/posts/`
-4. 如果有图片，复制到 `public/images/posts/你的-slug/`
-5. 如果有封面，复制到 `public/images/covers/`
-6. 运行本地检查
+3. 新建文章 Markdown
+4. 把图片放到 `public/images/posts/你的-slug/`
+5. 如果有封面，把封面放到 `public/images/covers/`
+6. 运行：
 
 ```bash
 npm run build
 ```
 
-7. 本地预览
+7. 预览：
 
 ```bash
 npm run dev
 ```
 
-8. 确认没问题后提交并推送
+8. 确认没问题后提交并推送：
 
 ```bash
 git add .
-git commit -m "add new post"
+git commit -m "add new content"
 git push origin main
 ```
 
-### 场景 B：从 Notion 导入
+## 16. 部署地址
 
-1. 从 Notion 导出 `Markdown & CSV`
-2. 把 zip 或文件夹放到 `imports/notion/你的-slug/` 或 `imports/notion/你的-slug.zip`
-3. 运行
-
-```bash
-npm run publish:notion -- 你的-slug
-```
-
-4. 再运行
-
-```bash
-npm run dev
-```
-
-5. 浏览器打开
-
-```text
-http://localhost:4321/personal-blog/posts/你的-slug/
-```
-
-6. 确认没问题后推送
-
-```bash
-git add .
-git commit -m "import notion post"
-git push origin main
-```
-
-## 12. 常用命令
-
-| 命令 | 作用 |
-| --- | --- |
-| `npm install` | 安装依赖 |
-| `npm run dev` | 本地预览 |
-| `npm run build` | 生产构建 |
-| `npm run publish:notion -- slug` | 一键导入 Notion 文章 |
-| `npm run import:notion -- slug` | 和上面相同 |
-| `npm run summarize -- slug` | 重生成文章总结 |
-| `npm run check:post -- slug` | 检查并自动修文章元数据 |
-
-## 13. 部署
-
-推到 `main` 分支后，GitHub Actions 会自动部署到 GitHub Pages。
+推到 `main` 后，GitHub Actions 会自动部署到 GitHub Pages。
 
 公网地址：
 

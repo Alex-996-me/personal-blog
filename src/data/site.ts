@@ -2,16 +2,23 @@ export type CategoryDefinition = {
   name: string;
   slug: string;
   description: string;
+  hidden?: boolean;
+};
+
+export type ModuleDefinition = {
+  name: string;
+  href: string;
+  description: string;
 };
 
 export const siteConfig = {
   title: "N=1 Lab",
-  description: "记录个人日志、读书、健康、训练、脑科学与工具实践的中文博客。",
+  description: "记录身体、营养、训练、脑科学、学习与生活意义的中文个人博客。",
   tagline: "要实践，不要幻想；要思考，不要盲从。",
   author: {
     name: "海粟",
-    shortBio: "大二学生。关心身体、营养、训练、脑科学、学习和生活意义，慢慢把自己的困惑和记录写下来。",
-    bio: "这是一个公开日记本，不是自媒体，也不是作品集。我会写读书、播客、训练、饮食实验、大学阶段的迷茫、保研或留学的犹豫、AI 工具，以及一些还没有想明白的问题。我不保证自己一直正确，但希望自己能一直诚实。",
+    shortBio: "大二学生。关心身体、营养、训练、脑科学、学习和生活意义，也会把还没想明白的问题慢慢记下来。",
+    bio: "这是一个公开日记本，不是自媒体，也不是作品集。我会记录读书、播客、训练、饮食实验、大学阶段的迷茫、保研或留学的犹豫、AI 工具，以及一些还没有想明白的问题。我不保证自己永远正确，但希望自己持续诚实。",
   },
   defaultOgImage: "/images/og-default.svg",
 };
@@ -20,7 +27,8 @@ export const categories: CategoryDefinition[] = [
   {
     name: "日志",
     slug: "journal",
-    description: "记录阶段性心情、选择、迷茫与成长。",
+    description: "旧的阶段性记录入口，保留历史文章使用。",
+    hidden: true,
   },
   {
     name: "读书",
@@ -49,13 +57,29 @@ export const categories: CategoryDefinition[] = [
   },
 ];
 
+export const visibleCategories = categories.filter((category) => !category.hidden);
+
+export const modules: ModuleDefinition[] = [
+  {
+    name: "每日灵感",
+    href: "/daily/",
+    description: "放短想法、随手记和一闪而过但值得留下的话。",
+  },
+  {
+    name: "资料",
+    href: "/resources/",
+    description: "集中放 PDF、课程资料、讲义和可下载的参考材料。",
+  },
+];
+
 export const navigation = [
   { label: "首页", href: "/" },
-  { label: "日志", href: "/categories/journal/" },
+  { label: "每日灵感", href: "/daily/" },
   { label: "读书", href: "/categories/reading/" },
   { label: "健康", href: "/categories/health/" },
   { label: "训练", href: "/categories/training/" },
   { label: "脑科学", href: "/categories/neuroscience/" },
   { label: "工具", href: "/categories/tools/" },
+  { label: "资料", href: "/resources/" },
   { label: "关于", href: "/about/" },
 ];

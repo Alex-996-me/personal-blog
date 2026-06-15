@@ -26,11 +26,43 @@ const postSchema = z.object({
   notionImport: notionImportSchema.optional(),
 });
 
+const inspirationSchema = z.object({
+  title: z.string(),
+  date: z.coerce.date(),
+  updated: z.coerce.date().optional(),
+  tags: z.array(z.string()).default([]),
+  description: z.string(),
+  published: z.boolean().default(true),
+});
+
+const resourceSchema = z.object({
+  title: z.string(),
+  date: z.coerce.date(),
+  updated: z.coerce.date().optional(),
+  tags: z.array(z.string()).default([]),
+  description: z.string(),
+  file: z.string(),
+  cover: z.string().optional(),
+  published: z.boolean().default(true),
+});
+
 const posts = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/posts" }),
   schema: postSchema,
 });
 
+const inspirations = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/inspirations" }),
+  schema: inspirationSchema,
+});
+
+const resources = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/resources" }),
+  schema: resourceSchema,
+});
+
 export const collections = {
   posts,
+  inspirations,
+  resources,
 };

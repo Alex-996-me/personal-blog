@@ -1,12 +1,27 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import CategoryGrid from "../components/CategoryGrid.astro";
+import InspirationCard from "../components/InspirationCard.astro";
 import PostCard from "../components/PostCard.astro";
-import { siteConfig } from "../data/site";
-import { getAllPosts, getCategoryCounts } from "../lib/blog";
+import ResourceCard from "../components/ResourceCard.astro";
+import { modules, siteConfig } from "../data/site";
+import {
+  getAllInspirations,
+  getAllPosts,
+  getAllResources,
+  getCategoryCounts,
+} from "../lib/blog";
+import { withBasePath } from "../lib/paths";
 
-const posts = await getAllPosts();
+const [posts, inspirations, resources] = await Promise.all([
+  getAllPosts(),
+  getAllInspirations(),
+  getAllResources(),
+]);
+
 const latestPosts = posts.slice(0, 5);
+const latestInspirations = inspirations.slice(0, 4);
+const latestResources = resources.slice(0, 3);
 const categoryCounts = getCategoryCounts(posts);
 ---
 
@@ -27,9 +42,51 @@ const categoryCounts = getCategoryCounts(posts);
   </section>
 
   <section class="section-block">
+    <h2 class="section-title">每日灵感</h2>
+    <p class="section-intro">这里放短想法、片段记录和还没长成完整文章的念头。</p>
+    {latestInspirations.length > 0 ? (
+      <div class="inspiration-list">
+        {latestInspirations.map((inspiration) => (
+          <InspirationCard inspiration={inspiration} />
+        ))}
+      </div>
+    ) : (
+      <div class="empty-state">
+        这里暂时还没有公开的灵感条目。以后你发来的短感想、随手记和一句话记录都会集中放在这里。
+      </div>
+    )}
+  </section>
+
+  <section class="section-block">
+    <h2 class="section-title">栏目入口</h2>
+    <div class="module-grid">
+      {modules.map((module) => (
+        <a class="module-card" href={withBasePath(module.href)}>
+          <h3>{module.name}</h3>
+          <p>{module.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section-block">
     <h2 class="section-title">分类入口</h2>
-    <p class="section-intro">围绕日志、读书、健康、训练、脑科学和工具，持续更新。</p>
+    <p class="section-intro">长文继续按主题归档，方便以后回看。</p>
     <CategoryGrid categories={categoryCounts} />
+  </section>
+
+  <section class="section-block">
+    <h2 class="section-title">资料</h2>
+    <p class="section-intro">这里集中放讲义、PDF 和方便在线阅读的资料。</p>
+    {latestResources.length > 0 ? (
+      <div class="post-list">
+        {latestResources.map((resource) => (
+          <ResourceCard resource={resource} />
+        ))}
+      </div>
+    ) : (
+      <div class="empty-state">资料库还没有公开文件。等你把 PDF 或讲义放进来后，这里会自动显示。</div>
+    )}
   </section>
 
   <section class="section-block">

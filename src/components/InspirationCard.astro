@@ -1,0 +1,38 @@
+---
+import {
+  formatDate,
+  getInspirationHref,
+  getInspirationUpdatedDate,
+  type Inspiration,
+} from "../lib/blog";
+import { withBasePath } from "../lib/paths";
+
+interface Props {
+  inspiration: Inspiration;
+}
+
+const { inspiration } = Astro.props;
+const updated = getInspirationUpdatedDate(inspiration);
+const hasUpdated = updated.valueOf() !== inspiration.data.date.valueOf();
+---
+
+<article class="inspiration-card">
+  <div class="inspiration-card__mark" aria-hidden="true">“</div>
+  <div class="inspiration-card__content">
+    <div class="post-card__meta">
+      <span>{formatDate(inspiration.data.date)}</span>
+      {hasUpdated && <span>更新于 {formatDate(updated)}</span>}
+    </div>
+    <h2 class="inspiration-card__title">
+      <a href={withBasePath(getInspirationHref(inspiration))}>{inspiration.data.title}</a>
+    </h2>
+    <p class="inspiration-card__description">{inspiration.data.description}</p>
+    {inspiration.data.tags.length > 0 && (
+      <div class="tag-list" aria-label="灵感标签">
+        {inspiration.data.tags.map((tag) => (
+          <span class="tag">#{tag}</span>
+        ))}
+      </div>
+    )}
+  </div>
+</article>
