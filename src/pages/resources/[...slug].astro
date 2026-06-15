@@ -15,8 +15,8 @@ export async function getStaticPaths() {
   return resources
     .filter((resource) => resource.data.published !== false)
     .map((resource) => ({
-    params: { slug: getResourceSlug(resource) },
-    props: { resource },
+      params: { slug: getResourceSlug(resource) },
+      props: { resource },
     }));
 }
 
@@ -29,7 +29,13 @@ const canPreviewImage = isImageResource(resource.data.file);
 const hasBody = resource.body.trim().length > 0;
 ---
 
-<BaseLayout title={resource.data.title} description={resource.data.description} ogImage={resource.data.cover}>
+<BaseLayout
+  title={resource.data.title}
+  description={resource.data.description}
+  ogImage={resource.data.cover}
+  showSidebar={false}
+  wideContent={true}
+>
   <article>
     <a class="post-backlink" href={withBasePath("/resources/")}>
       ← 返回资料
@@ -49,19 +55,34 @@ const hasBody = resource.body.trim().length > 0;
           ))}
         </div>
       )}
-      <div class="resource-card__actions resource-card__actions--detail">
-        <a href={fileUrl} target="_blank" rel="noopener noreferrer">
-          在线阅读
-        </a>
-        <a href={fileUrl} download>
-          下载资料
-        </a>
+
+      <div class="resource-toolbar">
+        <div class="resource-card__actions resource-card__actions--detail">
+          <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+            在线阅读
+          </a>
+          <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+            新窗口打开
+          </a>
+          <a href={fileUrl} download>
+            下载资料
+          </a>
+        </div>
+        {canPreviewPdf && (
+          <p class="resource-toolbar__note">
+            当前页面已内嵌 PDF 预览。如果你想使用浏览器原生的缩放、搜索和翻页工具，可以点击“新窗口打开”。
+          </p>
+        )}
       </div>
     </header>
 
     {canPreviewPdf && (
       <div class="resource-viewer">
-        <iframe src={`${fileUrl}#view=FitH`} title={`${resource.data.title} 在线阅读`} loading="lazy"></iframe>
+        <iframe
+          src={`${fileUrl}#view=FitH`}
+          title={`${resource.data.title} 在线阅读`}
+          loading="eager"
+        ></iframe>
       </div>
     )}
 

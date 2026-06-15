@@ -123,6 +123,10 @@ footer {
   max-width: var(--reading-width);
 }
 
+.content-panel--wide {
+  max-width: 100%;
+}
+
 .page-header {
   margin-bottom: 1.5rem;
 }
@@ -355,6 +359,20 @@ footer {
 
 .resource-card__actions--detail {
   margin-top: 1rem;
+}
+
+.resource-toolbar {
+  margin-top: 1rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid var(--line);
+  background: #fafafa;
+}
+
+.resource-toolbar__note {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.7;
 }
 
 .sidebar {
@@ -913,7 +931,7 @@ footer {
 .resource-viewer iframe {
   display: block;
   width: 100%;
-  min-height: 820px;
+  min-height: 88vh;
   border: 0;
   background: #ffffff;
 }
@@ -1043,7 +1061,11 @@ footer {
   }
 
   .resource-viewer iframe {
-    min-height: 72vh;
+    min-height: 75vh;
+  }
+
+  .resource-toolbar {
+    padding: 0.85rem 0.9rem;
   }
 
   .history-entry__header {
