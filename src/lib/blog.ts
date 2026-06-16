@@ -5,6 +5,8 @@ import { withBasePath } from "./paths";
 export type Post = CollectionEntry<"posts">;
 export type Inspiration = CollectionEntry<"inspirations">;
 export type ResourceDocument = CollectionEntry<"resources">;
+export type ResourceGroup = ResourceDocument["data"]["groups"][number];
+export type ResourceItem = ResourceGroup["items"][number];
 
 type DatedEntry = {
   id: string;
@@ -179,12 +181,21 @@ function buildInspirationSearchText(inspiration: Inspiration) {
 }
 
 function buildResourceSearchText(resource: ResourceDocument) {
+  const groupText = (resource.data.groups ?? [])
+    .flatMap((group) => [
+      group.title,
+      group.description ?? "",
+      ...group.items.flatMap((item) => [item.title, item.description ?? "", item.file]),
+    ])
+    .join(" ");
+
   return stripMarkdownToText(
     [
       resource.data.title,
       resource.data.description,
       resource.data.tags.join(" "),
-      resource.data.file,
+      resource.data.file ?? "",
+      groupText,
       resource.body,
     ].join("\n\n"),
   ).toLowerCase();
@@ -204,6 +215,44 @@ export function isPdfResource(value: string) {
 
 export function isImageResource(value: string) {
   return /\.(png|jpe?g|webp|gif|svg)($|[?#])/i.test(value);
+}
+
+export function isAudioResource(value: string) {
+  return /\.(mp3|m4a|wav|ogg|aac|flac)($|[?#])/i.test(value);
+}
+
+export function isOfficeResource(value: string) {
+  return /\.(docx?|pptx?|xlsx?)($|[?#])/i.test(value);
+}
+
+export function getResourcePrimaryFile(resource: ResourceDocument) {
+  if (resource.data.file) {
+    return resource.data.file;
+  }
+
+  const firstGroupedFile = (resource.data.groups ?? [])
+    .flatMap((group) => group.items)
+    .find((item) => item.kind !== "audio")?.file;
+
+  return firstGroupedFile ?? "";
+}
+
+export function getResourceCover(resource: ResourceDocument) {
+  if (resource.data.cover) {
+    return resource.data.cover;
+  }
+
+  const fallbackFile = getResourcePrimaryFile(resource);
+  return fallbackFile && isImageResource(fallbackFile) ? fallbackFile : "";
+}
+
+export function getOfficeViewerUrl(value: string, site?: URL) {
+  if (!value || !site) {
+    return "";
+  }
+
+  const absoluteFileUrl = new URL(withBasePath(value), site).toString();
+  return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(absoluteFileUrl)}`;
 }
 
 export async function getSearchEntries() {
@@ -246,8 +295,9 @@ export async function getSearchEntries() {
   );
 
   const resourceEntries: (SearchEntry & { sortTime: number })[] = resources.map((resource) => {
-    const fallbackCover = !resource.data.cover && isImageResource(resource.data.file)
-      ? resource.data.file
+    const primaryFile = getResourcePrimaryFile(resource);
+    const fallbackCover = !resource.data.cover && primaryFile && isImageResource(primaryFile)
+      ? primaryFile
       : "";
 
     return {

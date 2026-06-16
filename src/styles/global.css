@@ -982,6 +982,108 @@ footer {
   background: #ffffff;
 }
 
+.resource-groups {
+  display: grid;
+  gap: 1.2rem;
+  margin: 1.3rem 0 1.7rem;
+}
+
+.resource-section {
+  border: 1px solid var(--line);
+  background: #ffffff;
+  padding: 1rem 1.05rem;
+}
+
+.resource-section__header {
+  margin-bottom: 0.9rem;
+}
+
+.resource-section__header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.resource-section__header p {
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+}
+
+.resource-file-list,
+.resource-audio-list {
+  margin: 0;
+  padding: 0;
+}
+
+.resource-file-list {
+  list-style: none;
+}
+
+.resource-audio-list {
+  padding-left: 1.2rem;
+}
+
+.resource-file-item,
+.resource-audio-item {
+  border-top: 1px solid var(--line);
+  padding: 0.9rem 0;
+}
+
+.resource-file-item:first-child,
+.resource-audio-item:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.resource-file-item:last-child,
+.resource-audio-item:last-child {
+  padding-bottom: 0;
+}
+
+.resource-file-item {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.resource-file-item h3,
+.resource-audio-item h3 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.resource-item__description {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+.resource-file-actions {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.resource-file-actions a {
+  color: var(--accent);
+}
+
+.resource-audio-item__top {
+  display: flex;
+  gap: 0.9rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.65rem;
+}
+
+.resource-audio-item audio {
+  display: block;
+  width: 100%;
+}
+
 .site-footer {
   border-top: 1px solid var(--line);
   background: #ffffff;
@@ -1121,6 +1223,15 @@ footer {
 
   .resource-toolbar {
     padding: 0.85rem 0.9rem;
+  }
+
+  .resource-file-item,
+  .resource-audio-item__top {
+    flex-direction: column;
+  }
+
+  .resource-file-actions {
+    justify-content: flex-start;
   }
 
   .history-entry__header {

@@ -35,14 +35,29 @@ const inspirationSchema = z.object({
   published: z.boolean().default(true),
 });
 
+const resourceItemSchema = z.object({
+  title: z.string(),
+  file: z.string(),
+  kind: z.enum(["document", "audio", "archive", "image", "other"]).default("other"),
+  description: z.string().optional(),
+  preview: z.enum(["auto", "pdf", "image", "audio", "office", "none"]).default("auto"),
+});
+
+const resourceGroupSchema = z.object({
+  title: z.string(),
+  description: z.string().optional(),
+  items: z.array(resourceItemSchema).default([]),
+});
+
 const resourceSchema = z.object({
   title: z.string(),
   date: z.coerce.date(),
   updated: z.coerce.date().optional(),
   tags: z.array(z.string()).default([]),
   description: z.string(),
-  file: z.string(),
+  file: z.string().optional(),
   cover: z.string().optional(),
+  groups: z.array(resourceGroupSchema).default([]),
   published: z.boolean().default(true),
 });
 

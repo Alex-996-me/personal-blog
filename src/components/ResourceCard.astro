@@ -1,5 +1,11 @@
 ---
-import { formatDate, getResourceHref, type ResourceDocument } from "../lib/blog";
+import {
+  formatDate,
+  getResourceCover,
+  getResourceHref,
+  getResourcePrimaryFile,
+  type ResourceDocument,
+} from "../lib/blog";
 import { withBasePath } from "../lib/paths";
 
 interface Props {
@@ -7,8 +13,12 @@ interface Props {
 }
 
 const { resource } = Astro.props;
-const cover = resource.data.cover ? withBasePath(resource.data.cover) : "";
-const fileUrl = withBasePath(resource.data.file);
+const resourceHref = withBasePath(getResourceHref(resource));
+const coverPath = getResourceCover(resource);
+const cover = coverPath ? withBasePath(coverPath) : "";
+const primaryFile = getResourcePrimaryFile(resource);
+const fileUrl = primaryFile ? withBasePath(primaryFile) : "";
+const hasGroupedAssets = (resource.data.groups ?? []).length > 0;
 ---
 
 <article class="resource-card">
@@ -18,7 +28,7 @@ const fileUrl = withBasePath(resource.data.file);
       <span>资料</span>
     </div>
     <h2 class="post-card__title">
-      <a href={withBasePath(getResourceHref(resource))}>{resource.data.title}</a>
+      <a href={resourceHref}>{resource.data.title}</a>
     </h2>
     <p class="post-card__description">{resource.data.description}</p>
     {resource.data.tags.length > 0 && (
@@ -29,17 +39,25 @@ const fileUrl = withBasePath(resource.data.file);
       </div>
     )}
     <div class="resource-card__actions">
-      <a href={withBasePath(getResourceHref(resource))}>查看详情</a>
-      <a href={fileUrl} target="_blank" rel="noopener noreferrer">
-        在线阅读
-      </a>
-      <a href={fileUrl} download>
-        下载
-      </a>
+      <a href={resourceHref}>查看详情</a>
+      {hasGroupedAssets ? (
+        <a href={resourceHref}>在线浏览</a>
+      ) : (
+        fileUrl && (
+          <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+            在线阅读
+          </a>
+        )
+      )}
+      {fileUrl && (
+        <a href={fileUrl} download>
+          下载
+        </a>
+      )}
     </div>
   </div>
   {cover && (
-    <a class="post-card__media" href={withBasePath(getResourceHref(resource))} aria-hidden="true" tabindex="-1">
+    <a class="post-card__media" href={resourceHref} aria-hidden="true" tabindex="-1">
       <img class="post-card__cover" src={cover} alt="" />
     </a>
   )}

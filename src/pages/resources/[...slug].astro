@@ -3,9 +3,13 @@ import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import {
   formatDate,
+  getOfficeViewerUrl,
+  getResourcePrimaryFile,
   getResourceSlug,
   getResourceUpdatedDate,
+  isAudioResource,
   isImageResource,
+  isOfficeResource,
   isPdfResource,
 } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
@@ -23,10 +27,17 @@ export async function getStaticPaths() {
 const { resource } = Astro.props;
 const { Content } = await render(resource);
 const updated = getResourceUpdatedDate(resource);
-const fileUrl = withBasePath(resource.data.file);
-const canPreviewPdf = isPdfResource(resource.data.file);
-const canPreviewImage = isImageResource(resource.data.file);
+const primaryFile = getResourcePrimaryFile(resource);
+const fileUrl = primaryFile ? withBasePath(primaryFile) : "";
+const canPreviewPdf = primaryFile ? isPdfResource(primaryFile) : false;
+const canPreviewImage = primaryFile ? isImageResource(primaryFile) : false;
+const canPreviewOffice = primaryFile ? isOfficeResource(primaryFile) : false;
+const canPreviewAudio = primaryFile ? isAudioResource(primaryFile) : false;
+const officeViewerUrl = canPreviewOffice ? getOfficeViewerUrl(primaryFile, Astro.site) : "";
 const hasBody = resource.body.trim().length > 0;
+const groups = resource.data.groups ?? [];
+const allItems = groups.flatMap((group) => group.items);
+const archiveItems = allItems.filter((item) => item.kind === "archive");
 ---
 
 <BaseLayout
@@ -58,25 +69,53 @@ const hasBody = resource.body.trim().length > 0;
 
       <div class="resource-toolbar">
         <div class="resource-card__actions resource-card__actions--detail">
-          <a href={fileUrl} target="_blank" rel="noopener noreferrer">
-            在线阅读
-          </a>
-          <a href={fileUrl} target="_blank" rel="noopener noreferrer">
-            新窗口打开
-          </a>
-          <a href={fileUrl} download>
-            下载资料
-          </a>
+          {canPreviewOffice && officeViewerUrl ? (
+            <a href={officeViewerUrl} target="_blank" rel="noopener noreferrer">
+              在线浏览文档
+            </a>
+          ) : fileUrl ? (
+            <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+              在线打开
+            </a>
+          ) : null}
+
+          {fileUrl && (
+            <>
+              <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+                打开原始文件
+              </a>
+              <a href={fileUrl} download>
+                下载主文件
+              </a>
+            </>
+          )}
+
+          {archiveItems.map((item) => (
+            <a href={withBasePath(item.file)} download>
+              下载：{item.title}
+            </a>
+          ))}
         </div>
+
         {canPreviewPdf && (
           <p class="resource-toolbar__note">
-            当前页面已内嵌 PDF 预览。如果你想使用浏览器原生的缩放、搜索和翻页工具，可以点击“新窗口打开”。
+            当前页面内嵌的是 PDF 预览。如果你想用浏览器自带的搜索、缩放和翻页工具，可以点击上方“打开原始文件”。
+          </p>
+        )}
+        {canPreviewOffice && officeViewerUrl && (
+          <p class="resource-toolbar__note">
+            当前页面通过 Office 在线预览文档；如果预览服务偶尔加载慢，直接下载原始 DOCX 会更稳。
+          </p>
+        )}
+        {canPreviewAudio && (
+          <p class="resource-toolbar__note">
+            当前主文件是音频。你可以直接在线播放，也可以在下方音频列表里逐条收听。
           </p>
         )}
       </div>
     </header>
 
-    {canPreviewPdf && (
+    {canPreviewPdf && fileUrl && (
       <div class="resource-viewer">
         <iframe
           src={`${fileUrl}#view=FitH`}
@@ -86,15 +125,110 @@ const hasBody = resource.body.trim().length > 0;
       </div>
     )}
 
-    {!canPreviewPdf && canPreviewImage && (
+    {canPreviewOffice && officeViewerUrl && (
+      <div class="resource-viewer">
+        <iframe
+          src={officeViewerUrl}
+          title={`${resource.data.title} 在线文档预览`}
+          loading="eager"
+        ></iframe>
+      </div>
+    )}
+
+    {!canPreviewPdf && !canPreviewOffice && canPreviewImage && fileUrl && (
       <figure class="post-figure post-figure--wide">
         <img src={fileUrl} alt={resource.data.title} />
       </figure>
     )}
 
-    {!canPreviewPdf && !canPreviewImage && (
+    {!canPreviewPdf && !canPreviewOffice && !canPreviewImage && canPreviewAudio && fileUrl && (
+      <section class="resource-section">
+        <div class="resource-section__header">
+          <h2>主音频</h2>
+        </div>
+        <div class="resource-audio-item">
+          <audio controls preload="none" src={fileUrl}></audio>
+        </div>
+      </section>
+    )}
+
+    {!canPreviewPdf && !canPreviewOffice && !canPreviewImage && !canPreviewAudio && !fileUrl && (
       <div class="empty-state">
-        这个文件类型目前不适合站内预览，请使用上方的“在线阅读”或“下载资料”打开。
+        这个资料暂时没有可直接预览的主文件，请使用下方分组中的下载或在线播放入口。
+      </div>
+    )}
+
+    {groups.length > 0 && (
+      <div class="resource-groups">
+        {groups.map((group) => {
+          const hasAudioItems = group.items.some((item) => item.kind === "audio");
+
+          return (
+            <section class="resource-section">
+              <div class="resource-section__header">
+                <h2>{group.title}</h2>
+                {group.description && <p>{group.description}</p>}
+              </div>
+
+              {hasAudioItems ? (
+                <ol class="resource-audio-list">
+                  {group.items.map((item) => {
+                    const itemUrl = withBasePath(item.file);
+                    return (
+                      <li class="resource-audio-item">
+                        <div class="resource-audio-item__top">
+                          <h3>{item.title}</h3>
+                          <div class="resource-file-actions">
+                            <a href={itemUrl} target="_blank" rel="noopener noreferrer">
+                              在线打开
+                            </a>
+                            <a href={itemUrl} download>
+                              下载
+                            </a>
+                          </div>
+                        </div>
+                        {item.description && <p class="resource-item__description">{item.description}</p>}
+                        {item.kind === "audio" ? (
+                          <audio controls preload="none" src={itemUrl}></audio>
+                        ) : (
+                          <a href={itemUrl} target="_blank" rel="noopener noreferrer">
+                            打开文件
+                          </a>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ol>
+              ) : (
+                <ul class="resource-file-list">
+                  {group.items.map((item) => {
+                    const itemUrl = withBasePath(item.file);
+                    const previewUrl = item.preview === "office"
+                      ? getOfficeViewerUrl(item.file, Astro.site)
+                      : itemUrl;
+
+                    return (
+                      <li class="resource-file-item">
+                        <div>
+                          <h3>{item.title}</h3>
+                          {item.description && <p class="resource-item__description">{item.description}</p>}
+                        </div>
+                        <div class="resource-file-actions">
+                          <a href={previewUrl} target="_blank" rel="noopener noreferrer">
+                            在线打开
+                          </a>
+                          <a href={itemUrl} download>
+                            下载
+                          </a>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </section>
+          );
+        })}
       </div>
     )}
 
