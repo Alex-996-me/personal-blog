@@ -280,6 +280,52 @@ footer {
   color: var(--muted);
 }
 
+.inspiration-stream {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+
+.inspiration-entry {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1.15rem 0 1.25rem;
+  border-bottom: 1px solid var(--line);
+  scroll-margin-top: 5rem;
+}
+
+.inspiration-entry__mark {
+  color: var(--accent);
+  font-size: 2.35rem;
+  line-height: 1;
+  font-family: Georgia, "Times New Roman", serif;
+  opacity: 0.92;
+}
+
+.inspiration-entry__content {
+  min-width: 0;
+}
+
+.inspiration-entry__header {
+  margin-bottom: 0.8rem;
+}
+
+.inspiration-entry__title {
+  margin: 0.42rem 0 0;
+  font-size: 1.1rem;
+  line-height: 1.55;
+}
+
+.prose--inspiration-entry {
+  font-size: 1.02rem;
+  line-height: 1.9;
+}
+
+.prose--inspiration-entry > :last-child {
+  margin-bottom: 0;
+}
+
 .module-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1022,6 +1068,15 @@ footer {
 
   .inspiration-card__mark {
     font-size: 1.9rem;
+  }
+
+  .inspiration-entry {
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+
+  .inspiration-entry__mark {
+    font-size: 1.95rem;
   }
 
   .search-form,

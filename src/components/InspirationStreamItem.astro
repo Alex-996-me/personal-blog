@@ -1,0 +1,43 @@
+---
+import { render } from "astro:content";
+import {
+  formatDate,
+  getInspirationAnchorId,
+  getInspirationUpdatedDate,
+  type Inspiration,
+} from "../lib/blog";
+
+interface Props {
+  inspiration: Inspiration;
+}
+
+const { inspiration } = Astro.props;
+const { Content } = await render(inspiration);
+const updated = getInspirationUpdatedDate(inspiration);
+const hasUpdated = updated.valueOf() !== inspiration.data.date.valueOf();
+const anchorId = getInspirationAnchorId(inspiration);
+---
+
+<article id={anchorId} class="inspiration-entry">
+  <div class="inspiration-entry__mark" aria-hidden="true">“</div>
+  <div class="inspiration-entry__content">
+    <header class="inspiration-entry__header">
+      <div class="post-card__meta">
+        <span>{formatDate(inspiration.data.date)}</span>
+        {hasUpdated && <span>更新于 {formatDate(updated)}</span>}
+      </div>
+      <h2 class="inspiration-entry__title">{inspiration.data.title}</h2>
+      {inspiration.data.tags.length > 0 && (
+        <div class="tag-list" aria-label="灵感标签">
+          {inspiration.data.tags.map((tag) => (
+            <span class="tag">#{tag}</span>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <div class="prose prose--inspiration prose--inspiration-entry">
+      <Content />
+    </div>
+  </div>
+</article>

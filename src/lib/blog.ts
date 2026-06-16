@@ -52,6 +52,10 @@ export function getInspirationSlug(inspiration: Inspiration) {
   return getEntrySlug(inspiration);
 }
 
+export function getInspirationAnchorId(inspiration: Inspiration) {
+  return getInspirationSlug(inspiration);
+}
+
 export function getResourceSlug(resource: ResourceDocument) {
   return getEntrySlug(resource);
 }
@@ -113,7 +117,7 @@ export function getPostHref(post: Post) {
 }
 
 export function getInspirationHref(inspiration: Inspiration) {
-  return `/daily/${getInspirationSlug(inspiration)}/`;
+  return `/daily/#${getInspirationAnchorId(inspiration)}`;
 }
 
 export function getResourceHref(resource: ResourceDocument) {

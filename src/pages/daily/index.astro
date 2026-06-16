@@ -1,26 +1,26 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import InspirationCard from "../../components/InspirationCard.astro";
+import InspirationStreamItem from "../../components/InspirationStreamItem.astro";
 import { getAllInspirations } from "../../lib/blog";
 
 const inspirations = await getAllInspirations();
 ---
 
-<BaseLayout title="每日灵感" description="短想法、随手记和公开留下来的片段记录。">
+<BaseLayout title="每日灵感" description="像推文流一样展开的短想法、随手记和片段记录。">
   <section class="page-header">
     <h1>每日灵感</h1>
-    <p>这里不放长文，只放短小、直接、值得留下的一句话或一段话。</p>
+    <p>这里不做“点进去看全文”的短文章列表，而是把每条灵感直接铺开，像一条条可回看的公开朋友圈。</p>
   </section>
 
   {inspirations.length > 0 ? (
-    <div class="inspiration-list">
+    <div class="inspiration-stream">
       {inspirations.map((inspiration) => (
-        <InspirationCard inspiration={inspiration} />
+        <InspirationStreamItem inspiration={inspiration} />
       ))}
     </div>
   ) : (
     <div class="empty-state">
-      这里暂时还是空的。以后你发来的感想、片段记录、突然想明白的一句话，都会集中出现在这里。
+      这里暂时还是空的。以后你发来的感想、片段记录和突然想明白的一句话，都会直接展开出现在这里。
     </div>
   )}
 </BaseLayout>
