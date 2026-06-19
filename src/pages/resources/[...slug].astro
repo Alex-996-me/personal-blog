@@ -59,6 +59,7 @@ const archiveItems = allItems.filter((item) => item.kind === "archive");
         <span>最后更新：{formatDate(updated)}</span>
         <span>资料</span>
       </div>
+      {resource.data.description && <p class="section-intro">{resource.data.description}</p>}
       {resource.data.tags.length > 0 && (
         <div class="tag-list" aria-label="资料标签">
           {resource.data.tags.map((tag) => (
