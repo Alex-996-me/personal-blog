@@ -785,6 +785,17 @@ footer {
   height: auto;
 }
 
+.prose figure video,
+.post-figure video {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  border: 1px solid var(--line);
+  background: #ffffff;
+}
+
 .prose figcaption,
 .post-figure figcaption {
   margin-top: 0.55rem;

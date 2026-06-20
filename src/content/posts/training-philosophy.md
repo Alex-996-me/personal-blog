@@ -206,14 +206,18 @@ vector 是这么说的：
 **先轻呼气让肋骨下降、腹壁预紧；再用膈肌吸气，让腹部、侧腰、下背形成 360° 扩张；随后像准备挨打一拳一样 brace，在发力瞬间用短促的 power breath 保持腹内压和核心刚性，而不是单纯吸胸、吸肚子或长时间憋气。**
 
 <figure class="post-figure post-figure--narrow">
-<img src="/images/posts/training-philosophy/image-03.gif" alt="Hardstyle breathing 与腹内压示意" />
+<video autoplay loop muted playsinline preload="metadata" aria-label="Hardstyle breathing 与腹内压示意">
+  <source src="/images/posts/training-philosophy/hardstyle-breathing-iap-demo.mp4" type="video/mp4" />
+</video>
 <figcaption>Hardstyle breathing 与腹内压示意</figcaption>
 </figure>
 
 换成塑料瓶，可能会更加直观一些：
 
 <figure class="post-figure post-figure--narrow">
-<img src="/images/posts/training-philosophy/image-04.gif" alt="用塑料瓶理解腹内压" />
+<video autoplay loop muted playsinline preload="metadata" aria-label="用塑料瓶理解腹内压">
+  <source src="/images/posts/training-philosophy/plastic-bottle-iap-metaphor.mp4" type="video/mp4" />
+</video>
 <figcaption>用塑料瓶理解腹内压</figcaption>
 </figure>
 
