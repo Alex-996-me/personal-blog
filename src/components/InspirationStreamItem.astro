@@ -6,6 +6,7 @@ import {
   getInspirationUpdatedDate,
   type Inspiration,
 } from "../lib/blog";
+import { siteConfig } from "../data/site";
 
 interface Props {
   inspiration: Inspiration;
@@ -16,15 +17,25 @@ const { Content } = await render(inspiration);
 const updated = getInspirationUpdatedDate(inspiration);
 const hasUpdated = updated.valueOf() !== inspiration.data.date.valueOf();
 const anchorId = getInspirationAnchorId(inspiration);
+const feedDate = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+}).format(inspiration.data.date);
 ---
 
 <article id={anchorId} class="inspiration-entry">
-  <div class="inspiration-entry__mark" aria-hidden="true">“</div>
+  <div class="inspiration-entry__avatar" aria-hidden="true">{siteConfig.author.avatarLabel}</div>
   <div class="inspiration-entry__content">
     <header class="inspiration-entry__header">
-      <div class="post-card__meta">
-        <span>{formatDate(inspiration.data.date)}</span>
-        {hasUpdated && <span>更新于 {formatDate(updated)}</span>}
+      <div class="inspiration-entry__meta-row">
+        <div class="inspiration-entry__identity">
+          <span class="inspiration-entry__name">{siteConfig.author.name}</span>
+          <span class="inspiration-entry__handle">{siteConfig.author.handle}</span>
+          <span class="inspiration-entry__date">· {feedDate}</span>
+          {hasUpdated && <span class="inspiration-entry__edited">· 更新过</span>}
+        </div>
+        <span class="inspiration-entry__more" aria-hidden="true">···</span>
       </div>
       <h2 class="inspiration-entry__title">{inspiration.data.title}</h2>
       {inspiration.data.tags.length > 0 && (

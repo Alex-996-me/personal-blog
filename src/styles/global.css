@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --bg: #ffffff;
   --surface: #fbfbfb;
   --text: #111111;
@@ -295,12 +295,20 @@ footer {
   scroll-margin-top: 5rem;
 }
 
-.inspiration-entry__mark {
-  color: var(--accent);
-  font-size: 2.35rem;
-  line-height: 1;
-  font-family: Georgia, "Times New Roman", serif;
-  opacity: 0.92;
+.inspiration-entry__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-top: 0.15rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 .inspiration-entry__content {
@@ -309,6 +317,34 @@ footer {
 
 .inspiration-entry__header {
   margin-bottom: 0.8rem;
+}
+
+.inspiration-entry__meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+}
+
+.inspiration-entry__identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.45rem;
+  min-width: 0;
+}
+
+.inspiration-entry__name {
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.inspiration-entry__handle,
+.inspiration-entry__date,
+.inspiration-entry__edited,
+.inspiration-entry__more {
+  color: var(--muted);
+  font-size: 0.94rem;
 }
 
 .inspiration-entry__title {
@@ -326,6 +362,178 @@ footer {
 
 .prose--inspiration-entry > :last-child {
   margin-bottom: 0;
+}
+
+.body--daily {
+  background: #000000;
+  color: #f5f7fa;
+}
+
+.body--daily .site-header {
+  background: #000000;
+  border-bottom-color: #1d1f24;
+}
+
+.body--daily .site-header__inner,
+.body--daily .site-footer__inner,
+.body--daily .page-shell {
+  width: min(calc(100% - 1rem), 760px);
+}
+
+.body--daily .page-shell {
+  padding: 0 0 3rem;
+}
+
+.body--daily .content-panel--daily {
+  max-width: 100%;
+}
+
+.body--daily .site-nav a {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.body--daily .site-nav a:hover,
+.body--daily .site-nav a.is-active {
+  color: #ffffff;
+}
+
+.body--daily .site-footer {
+  border-top: 1px solid #1d1f24;
+  background: #000000;
+}
+
+.body--daily .site-footer__inner {
+  color: #8d97a5;
+}
+
+.body--daily .site-footer__inner a {
+  color: #d7dce3;
+}
+
+.body--daily .page-header {
+  margin-bottom: 0;
+  padding: 1rem 0 1.2rem;
+  border-bottom: 1px solid #1d1f24;
+}
+
+.body--daily .page-header h1 {
+  color: #ffffff;
+  font-size: 2rem;
+  letter-spacing: 0.01em;
+}
+
+.body--daily .page-header p,
+.body--daily .section-intro,
+.body--daily .muted {
+  color: #98a2b3;
+}
+
+.body--daily .inspiration-stream {
+  border-top: 0;
+}
+
+.body--daily .inspiration-entry {
+  grid-template-columns: 3.3rem minmax(0, 1fr);
+  gap: 0.9rem;
+  padding: 1rem 0 1.15rem;
+  border-bottom-color: #1d1f24;
+}
+
+.body--daily .inspiration-entry__avatar {
+  width: 3rem;
+  height: 3rem;
+  margin-top: 0.05rem;
+  border-color: #2a2e35;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.26), transparent 30%),
+    linear-gradient(145deg, #272a30, #111317);
+  color: #f3f4f6;
+  font-size: 0.92rem;
+}
+
+.body--daily .inspiration-entry__name {
+  color: #ffffff;
+}
+
+.body--daily .inspiration-entry__handle,
+.body--daily .inspiration-entry__date,
+.body--daily .inspiration-entry__edited,
+.body--daily .inspiration-entry__more {
+  color: #6f7782;
+}
+
+.body--daily .inspiration-entry__title {
+  margin-top: 0.34rem;
+  color: #ffffff;
+  font-size: 1.62rem;
+  line-height: 1.32;
+}
+
+.body--daily .tag {
+  border-color: #2a2e35;
+  background: #101216;
+  color: #d7dce3;
+}
+
+.body--daily .prose,
+.body--daily .prose--inspiration,
+.body--daily .prose--inspiration-entry {
+  color: #f3f4f6;
+}
+
+.body--daily .prose p,
+.body--daily .prose li {
+  color: #f3f4f6;
+}
+
+.body--daily .prose blockquote {
+  margin: 0 0 1rem;
+  padding: 0.92rem 1rem 0.96rem;
+  border: 1px solid #1f232b;
+  border-left: 1px solid #1f232b;
+  border-radius: 18px;
+  background: #0c0e12;
+  color: #eef2f6;
+}
+
+.body--daily .prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.body--daily .prose a {
+  color: #f3f4f6;
+}
+
+.body--daily .prose a:hover {
+  color: #ffffff;
+}
+
+.body--daily .post-backlink {
+  margin: 0.9rem 0 1rem;
+  color: #d7dce3;
+}
+
+.body--daily .post-backlink:hover {
+  color: #ffffff;
+}
+
+.body--daily .post-header {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #1d1f24;
+}
+
+.body--daily .post-header h1 {
+  color: #ffffff;
+}
+
+.body--daily .post-meta {
+  color: #8d97a5;
+}
+
+.body--daily .empty-state {
+  border-color: #1d1f24;
+  background: #090b0f;
+  color: #98a2b3;
 }
 
 .module-grid {
@@ -1258,3 +1466,4 @@ footer {
     gap: 0.45rem;
   }
 }
+
