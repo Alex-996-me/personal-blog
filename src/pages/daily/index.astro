@@ -1,9 +1,17 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import InspirationStreamItem from "../../components/InspirationStreamItem.astro";
-import { getAllInspirations } from "../../lib/blog";
+import { inspirationThemes } from "../../data/site";
+import { getAllInspirations, getInspirationThemeAnchor } from "../../lib/blog";
 
 const inspirations = await getAllInspirations();
+const themeSections = inspirationThemes
+  .map((theme) => ({
+    ...theme,
+    anchorId: getInspirationThemeAnchor(theme.name),
+    items: inspirations.filter((inspiration) => inspiration.data.theme === theme.name),
+  }))
+  .filter((theme) => theme.items.length > 0);
 ---
 
 <BaseLayout
@@ -20,12 +28,38 @@ const inspirations = await getAllInspirations();
     <p>这里不做“点进去看全文”的短文章列表，而是把每条灵感直接铺开，像一条条可回看的公开推文流。</p>
   </section>
 
-  {inspirations.length > 0 ? (
-    <div class="inspiration-stream">
-      {inspirations.map((inspiration) => (
-        <InspirationStreamItem inspiration={inspiration} />
-      ))}
-    </div>
+  {themeSections.length > 0 ? (
+    <>
+      <nav class="daily-theme-nav" aria-label="每日灵感主题导航">
+        {themeSections.map((theme) => (
+          <a href={`#${theme.anchorId}`}>
+            <span>{theme.name}</span>
+            <span class="daily-theme-nav__count">{theme.items.length}</span>
+          </a>
+        ))}
+      </nav>
+
+      <div class="daily-theme-sections">
+        {themeSections.map((theme) => (
+          <section id={theme.anchorId} class="daily-theme-section">
+            <header class="daily-theme-section__header">
+              <div>
+                <p class="daily-theme-section__eyebrow">主题</p>
+                <h2>{theme.name}</h2>
+              </div>
+              <p class="daily-theme-section__count">{theme.items.length} 条</p>
+            </header>
+            <p class="daily-theme-section__description">{theme.description}</p>
+
+            <div class="inspiration-stream">
+              {theme.items.map((inspiration) => (
+                <InspirationStreamItem inspiration={inspiration} />
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </>
   ) : (
     <div class="empty-state">
       这里暂时还是空的。以后你发来的感想、片段记录和突然想明白的一句话，都会直接展开出现在这里。

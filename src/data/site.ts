@@ -11,6 +11,14 @@ export type ModuleDefinition = {
   description: string;
 };
 
+export const inspirationThemeNames = ["思考", "生活", "科学"] as const;
+
+export type InspirationThemeDefinition = {
+  name: (typeof inspirationThemeNames)[number];
+  slug: string;
+  description: string;
+};
+
 export const siteConfig = {
   title: "N=1 Lab",
   description: "记录身体、营养、训练、脑科学、学习与生活意义的中文个人博客。",
@@ -60,6 +68,24 @@ export const categories: CategoryDefinition[] = [
 ];
 
 export const visibleCategories = categories.filter((category) => !category.hidden);
+
+export const inspirationThemes: InspirationThemeDefinition[] = [
+  {
+    name: "思考",
+    slug: "thinking",
+    description: "放判断、学习、做事方法、系统感和那些还在发酵的观念。",
+  },
+  {
+    name: "生活",
+    slug: "living",
+    description: "放日常观察、身体感受、经验判断和更贴身的生活记录。",
+  },
+  {
+    name: "科学",
+    slug: "science",
+    description: "放脑科学、营养、机制、模型，以及更偏知识性的短笔记。",
+  },
+];
 
 export const modules: ModuleDefinition[] = [
   {

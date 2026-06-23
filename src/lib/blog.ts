@@ -1,9 +1,10 @@
 import { getCollection, type CollectionEntry } from "astro:content";
-import { categories, visibleCategories } from "../data/site";
+import { categories, inspirationThemes, visibleCategories } from "../data/site";
 import { withBasePath } from "./paths";
 
 export type Post = CollectionEntry<"posts">;
 export type Inspiration = CollectionEntry<"inspirations">;
+export type InspirationTheme = Inspiration["data"]["theme"];
 export type ResourceDocument = CollectionEntry<"resources">;
 export type ResourceGroup = ResourceDocument["data"]["groups"][number];
 export type ResourceItem = ResourceGroup["items"][number];
@@ -56,6 +57,19 @@ export function getInspirationSlug(inspiration: Inspiration) {
 
 export function getInspirationAnchorId(inspiration: Inspiration) {
   return getInspirationSlug(inspiration);
+}
+
+export function getInspirationThemeDefinition(theme: InspirationTheme) {
+  return inspirationThemes.find((item) => item.name === theme);
+}
+
+export function getInspirationThemeAnchor(theme: InspirationTheme) {
+  const themeDefinition = getInspirationThemeDefinition(theme);
+  return `daily-theme-${themeDefinition?.slug ?? theme}`;
+}
+
+export function getInspirationThemeHref(theme: InspirationTheme) {
+  return `/daily/#${getInspirationThemeAnchor(theme)}`;
 }
 
 export function getResourceSlug(resource: ResourceDocument) {
@@ -174,6 +188,7 @@ function buildInspirationSearchText(inspiration: Inspiration) {
     [
       inspiration.data.title,
       inspiration.data.description,
+      inspiration.data.theme,
       inspiration.data.tags.join(" "),
       inspiration.body,
     ].join("\n\n"),
@@ -283,7 +298,7 @@ export async function getSearchEntries() {
       description: inspiration.data.description,
       date: inspiration.data.date.toISOString().slice(0, 10),
       updated: getInspirationUpdatedDate(inspiration).toISOString().slice(0, 10),
-      section: "每日灵感",
+      section: `每日灵感 / ${inspiration.data.theme}`,
       kind: "每日灵感",
       tags: inspiration.data.tags,
       cover: "",

@@ -4,6 +4,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import {
   formatDate,
   getInspirationSlug,
+  getInspirationThemeHref,
   getInspirationUpdatedDate,
 } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
@@ -33,8 +34,8 @@ const updated = getInspirationUpdatedDate(inspiration);
   panelClass="content-panel--daily"
 >
   <article>
-    <a class="post-backlink" href={withBasePath("/daily/")}>
-      ← 返回每日灵感
+    <a class="post-backlink" href={withBasePath(getInspirationThemeHref(inspiration.data.theme))}>
+      ← 返回 {inspiration.data.theme}
     </a>
 
     <header class="post-header">
@@ -42,7 +43,7 @@ const updated = getInspirationUpdatedDate(inspiration);
       <div class="post-meta">
         <span>发布于：{formatDate(inspiration.data.date)}</span>
         <span>最后更新：{formatDate(updated)}</span>
-        <span>每日灵感</span>
+        <span>{inspiration.data.theme}</span>
       </div>
       {inspiration.data.tags.length > 0 && (
         <div class="tag-list" aria-label="灵感标签">

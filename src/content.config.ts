@@ -1,5 +1,6 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
+import { inspirationThemeNames } from "./data/site";
 
 const sectionSummarySchema = z.object({
   heading: z.string(),
@@ -30,6 +31,7 @@ const inspirationSchema = z.object({
   title: z.string(),
   date: z.coerce.date(),
   updated: z.coerce.date().optional(),
+  theme: z.enum(inspirationThemeNames),
   tags: z.array(z.string()).default([]),
   description: z.string(),
   published: z.boolean().default(true),
