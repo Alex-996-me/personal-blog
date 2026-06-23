@@ -1,21 +1,37 @@
 ---
+import { render } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteConfig } from "../data/site";
+import { getWeeklyMottoForDate, weeklyMottos } from "../data/weekly-mottos";
 import {
   formatDate,
   getAllInspirations,
   getAllPosts,
   getInspirationHref,
   getPostHref,
+  getUpdatedDate,
 } from "../lib/blog";
 import { withBasePath } from "../lib/paths";
 
 const [posts, inspirations] = await Promise.all([getAllPosts(), getAllInspirations()]);
 
-const latestPost = posts[0];
-const previousPost = posts[1];
+const latestPosts = posts.slice(0, 3);
 const latestInspiration = inspirations[0];
-const previousInspiration = inspirations[1];
 const currentQuery = Astro.url.searchParams.get("q") ?? "";
+const todayMotto = getWeeklyMottoForDate(new Date());
+const latestInspirationRender = latestInspiration ? await render(latestInspiration) : null;
+const LatestInspirationContent = latestInspirationRender?.Content ?? null;
+const latestUpdatedPost = posts[0];
+
+const homeFacts = [
+  { label: "Archive", value: `${posts.length} 篇文章` },
+  { label: "Spark", value: `${inspirations.length} 条灵感` },
+  {
+    label: "Latest",
+    value: latestUpdatedPost ? formatDate(getUpdatedDate(latestUpdatedPost)) : "持续更新中",
+  },
+  { label: "Field", value: "身体 / 训练 / 学习 / 脑科学" },
+];
 ---
 
 <BaseLayout
@@ -25,70 +41,150 @@ const currentQuery = Astro.url.searchParams.get("q") ?? "";
   shellClass="page-shell--home"
   panelClass="content-panel--home"
 >
-  <section class="home-search-panel" aria-label="首页搜索">
-    <form class="search-form search-form--home" action={withBasePath("/search/")} method="get">
-      <input
-        type="search"
-        name="q"
-        value={currentQuery}
-        placeholder="搜索文章标题、正文、标签、灵感"
-      />
-      <button type="submit">搜索</button>
-    </form>
-  </section>
+  <section class="home-hero">
+    <div class="home-hero__backdrop" aria-hidden="true">
+      <span class="home-hero__ghost home-hero__ghost--en" data-motto-ghost-en>{todayMotto.en}</span>
+      <span class="home-hero__ghost home-hero__ghost--zh" data-motto-ghost-zh>{todayMotto.zh}</span>
+    </div>
 
-  <section class="home-showcase" aria-label="首页内容">
-    {latestPost ? (
-      <article class="home-section">
-        <div class="home-section__header">
-          <p class="home-section__label">文章</p>
-          <a class="home-section__more" href={withBasePath(getPostHref(latestPost))}>阅读全文</a>
+    <div class="home-hero__grid">
+      <div class="home-motto-card">
+        <div class="home-motto-card__main">
+          <p class="home-motto-card__eyebrow" data-motto-day>
+            {todayMotto.dayEn.toUpperCase()} · {todayMotto.dayZh}
+          </p>
+          <h1 class="home-motto-card__headline">
+            <span class="home-motto-card__en" data-motto-en>{todayMotto.en}</span>
+            <span class="home-motto-card__zh" data-motto-zh>{todayMotto.zh}</span>
+          </h1>
         </div>
 
-        <a class="home-spotlight home-spotlight--post" href={withBasePath(getPostHref(latestPost))}>
-          <div class="home-spotlight__topline">
-            <span>{formatDate(latestPost.data.date)}</span>
-            <span>{latestPost.data.category}</span>
-          </div>
-          <h2>{latestPost.data.title}</h2>
-          <p class="home-spotlight__description">{latestPost.data.description}</p>
+        <p class="home-motto-card__note">
+          {siteConfig.title} 是一个长期写作站。格言按星期自动轮换，每天只留一句最值得反复看。
+        </p>
+      </div>
 
-          {previousPost && (
-            <div class="home-spotlight__previous">
-              <span class="home-spotlight__previous-label">上一篇</span>
-              <span class="home-spotlight__previous-title">{previousPost.data.title}</span>
+      <aside class="home-search-card" aria-label="站内搜索与站点概览">
+        <p class="home-search-card__label">Search the notebook</p>
+        <form class="search-form search-form--hero" action={withBasePath("/search/")} method="get">
+          <input
+            type="search"
+            name="q"
+            value={currentQuery}
+            placeholder="搜索文章标题、正文、标签、灵感"
+          />
+          <button type="submit">搜索</button>
+        </form>
+        <p class="home-search-card__hint">搜标题、正文、标签、资料和灵感。</p>
+
+        <dl class="home-search-card__facts">
+          {homeFacts.map((item) => (
+            <div>
+              <dt>{item.label}</dt>
+              <dd>{item.value}</dd>
             </div>
-          )}
-        </a>
-      </article>
-    ) : null}
+          ))}
+        </dl>
+      </aside>
+    </div>
+  </section>
 
-    {latestInspiration ? (
-      <article class="home-section">
-        <div class="home-section__header">
-          <p class="home-section__label">灵感</p>
-          <a class="home-section__more" href={withBasePath("/daily/")}>进入灵感流</a>
+  <section class="home-journal-block" aria-label="最新文章">
+    <div class="home-block-heading">
+      <div class="home-block-heading__left">
+        <span class="home-block-heading__index">§ 01 · ARTICLES</span>
+        <h2>The journal <em>— recently revised</em></h2>
+      </div>
+    </div>
+
+    <div class="home-article-grid">
+      {latestPosts.map((post) => (
+        <a class="home-article-card" href={withBasePath(getPostHref(post))}>
+          <div class="home-article-card__media">
+            {post.data.cover ? (
+              <img
+                class="home-article-card__cover"
+                src={withBasePath(post.data.cover)}
+                alt={post.data.title}
+                loading="lazy"
+              />
+            ) : (
+              <div class="home-article-card__cover home-article-card__cover--fallback">
+                <span>{post.data.category}</span>
+                <strong>{post.data.title}</strong>
+              </div>
+            )}
+          </div>
+          <div class="home-article-card__body">
+            <div class="home-article-card__meta">
+              <span>更新于 {formatDate(getUpdatedDate(post))}</span>
+              <span>{post.data.category}</span>
+            </div>
+            <h3>{post.data.title}</h3>
+            <p class="home-article-card__summary">{post.data.description}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  {latestInspiration && LatestInspirationContent && (
+    <section class="home-inspiration-block" data-home-reveal aria-label="最新灵感">
+      <div class="home-block-heading home-block-heading--inspiration">
+        <div class="home-block-heading__left">
+          <span class="home-block-heading__index">§ 02 · INSPIRATION</span>
+          <h2>Latest spark <em>— scroll to unfold</em></h2>
+        </div>
+        <a class="home-block-heading__all" href={withBasePath("/daily/")}>ALL →</a>
+      </div>
+
+      <div class="home-inspiration-shell">
+        <div class="home-inspiration-shell__bar">
+          <span class="home-inspiration-shell__theme">{latestInspiration.data.theme}</span>
+          <span class="home-inspiration-shell__title">{latestInspiration.data.title}</span>
         </div>
 
-        <a
-          class="home-spotlight home-spotlight--inspiration"
-          href={withBasePath(getInspirationHref(latestInspiration))}
-        >
-          <div class="home-spotlight__topline">
-            <span>{formatDate(latestInspiration.data.date)}</span>
-            <span>{latestInspiration.data.theme}</span>
+        <div class="home-inspiration-shell__panel">
+          <div class="home-inspiration-shell__content">
+            <LatestInspirationContent />
           </div>
-          <h2>{latestInspiration.data.title}</h2>
-          <p class="home-spotlight__description">{latestInspiration.data.description}</p>
+        </div>
+      </div>
+    </section>
+  )}
 
-          {previousInspiration && (
-            <div class="home-spotlight__previous">
-              <span class="home-spotlight__previous-label">上一条</span>
-              <span class="home-spotlight__previous-title">{previousInspiration.data.title}</span>
-            </div>
-          )}
-        </a>
-      </article>
-    ) : null}
-  </section>
+  <script is:inline define:vars={{ weeklyMottos }}>
+    const getMondayFirstIndex = (day) => (day + 6) % 7;
+    const today = weeklyMottos[getMondayFirstIndex(new Date().getDay())];
+    const dayNode = document.querySelector("[data-motto-day]");
+    const enNode = document.querySelector("[data-motto-en]");
+    const zhNode = document.querySelector("[data-motto-zh]");
+    const ghostEnNode = document.querySelector("[data-motto-ghost-en]");
+    const ghostZhNode = document.querySelector("[data-motto-ghost-zh]");
+
+    if (today && dayNode && enNode && zhNode && ghostEnNode && ghostZhNode) {
+      dayNode.textContent = `${today.dayEn.toUpperCase()} · ${today.dayZh}`;
+      enNode.textContent = today.en;
+      zhNode.textContent = today.zh;
+      ghostEnNode.textContent = today.en;
+      ghostZhNode.textContent = today.zh;
+    }
+
+    const revealBlocks = document.querySelectorAll("[data-home-reveal]");
+    if (revealBlocks.length > 0) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-revealed");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.25 }
+      );
+
+      revealBlocks.forEach((block) => observer.observe(block));
+    }
+  </script>
 </BaseLayout>

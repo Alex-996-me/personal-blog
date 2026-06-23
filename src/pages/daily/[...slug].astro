@@ -45,13 +45,6 @@ const updated = getInspirationUpdatedDate(inspiration);
         <span>最后更新：{formatDate(updated)}</span>
         <span>{inspiration.data.theme}</span>
       </div>
-      {inspiration.data.tags.length > 0 && (
-        <div class="tag-list" aria-label="灵感标签">
-          {inspiration.data.tags.map((tag) => (
-            <span class="tag">#{tag}</span>
-          ))}
-        </div>
-      )}
     </header>
 
     <div class="prose prose--inspiration">
