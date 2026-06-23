@@ -3,6 +3,11 @@ import { navigation, siteConfig } from "../data/site";
 import { withBasePath } from "../lib/paths";
 
 const pathname = Astro.url.pathname;
+const {
+  showSearch = false,
+  searchQuery = "",
+  searchPlaceholder = "搜索文章、灵感、标签",
+} = Astro.props;
 
 function isActive(href: string) {
   const target = withBasePath(href);
@@ -16,12 +21,25 @@ function isActive(href: string) {
 <header class="site-header">
   <div class="site-header__inner">
     <a class="site-brand" href={withBasePath("/")}>{siteConfig.title}</a>
-    <nav class="site-nav" aria-label="顶部导航">
-      {navigation.map((item) => (
-        <a href={withBasePath(item.href)} class={isActive(item.href) ? "is-active" : undefined}>
-          {item.label}
-        </a>
-      ))}
-    </nav>
+    <div class="site-header__controls">
+      {showSearch && (
+        <form class="header-search" action={withBasePath("/search/")} method="get" aria-label="站内搜索">
+          <input
+            type="search"
+            name="q"
+            value={searchQuery}
+            placeholder={searchPlaceholder}
+          />
+          <button type="submit">搜索</button>
+        </form>
+      )}
+      <nav class="site-nav" aria-label="顶部导航">
+        {navigation.map((item) => (
+          <a href={withBasePath(item.href)} class={isActive(item.href) ? "is-active" : undefined}>
+            {item.label}
+          </a>
+        ))}
+      </nav>
+    </div>
   </div>
 </header>

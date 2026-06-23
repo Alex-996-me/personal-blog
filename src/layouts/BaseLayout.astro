@@ -15,6 +15,9 @@ interface Props {
   bodyClass?: string;
   shellClass?: string;
   panelClass?: string;
+  headerSearch?: boolean;
+  headerSearchQuery?: string;
+  headerSearchPlaceholder?: string;
 }
 
 const {
@@ -26,6 +29,9 @@ const {
   bodyClass = "",
   shellClass = "",
   panelClass = "",
+  headerSearch = false,
+  headerSearchQuery = "",
+  headerSearchPlaceholder = "",
 } = Astro.props;
 
 const pageTitle = title === siteConfig.title ? title : `${title} | ${siteConfig.title}`;
@@ -54,7 +60,11 @@ const ogImageUrl = new URL(withBasePath(ogImage), site).toString();
     <meta property="og:image" content={ogImageUrl} />
   </head>
   <body class={bodyClass}>
-    <Header />
+    <Header
+      showSearch={headerSearch}
+      searchQuery={headerSearchQuery}
+      searchPlaceholder={headerSearchPlaceholder}
+    />
     <div class:list={["page-shell", !showSidebar && "page-shell--single", shellClass]}>
       <main class="content-column">
         <div class:list={["content-panel", wideContent && "content-panel--wide", panelClass]}>

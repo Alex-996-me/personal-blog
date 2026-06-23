@@ -31,6 +31,9 @@ function splitMottoWords(value: string) {
   bodyClass="body--home"
   shellClass="page-shell--home"
   panelClass="content-panel--home"
+  headerSearch={true}
+  headerSearchQuery={currentQuery}
+  headerSearchPlaceholder="搜索文章、正文、标签、灵感"
 >
   <section class="home-hero">
     <div class="home-hero__backdrop" aria-hidden="true">
@@ -52,18 +55,6 @@ function splitMottoWords(value: string) {
           </h1>
         </div>
       </div>
-
-      <aside class="home-search-card" aria-label="站内搜索">
-        <form class="search-form search-form--hero" action={withBasePath("/search/")} method="get">
-          <input
-            type="search"
-            name="q"
-            value={currentQuery}
-            placeholder="搜索文章、正文、标签、灵感"
-          />
-          <button type="submit">搜索</button>
-        </form>
-      </aside>
     </div>
   </section>
 
@@ -160,7 +151,7 @@ function splitMottoWords(value: string) {
           const span = document.createElement("span");
           span.textContent = word;
           return span;
-        })
+        }),
       );
       zhNode.textContent = today.zh;
       ghostEnNode.textContent = today.en;
@@ -202,7 +193,7 @@ function splitMottoWords(value: string) {
           state.target = target;
           const delta = state.target - state.current;
           const settled = Math.abs(delta) < 0.0012;
-          state.current = settled ? state.target : state.current + delta * 0.12;
+          state.current = settled ? state.target : state.current + delta * 0.18;
 
           onUpdate(state.current, {
             rect,
@@ -250,68 +241,68 @@ function splitMottoWords(value: string) {
             return;
           }
 
-          const shellProgress = easeInOutCubic(clamp((progress - 0.04) / 0.96));
-          const headingProgress = easeOutCubic(clamp((progress - 0.08) / 0.9));
-          const cardsProgress = easeOutCubic(clamp((progress - 0.34) / 0.56));
+          const shellProgress = easeInOutCubic(clamp(progress / 0.86));
+          const headingProgress = easeOutCubic(clamp((progress - 0.03) / 0.78));
+          const cardsProgress = easeOutCubic(clamp((progress - 0.08) / 0.5));
 
-          journalBlock.style.opacity = mix(0.22, 1, shellProgress).toFixed(3);
+          journalBlock.style.opacity = mix(0.48, 1, shellProgress).toFixed(3);
           journalBlock.style.transform =
-            `translateY(${mix(118, 0, shellProgress).toFixed(2)}px) ` +
-            `scale(${mix(0.94, 1, shellProgress).toFixed(4)})`;
-          journalBlock.style.borderRadius = `${mix(34, 28, shellProgress).toFixed(2)}px`;
+            `translateY(${mix(28, 0, shellProgress).toFixed(2)}px) ` +
+            `scale(${mix(0.985, 1, shellProgress).toFixed(4)})`;
+          journalBlock.style.borderRadius = `${mix(30, 26, shellProgress).toFixed(2)}px`;
           journalBlock.style.background =
-            `linear-gradient(180deg, rgba(255,255,255,${mix(0.012, 0.04, shellProgress).toFixed(3)}), transparent 24%), ` +
-            `rgba(11,14,18,${mix(0.68, 0.92, shellProgress).toFixed(3)})`;
+            `linear-gradient(180deg, rgba(255,255,255,${mix(0.018, 0.048, shellProgress).toFixed(3)}), transparent 24%), ` +
+            `rgba(11,14,18,${mix(0.76, 0.93, shellProgress).toFixed(3)})`;
           journalBlock.style.boxShadow =
-            `0 ${mix(24, 48, shellProgress).toFixed(2)}px ${mix(56, 96, shellProgress).toFixed(2)}px rgba(0,0,0,${mix(0.08, 0.24, shellProgress).toFixed(3)}), ` +
-            `inset 0 1px 0 rgba(255,255,255,${mix(0.03, 0.08, shellProgress).toFixed(3)})`;
+            `0 ${mix(18, 42, shellProgress).toFixed(2)}px ${mix(38, 88, shellProgress).toFixed(2)}px rgba(0,0,0,${mix(0.1, 0.24, shellProgress).toFixed(3)}), ` +
+            `inset 0 1px 0 rgba(255,255,255,${mix(0.04, 0.08, shellProgress).toFixed(3)})`;
           journalBlock.style.backdropFilter =
-            `blur(${mix(8, 22, shellProgress).toFixed(2)}px) saturate(${mix(112, 146, shellProgress).toFixed(1)}%)`;
+            `blur(${mix(10, 22, shellProgress).toFixed(2)}px) saturate(${mix(120, 148, shellProgress).toFixed(1)}%)`;
 
           if (journalHeading) {
-            journalHeading.style.width = `${mix(compact ? 92 : 44, 100, headingProgress).toFixed(2)}%`;
+            journalHeading.style.width = `${mix(compact ? 100 : 78, 100, headingProgress).toFixed(2)}%`;
             journalHeading.style.borderRadius = `${mix(999, 28, headingProgress).toFixed(2)}px`;
-            journalHeading.style.opacity = mix(0.42, 1, headingProgress).toFixed(3);
-            journalHeading.style.filter = `blur(${mix(12, 0, headingProgress).toFixed(2)}px)`;
+            journalHeading.style.opacity = mix(0.76, 1, headingProgress).toFixed(3);
+            journalHeading.style.filter = `blur(${mix(3, 0, headingProgress).toFixed(2)}px)`;
             journalHeading.style.transform =
-              `translateY(${mix(42, 0, headingProgress).toFixed(2)}px) ` +
-              `scale(${mix(0.88, 1, headingProgress).toFixed(4)})`;
+              `translateY(${mix(10, 0, headingProgress).toFixed(2)}px) ` +
+              `scale(${mix(0.98, 1, headingProgress).toFixed(4)})`;
           }
 
           if (journalGrid) {
-            journalGrid.style.opacity = mix(0.02, 1, cardsProgress).toFixed(3);
-            journalGrid.style.transform = `translateY(${mix(34, 0, cardsProgress).toFixed(2)}px)`;
+            journalGrid.style.opacity = mix(0.3, 1, cardsProgress).toFixed(3);
+            journalGrid.style.transform = `translateY(${mix(6, 0, cardsProgress).toFixed(2)}px)`;
           }
 
           journalCards.forEach((card, index) => {
-            const localProgress = easeOutCubic(clamp((cardsProgress - index * 0.1) / 0.7));
-            const lateralShift = compact ? 0 : index === 0 ? -16 : index === 2 ? 16 : 0;
+            const localProgress = easeOutCubic(clamp((cardsProgress - index * 0.08) / 0.76));
+            const lateralShift = compact ? 0 : index === 0 ? -10 : index === 2 ? 10 : 0;
             const cardMedia = card.querySelector(".home-article-card__media");
             const cardCover = card.querySelector(".home-article-card__cover, .home-article-card__cover--fallback");
 
-            card.style.opacity = mix(0.02, 1, localProgress).toFixed(3);
-            card.style.filter = `blur(${mix(18, 0, localProgress).toFixed(2)}px)`;
+            card.style.opacity = mix(0.26, 1, localProgress).toFixed(3);
+            card.style.filter = `blur(${mix(4, 0, localProgress).toFixed(2)}px)`;
             card.style.transform =
-              `translate3d(${mix(lateralShift, 0, localProgress).toFixed(2)}px, ${mix(92 + index * 10, 0, localProgress).toFixed(2)}px, 0) ` +
-              `scale(${mix(0.86, 1, localProgress).toFixed(4)}) ` +
-              `perspective(1400px) rotateX(${mix(-18 + index * 2, 0, localProgress).toFixed(2)}deg)`;
-            card.style.borderColor = `rgba(255,255,255,${mix(0.02, 0.12, localProgress).toFixed(3)})`;
+              `translate3d(${mix(lateralShift, 0, localProgress).toFixed(2)}px, ${mix(18 + index * 3, 0, localProgress).toFixed(2)}px, 0) ` +
+              `scale(${mix(0.98, 1, localProgress).toFixed(4)}) ` +
+              `perspective(1400px) rotateX(${mix(-4 + index, 0, localProgress).toFixed(2)}deg)`;
+            card.style.borderColor = `rgba(255,255,255,${mix(0.04, 0.12, localProgress).toFixed(3)})`;
             card.style.background =
-              `linear-gradient(180deg, rgba(255,255,255,${mix(0.03, 0.08, localProgress).toFixed(3)}), rgba(255,255,255,0.015)), ` +
-              `rgba(14,18,24,${mix(0.18, 0.56, localProgress).toFixed(3)})`;
+              `linear-gradient(180deg, rgba(255,255,255,${mix(0.045, 0.09, localProgress).toFixed(3)}), rgba(255,255,255,0.018)), ` +
+              `rgba(14,18,24,${mix(0.24, 0.58, localProgress).toFixed(3)})`;
             card.style.boxShadow =
-              `0 ${mix(16, 34, localProgress).toFixed(2)}px ${mix(34, 78, localProgress).toFixed(2)}px rgba(0,0,0,${mix(0.04, 0.22, localProgress).toFixed(3)}), ` +
-              `inset 0 1px 0 rgba(255,255,255,${mix(0.04, 0.08, localProgress).toFixed(3)})`;
+              `0 ${mix(12, 30, localProgress).toFixed(2)}px ${mix(24, 66, localProgress).toFixed(2)}px rgba(0,0,0,${mix(0.06, 0.22, localProgress).toFixed(3)}), ` +
+              `inset 0 1px 0 rgba(255,255,255,${mix(0.05, 0.08, localProgress).toFixed(3)})`;
 
             if (cardMedia) {
-              cardMedia.style.transform = `scale(${mix(1.08, 1, localProgress).toFixed(4)})`;
+              cardMedia.style.transform = `scale(${mix(1.03, 1, localProgress).toFixed(4)})`;
               cardMedia.style.filter =
-                `blur(${mix(4, 0, localProgress).toFixed(2)}px) ` +
-                `brightness(${mix(0.82, 1, localProgress).toFixed(3)})`;
+                `blur(${mix(2.5, 0, localProgress).toFixed(2)}px) ` +
+                `brightness(${mix(0.9, 1, localProgress).toFixed(3)})`;
             }
 
             if (cardCover) {
-              cardCover.style.opacity = mix(0.68, 1, localProgress).toFixed(3);
+              cardCover.style.opacity = mix(0.78, 1, localProgress).toFixed(3);
             }
           });
         },
@@ -336,85 +327,85 @@ function splitMottoWords(value: string) {
             return;
           }
 
-          const shellProgress = easeInOutCubic(clamp((progress - 0.02) / 0.98));
-          const barProgress = easeOutCubic(clamp((progress - 0.08) / 0.92));
-          const panelProgress = easeOutCubic(clamp((progress - 0.46) / 0.54));
+          const shellProgress = easeInOutCubic(clamp(progress / 0.9));
+          const barProgress = easeOutCubic(clamp((progress - 0.03) / 0.78));
+          const panelProgress = easeOutCubic(clamp((progress - 0.16) / 0.48));
           const shellWidth = sparkShell.clientWidth || sparkBlock.clientWidth || window.innerWidth;
-          const barClosedWidth = compact ? Math.max(228, shellWidth * 0.72) : Math.min(420, shellWidth * 0.42);
+          const barClosedWidth = compact ? Math.max(240, shellWidth * 0.82) : Math.min(520, shellWidth * 0.56);
           const barOpenWidth = shellWidth;
 
-          sparkBlock.style.opacity = mix(0.14, 1, shellProgress).toFixed(3);
+          sparkBlock.style.opacity = mix(0.4, 1, shellProgress).toFixed(3);
           sparkBlock.style.transform =
-            `translateY(${mix(128, 0, shellProgress).toFixed(2)}px) ` +
-            `scale(${mix(0.93, 1, shellProgress).toFixed(4)})`;
-          sparkBlock.style.borderRadius = `${mix(34, 28, shellProgress).toFixed(2)}px`;
+            `translateY(${mix(26, 0, shellProgress).toFixed(2)}px) ` +
+            `scale(${mix(0.985, 1, shellProgress).toFixed(4)})`;
+          sparkBlock.style.borderRadius = `${mix(30, 26, shellProgress).toFixed(2)}px`;
           sparkBlock.style.background =
-            `linear-gradient(180deg, rgba(255,255,255,${mix(0.008, 0.03, shellProgress).toFixed(3)}), transparent 22%), ` +
-            `rgba(10,13,17,${mix(0.72, 0.94, shellProgress).toFixed(3)})`;
+            `linear-gradient(180deg, rgba(255,255,255,${mix(0.012, 0.032, shellProgress).toFixed(3)}), transparent 22%), ` +
+            `rgba(10,13,17,${mix(0.78, 0.94, shellProgress).toFixed(3)})`;
           sparkBlock.style.boxShadow =
-            `0 ${mix(18, 44, shellProgress).toFixed(2)}px ${mix(40, 88, shellProgress).toFixed(2)}px rgba(0,0,0,${mix(0.06, 0.24, shellProgress).toFixed(3)}), ` +
+            `0 ${mix(14, 38, shellProgress).toFixed(2)}px ${mix(28, 82, shellProgress).toFixed(2)}px rgba(0,0,0,${mix(0.08, 0.24, shellProgress).toFixed(3)}), ` +
             `inset 0 1px 0 rgba(255,255,255,${mix(0.03, 0.07, shellProgress).toFixed(3)})`;
 
           if (sparkHeading) {
-            sparkHeading.style.opacity = mix(0.28, 1, shellProgress).toFixed(3);
+            sparkHeading.style.opacity = mix(0.72, 1, shellProgress).toFixed(3);
             sparkHeading.style.transform =
-              `translateY(${mix(38, 0, shellProgress).toFixed(2)}px) ` +
-              `scale(${mix(0.92, 1, shellProgress).toFixed(4)})`;
-            sparkHeading.style.filter = `blur(${mix(10, 0, shellProgress).toFixed(2)}px)`;
+              `translateY(${mix(10, 0, shellProgress).toFixed(2)}px) ` +
+              `scale(${mix(0.98, 1, shellProgress).toFixed(4)})`;
+            sparkHeading.style.filter = `blur(${mix(2.5, 0, shellProgress).toFixed(2)}px)`;
           }
 
           if (islandBar) {
             islandBar.style.width = `${mix(barClosedWidth, barOpenWidth, barProgress).toFixed(2)}px`;
-            islandBar.style.minHeight = `${mix(compact ? 62 : 66, compact ? 74 : 82, barProgress).toFixed(2)}px`;
-            islandBar.style.paddingLeft = `${mix(compact ? 1 : 1.1, compact ? 1.28 : 1.6, barProgress).toFixed(3)}rem`;
-            islandBar.style.paddingRight = `${mix(compact ? 1 : 1.1, compact ? 1.28 : 1.6, barProgress).toFixed(3)}rem`;
+            islandBar.style.minHeight = `${mix(compact ? 60 : 64, compact ? 76 : 86, barProgress).toFixed(2)}px`;
+            islandBar.style.paddingLeft = `${mix(compact ? 1.04 : 1.14, compact ? 1.34 : 1.75, barProgress).toFixed(3)}rem`;
+            islandBar.style.paddingRight = `${mix(compact ? 1.04 : 1.14, compact ? 1.34 : 1.75, barProgress).toFixed(3)}rem`;
             islandBar.style.borderRadius = `${mix(999, 30, barProgress).toFixed(2)}px`;
-            islandBar.style.background = `rgba(12,16,22,${mix(0.84, 0.96, barProgress).toFixed(3)})`;
+            islandBar.style.background = `rgba(12,16,22,${mix(0.88, 0.97, barProgress).toFixed(3)})`;
             islandBar.style.boxShadow =
-              `0 ${mix(12, 28, barProgress).toFixed(2)}px ${mix(26, 62, barProgress).toFixed(2)}px rgba(0,0,0,${mix(0.1, 0.32, barProgress).toFixed(3)}), ` +
-              `inset 0 1px 0 rgba(255,255,255,${mix(0.03, 0.08, barProgress).toFixed(3)})`;
+              `0 ${mix(10, 24, barProgress).toFixed(2)}px ${mix(18, 56, barProgress).toFixed(2)}px rgba(0,0,0,${mix(0.12, 0.3, barProgress).toFixed(3)}), ` +
+              `inset 0 1px 0 rgba(255,255,255,${mix(0.04, 0.08, barProgress).toFixed(3)})`;
             islandBar.style.transform =
-              `translateY(${mix(34, 0, barProgress).toFixed(2)}px) ` +
-              `scale(${mix(0.93, 1, barProgress).toFixed(4)})`;
+              `translateY(${mix(24, 0, barProgress).toFixed(2)}px) ` +
+              `scale(${mix(0.95, 1, barProgress).toFixed(4)})`;
           }
 
           if (islandTheme) {
-            islandTheme.style.fontSize = `${mix(compact ? 0.76 : 0.8, compact ? 0.88 : 0.92, barProgress).toFixed(3)}rem`;
-            islandTheme.style.letterSpacing = `${mix(0.1, 0.16, barProgress).toFixed(3)}em`;
-            islandTheme.style.opacity = mix(0.62, 1, barProgress).toFixed(3);
-            islandTheme.style.transform = `translateY(${mix(8, 0, barProgress).toFixed(2)}px)`;
+            islandTheme.style.fontSize = `${mix(compact ? 0.8 : 0.82, compact ? 0.92 : 0.98, barProgress).toFixed(3)}rem`;
+            islandTheme.style.letterSpacing = `${mix(0.08, 0.14, barProgress).toFixed(3)}em`;
+            islandTheme.style.opacity = mix(0.72, 1, barProgress).toFixed(3);
+            islandTheme.style.transform = `translateY(${mix(6, 0, barProgress).toFixed(2)}px)`;
           }
 
           if (islandTitle) {
-            islandTitle.style.fontSize = `${mix(compact ? 1 : 1.04, compact ? 1.14 : 1.2, barProgress).toFixed(3)}rem`;
-            islandTitle.style.letterSpacing = `${mix(0, 0.016, barProgress).toFixed(3)}em`;
-            islandTitle.style.opacity = mix(0.62, 1, barProgress).toFixed(3);
-            islandTitle.style.transform = `translateY(${mix(10, 0, barProgress).toFixed(2)}px)`;
+            islandTitle.style.fontSize = `${mix(compact ? 1.06 : 1.08, compact ? 1.18 : 1.28, barProgress).toFixed(3)}rem`;
+            islandTitle.style.letterSpacing = `${mix(0, 0.012, barProgress).toFixed(3)}em`;
+            islandTitle.style.opacity = mix(0.7, 1, barProgress).toFixed(3);
+            islandTitle.style.transform = `translateY(${mix(6, 0, barProgress).toFixed(2)}px)`;
           }
 
           if (islandPanel) {
-            islandPanel.style.marginTop = `${mix(0.2, 1, panelProgress).toFixed(3)}rem`;
-            islandPanel.style.maxHeight = `${mix(0, compact ? 920 : 760, panelProgress).toFixed(2)}px`;
+            islandPanel.style.marginTop = `${mix(0.16, 0.72, panelProgress).toFixed(3)}rem`;
+            islandPanel.style.maxHeight = `${mix(0, compact ? 860 : 700, panelProgress).toFixed(2)}px`;
             islandPanel.style.opacity = mix(0, 1, panelProgress).toFixed(3);
-            islandPanel.style.filter = `blur(${mix(18, 0, panelProgress).toFixed(2)}px)`;
+            islandPanel.style.filter = `blur(${mix(5, 0, panelProgress).toFixed(2)}px)`;
             islandPanel.style.clipPath = `inset(0 0 ${mix(100, 0, panelProgress).toFixed(2)}% 0 round 28px)`;
             islandPanel.style.transform =
-              `perspective(1600px) rotateX(${mix(-22, 0, panelProgress).toFixed(2)}deg) ` +
-              `translateY(${mix(88, 0, panelProgress).toFixed(2)}px) ` +
-              `scale(${mix(0.9, 1, panelProgress).toFixed(4)})`;
+              `perspective(1600px) rotateX(${mix(-6, 0, panelProgress).toFixed(2)}deg) ` +
+              `translateY(${mix(18, 0, panelProgress).toFixed(2)}px) ` +
+              `scale(${mix(0.982, 1, panelProgress).toFixed(4)})`;
             islandPanel.style.boxShadow =
-              `0 ${mix(16, 32, panelProgress).toFixed(2)}px ${mix(36, 72, panelProgress).toFixed(2)}px rgba(0,0,0,${mix(0.08, 0.24, panelProgress).toFixed(3)})`;
+              `0 ${mix(12, 28, panelProgress).toFixed(2)}px ${mix(20, 62, panelProgress).toFixed(2)}px rgba(0,0,0,${mix(0.08, 0.22, panelProgress).toFixed(3)})`;
           }
 
           if (islandContent) {
             islandContent.style.opacity = mix(0, 1, panelProgress).toFixed(3);
             islandContent.style.transform =
-              `translateY(${mix(28, 0, panelProgress).toFixed(2)}px) ` +
-              `scale(${mix(0.97, 1, panelProgress).toFixed(4)})`;
+              `translateY(${mix(14, 0, panelProgress).toFixed(2)}px) ` +
+              `scale(${mix(0.985, 1, panelProgress).toFixed(4)})`;
           }
 
           islandProseNodes.forEach((node) => {
-            node.style.fontSize = `${mix(1.02, compact ? 1.14 : 1.18, panelProgress).toFixed(3)}rem`;
+            node.style.fontSize = `${mix(1.06, compact ? 1.17 : 1.22, panelProgress).toFixed(3)}rem`;
           });
         },
       });
