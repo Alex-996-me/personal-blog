@@ -41,7 +41,10 @@ const feedDate = new Intl.DateTimeFormat("en-US", {
       {inspiration.data.tags.length > 0 && (
         <div class="tag-list" aria-label="灵感标签">
           {inspiration.data.tags.map((tag) => (
-            <span class="tag">#{tag}</span>
+            <span class="tag tag--daily">
+              <span class="tag__hash" aria-hidden="true">#</span>
+              <span>{tag}</span>
+            </span>
           ))}
         </div>
       )}

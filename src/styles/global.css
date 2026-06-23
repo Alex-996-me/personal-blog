@@ -441,7 +441,7 @@ footer {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  padding: 0.48rem 0.82rem;
+  padding: 0.5rem 0.88rem;
   border: 1px solid #242932;
   border-radius: 999px;
   background: #0c0e12;
@@ -457,6 +457,20 @@ footer {
   color: #ffffff;
 }
 
+.body--daily .daily-theme-nav__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border: 1px solid #5b606b;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
 .body--daily .daily-theme-nav__count {
   color: #8b94a3;
   font-size: 0.85rem;
@@ -468,6 +482,10 @@ footer {
 }
 
 .body--daily .daily-theme-section {
+  padding: 1.15rem 1.15rem 0.4rem;
+  border: 1px solid #1d1f24;
+  border-radius: 24px;
+  background: #05070a;
   scroll-margin-top: 5rem;
 }
 
@@ -478,6 +496,41 @@ footer {
   gap: 1rem;
   padding-bottom: 0.8rem;
   border-bottom: 1px solid #1d1f24;
+}
+
+.body--daily .daily-theme-section__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.95rem;
+}
+
+.body--daily .daily-theme-section__logo {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  width: 5.35rem;
+  min-width: 5.35rem;
+  height: 5.35rem;
+  padding: 0.35rem;
+  border: 1px solid #2c3139;
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0)),
+    #0d1014;
+}
+
+.body--daily .daily-theme-section__logo-mark {
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.body--daily .daily-theme-section__logo-code {
+  margin-top: 0.22rem;
+  color: #a9b1bc;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
 }
 
 .body--daily .daily-theme-section__eyebrow {
@@ -502,6 +555,23 @@ footer {
   white-space: nowrap;
 }
 
+.body--daily .daily-theme-section__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.body--daily .daily-theme-section__jump {
+  color: #f0b35f;
+  font-size: 0.88rem;
+  text-decoration: none;
+}
+
+.body--daily .daily-theme-section__jump:hover {
+  color: #ffd08c;
+}
+
 .body--daily .daily-theme-section__description {
   margin: 0.7rem 0 0.4rem;
   color: #98a2b3;
@@ -510,6 +580,7 @@ footer {
 }
 
 .body--daily .inspiration-stream {
+  margin-top: 0.75rem;
   border-top: 0;
 }
 
@@ -551,9 +622,39 @@ footer {
 }
 
 .body--daily .tag {
-  border-color: #2a2e35;
-  background: #101216;
-  color: #d7dce3;
+  border-color: #5a3a14;
+  background: #1a1206;
+  color: #ffe2b8;
+}
+
+.body--daily .tag-list {
+  gap: 0.72rem;
+  margin-top: 0.95rem;
+}
+
+.body--daily .tag--daily {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  padding: 0.3rem 0.72rem 0.34rem;
+  border-width: 1px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.body--daily .tag__hash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 999px;
+  background: #ef9f31;
+  color: #0c0e12;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .body--daily .prose,
@@ -1491,6 +1592,24 @@ footer {
   .body--daily .daily-theme-section__header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .body--daily .daily-theme-section__brand {
+    align-items: flex-start;
+  }
+
+  .body--daily .daily-theme-section__logo {
+    width: 4.4rem;
+    min-width: 4.4rem;
+    height: 4.4rem;
+  }
+
+  .body--daily .daily-theme-section__logo-mark {
+    font-size: 1.72rem;
+  }
+
+  .body--daily .daily-theme-section__meta {
+    align-items: flex-start;
   }
 
   .body--daily .inspiration-entry {

@@ -33,6 +33,7 @@ const themeSections = inspirationThemes
       <nav class="daily-theme-nav" aria-label="每日灵感主题导航">
         {themeSections.map((theme) => (
           <a href={`#${theme.anchorId}`}>
+            <span class="daily-theme-nav__mark">{theme.mark}</span>
             <span>{theme.name}</span>
             <span class="daily-theme-nav__count">{theme.items.length}</span>
           </a>
@@ -43,11 +44,20 @@ const themeSections = inspirationThemes
         {themeSections.map((theme) => (
           <section id={theme.anchorId} class="daily-theme-section">
             <header class="daily-theme-section__header">
-              <div>
-                <p class="daily-theme-section__eyebrow">主题</p>
-                <h2>{theme.name}</h2>
+              <div class="daily-theme-section__brand">
+                <div class="daily-theme-section__logo" aria-hidden="true">
+                  <span class="daily-theme-section__logo-mark">{theme.mark}</span>
+                  <span class="daily-theme-section__logo-code">{theme.code}</span>
+                </div>
+                <div>
+                  <p class="daily-theme-section__eyebrow">主题</p>
+                  <h2>{theme.name}</h2>
+                </div>
               </div>
-              <p class="daily-theme-section__count">{theme.items.length} 条</p>
+              <div class="daily-theme-section__meta">
+                <p class="daily-theme-section__count">{theme.items.length} 条</p>
+                <a class="daily-theme-section__jump" href={`#${theme.anchorId}`}>定位</a>
+              </div>
             </header>
             <p class="daily-theme-section__description">{theme.description}</p>
 

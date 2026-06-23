@@ -17,6 +17,8 @@ export type InspirationThemeDefinition = {
   name: (typeof inspirationThemeNames)[number];
   slug: string;
   description: string;
+  mark: string;
+  code: string;
 };
 
 export const siteConfig = {
@@ -74,16 +76,22 @@ export const inspirationThemes: InspirationThemeDefinition[] = [
     name: "思考",
     slug: "thinking",
     description: "放判断、学习、做事方法、系统感和那些还在发酵的观念。",
+    mark: "思",
+    code: "THINK",
   },
   {
     name: "生活",
     slug: "living",
     description: "放日常观察、身体感受、经验判断和更贴身的生活记录。",
+    mark: "生",
+    code: "LIVING",
   },
   {
     name: "科学",
     slug: "science",
     description: "放脑科学、营养、机制、模型，以及更偏知识性的短笔记。",
+    mark: "科",
+    code: "SCIENCE",
   },
 ];
 
