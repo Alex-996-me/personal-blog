@@ -6,7 +6,6 @@ import {
   formatDate,
   getAllInspirations,
   getAllPosts,
-  getInspirationHref,
   getPostHref,
   getUpdatedDate,
 } from "../lib/blog";
@@ -60,7 +59,7 @@ function splitMottoWords(value: string) {
             type="search"
             name="q"
             value={currentQuery}
-            placeholder="搜索文章标题、正文、标签、灵感"
+            placeholder="搜索文章、正文、标签、灵感"
           />
           <button type="submit">搜索</button>
         </form>
@@ -68,66 +67,79 @@ function splitMottoWords(value: string) {
     </div>
   </section>
 
-  <section class="home-journal-block" aria-label="最新文章">
-    <div class="home-block-heading">
-      <div class="home-block-heading__left">
-        <span class="home-block-heading__index">§ 01 · ARTICLES</span>
-        <h2>The journal <em>— recently revised</em></h2>
-      </div>
-    </div>
+  <section class="home-scroll-stage home-scroll-stage--journal" data-scroll-stage="journal">
+    <div class="home-scroll-stage__sticky">
+      <section class="home-journal-block" data-home-journal aria-label="Latest journal articles">
+        <div class="home-block-heading home-block-heading--journal">
+          <div class="home-block-heading__left">
+            <span class="home-block-heading__index">§ 01 · JOURNAL</span>
+            <h2>The journal <em>three recently revised entries</em></h2>
+          </div>
+        </div>
 
-    <div class="home-article-grid">
-      {latestPosts.map((post) => (
-        <a class="home-article-card" href={withBasePath(getPostHref(post))}>
-          <div class="home-article-card__media">
-            {post.data.cover ? (
-              <img
-                class="home-article-card__cover"
-                src={withBasePath(post.data.cover)}
-                alt={post.data.title}
-                loading="lazy"
-              />
-            ) : (
-              <div class="home-article-card__cover home-article-card__cover--fallback">
-                <span>{post.data.category}</span>
-                <strong>{post.data.title}</strong>
+        <div class="home-article-grid">
+          {latestPosts.map((post, index) => (
+            <a
+              class="home-article-card"
+              data-journal-card
+              style={`--journal-card-index:${index};`}
+              href={withBasePath(getPostHref(post))}
+            >
+              <div class="home-article-card__media">
+                {post.data.cover ? (
+                  <img
+                    class="home-article-card__cover"
+                    src={withBasePath(post.data.cover)}
+                    alt={post.data.title}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="home-article-card__cover home-article-card__cover--fallback">
+                    <span>{post.data.category}</span>
+                    <strong>{post.data.title}</strong>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div class="home-article-card__body">
-            <div class="home-article-card__meta">
-              <span>更新于 {formatDate(getUpdatedDate(post))}</span>
-              <span>{post.data.category}</span>
-            </div>
-            <h3>{post.data.title}</h3>
-            <p class="home-article-card__summary">{post.data.description}</p>
-          </div>
-        </a>
-      ))}
+              <div class="home-article-card__body">
+                <div class="home-article-card__meta">
+                  <span>Updated {formatDate(getUpdatedDate(post))}</span>
+                  <span>{post.data.category}</span>
+                </div>
+                <h3>{post.data.title}</h3>
+                <p class="home-article-card__summary">{post.data.description}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
     </div>
   </section>
 
   {latestInspiration && LatestInspirationContent && (
-    <section class="home-inspiration-block" data-home-reveal aria-label="最新灵感">
-      <div class="home-block-heading home-block-heading--inspiration">
-        <div class="home-block-heading__left">
-          <span class="home-block-heading__index">§ 02 · INSPIRATION</span>
-          <h2>Latest spark <em>— scroll to unfold</em></h2>
-        </div>
-        <a class="home-block-heading__all" href={withBasePath("/daily/")}>ALL →</a>
-      </div>
-
-      <div class="home-inspiration-shell">
-        <div class="home-inspiration-shell__bar">
-          <span class="home-inspiration-shell__theme">{latestInspiration.data.theme}</span>
-          <span class="home-inspiration-shell__title">{latestInspiration.data.title}</span>
-        </div>
-
-        <div class="home-inspiration-shell__panel">
-          <div class="home-inspiration-shell__content">
-            <LatestInspirationContent />
+    <section class="home-scroll-stage home-scroll-stage--spark" data-scroll-stage="spark">
+      <div class="home-scroll-stage__sticky home-scroll-stage__sticky--spark">
+        <section class="home-inspiration-block" data-home-reveal aria-label="Latest inspiration">
+          <div class="home-block-heading home-block-heading--inspiration">
+            <div class="home-block-heading__left">
+              <span class="home-block-heading__index">§ 02 · SPARK</span>
+              <h2>Latest spark <em>drag down to unfold</em></h2>
+            </div>
+            <a class="home-block-heading__all" href={withBasePath("/daily/")}>ALL →</a>
           </div>
-        </div>
+
+          <div class="home-inspiration-shell">
+            <div class="home-inspiration-shell__bar">
+              <span class="home-inspiration-shell__theme">{latestInspiration.data.theme}</span>
+              <span class="home-inspiration-shell__title">{latestInspiration.data.title}</span>
+            </div>
+
+            <div class="home-inspiration-shell__panel">
+              <div class="home-inspiration-shell__content">
+                <LatestInspirationContent />
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </section>
   )}
@@ -155,94 +167,267 @@ function splitMottoWords(value: string) {
       ghostZhNode.textContent = today.zh;
     }
 
-    const islandBlock = document.querySelector("[data-home-reveal]");
-    if (islandBlock) {
+    try {
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      let ticking = false;
-
-      const updateIslandProgress = () => {
-        const rect = islandBlock.getBoundingClientRect();
-        const viewportHeight = window.innerHeight;
-        const compact = window.innerWidth <= 720;
-        const start = viewportHeight * 0.92;
-        const end = viewportHeight * 0.26;
-        const range = Math.max(start - end, 1);
-        let progress = (start - rect.top) / range;
-
-        if (rect.top <= end && rect.bottom >= viewportHeight * 0.34) {
-          progress = 1;
-        }
-
-        progress = Math.max(0, Math.min(1, progress));
-
-        if (prefersReducedMotion) {
-          progress = progress > 0.08 ? 1 : 0;
-        }
-
-        const mix = (from, to) => from + (to - from) * progress;
-        const setVar = (name, value) => islandBlock.style.setProperty(name, value);
-        const barClosedWidth = compact ? 84 : 74;
-        const barOpenWidth = 100;
-        const barClosedHeight = compact ? 54 : 56;
-        const barOpenHeight = compact ? 62 : 68;
-        const barClosedPad = compact ? 1 : 1;
-        const barOpenPad = compact ? 1.12 : 1.28;
-        const panelOpenHeight = compact ? 620 : 540;
-        const proseOpenFont = compact ? 1.12 : 1.16;
-
-        islandBlock.style.setProperty("--island-progress", progress.toFixed(4));
-        setVar("--island-bar-width", `${mix(barClosedWidth, barOpenWidth).toFixed(2)}%`);
-        setVar("--island-bar-min-height", `${mix(barClosedHeight, barOpenHeight).toFixed(2)}px`);
-        setVar("--island-bar-padding-x", `${mix(barClosedPad, barOpenPad).toFixed(3)}rem`);
-        setVar("--island-bar-radius", `${mix(999, 27).toFixed(2)}px`);
-        setVar("--island-bar-bg-alpha", mix(0.9, 0.96).toFixed(3));
-        setVar("--island-bar-shadow-y", `${mix(10, 20).toFixed(2)}px`);
-        setVar("--island-bar-shadow-blur", `${mix(28, 44).toFixed(2)}px`);
-        setVar("--island-bar-shadow-alpha", mix(0.14, 0.3).toFixed(3));
-        setVar("--island-bar-inset-alpha", mix(0.03, 0.08).toFixed(3));
-        setVar("--island-bar-shift", `${mix(20, 0).toFixed(2)}px`);
-        setVar("--island-bar-scale", mix(0.92, 1).toFixed(4));
-        setVar("--island-sheen-alpha", mix(0.05, 0.09).toFixed(3));
-        setVar("--island-theme-font-size", `${mix(compact ? 0.72 : 0.76, compact ? 0.84 : 0.88).toFixed(3)}rem`);
-        setVar("--island-theme-letter-spacing", `${mix(0.12, 0.14).toFixed(3)}em`);
-        setVar("--island-theme-opacity", mix(0.68, 1).toFixed(3));
-        setVar("--island-theme-shift", `${mix(5, 0).toFixed(2)}px`);
-        setVar("--island-title-font-size", `${mix(compact ? 0.95 : 0.94, compact ? 1.05 : 1.12).toFixed(3)}rem`);
-        setVar("--island-title-letter-spacing", `${mix(0, 0.015).toFixed(3)}em`);
-        setVar("--island-title-opacity", mix(0.76, 1).toFixed(3));
-        setVar("--island-title-shift", `${mix(4, 0).toFixed(2)}px`);
-        setVar("--island-panel-margin-top", `${mix(0.45, 0.95).toFixed(3)}rem`);
-        setVar("--island-panel-max-height", `${mix(compact ? 34 : 36, panelOpenHeight).toFixed(2)}px`);
-        setVar("--island-panel-opacity", Math.max(0, Math.min(1, progress * 1.25 - 0.05)).toFixed(3));
-        setVar("--island-panel-blur", `${mix(10, 0).toFixed(2)}px`);
-        setVar("--island-panel-clip", `${mix(100, 0).toFixed(2)}%`);
-        setVar("--island-panel-rotate", `${mix(-12, 0).toFixed(2)}deg`);
-        setVar("--island-panel-shift", `${mix(34, 0).toFixed(2)}px`);
-        setVar("--island-panel-scale", mix(0.96, 1).toFixed(4));
-        setVar("--island-content-opacity", Math.max(0, Math.min(1, progress * 1.22 - 0.08)).toFixed(3));
-        setVar("--island-content-shift", `${mix(16, 0).toFixed(2)}px`);
-        setVar("--island-content-scale", mix(0.985, 1).toFixed(4));
-        setVar("--island-prose-font-size", `${mix(1, proseOpenFont).toFixed(3)}rem`);
-        islandBlock.classList.toggle("is-revealed", progress > 0.02);
-        islandBlock.classList.toggle("is-expanded", progress > 0.74);
+      const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
+      const mix = (from, to, progress) => from + (to - from) * progress;
+      const easeOutCubic = (value) => 1 - Math.pow(1 - clamp(value), 3);
+      const easeInOutCubic = (value) => {
+        const progress = clamp(value);
+        return progress < 0.5
+          ? 4 * progress * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
       };
 
-      const requestProgressUpdate = () => {
-        if (ticking) {
+      const stageControllers = [];
+      let frameId = 0;
+
+      const registerStageController = (stage, { onUpdate }) => {
+        if (!stage || typeof onUpdate !== "function") {
           return;
         }
 
-        ticking = true;
-        requestAnimationFrame(() => {
-          ticking = false;
-          updateIslandProgress();
+        const state = { current: 0, target: 0 };
+
+        stageControllers.push(() => {
+          const rect = stage.getBoundingClientRect();
+          const viewportHeight = window.innerHeight;
+          const travel = Math.max(rect.height - viewportHeight, 1);
+          let target = clamp(-rect.top / travel);
+
+          if (prefersReducedMotion) {
+            target = target > 0.08 ? 1 : 0;
+          }
+
+          state.target = target;
+          const delta = state.target - state.current;
+          const settled = Math.abs(delta) < 0.0012;
+          state.current = settled ? state.target : state.current + delta * 0.12;
+
+          onUpdate(state.current, {
+            rect,
+            viewportHeight,
+            compact: window.innerWidth <= 720,
+          });
+
+          return !settled;
         });
       };
 
-      updateIslandProgress();
+      const renderControllers = () => {
+        let needsNextFrame = false;
+
+        stageControllers.forEach((update) => {
+          if (update()) {
+            needsNextFrame = true;
+          }
+        });
+
+        if (needsNextFrame) {
+          frameId = requestAnimationFrame(renderControllers);
+        } else {
+          frameId = 0;
+        }
+      };
+
+      const requestProgressUpdate = () => {
+        if (frameId) {
+          return;
+        }
+
+        frameId = requestAnimationFrame(renderControllers);
+      };
+
+      const journalStage = document.querySelector('[data-scroll-stage="journal"]');
+      const journalBlock = document.querySelector("[data-home-journal]");
+      const journalHeading = journalBlock?.querySelector(".home-block-heading--journal");
+      const journalGrid = journalBlock?.querySelector(".home-article-grid");
+      const journalCards = journalBlock ? Array.from(journalBlock.querySelectorAll("[data-journal-card]")) : [];
+
+      registerStageController(journalStage, {
+        onUpdate: (progress, { compact }) => {
+          if (!journalBlock) {
+            return;
+          }
+
+          const shellProgress = easeInOutCubic(clamp((progress - 0.04) / 0.96));
+          const headingProgress = easeOutCubic(clamp((progress - 0.08) / 0.9));
+          const cardsProgress = easeOutCubic(clamp((progress - 0.34) / 0.56));
+
+          journalBlock.style.opacity = mix(0.22, 1, shellProgress).toFixed(3);
+          journalBlock.style.transform =
+            `translateY(${mix(118, 0, shellProgress).toFixed(2)}px) ` +
+            `scale(${mix(0.94, 1, shellProgress).toFixed(4)})`;
+          journalBlock.style.borderRadius = `${mix(34, 28, shellProgress).toFixed(2)}px`;
+          journalBlock.style.background =
+            `linear-gradient(180deg, rgba(255,255,255,${mix(0.012, 0.04, shellProgress).toFixed(3)}), transparent 24%), ` +
+            `rgba(11,14,18,${mix(0.68, 0.92, shellProgress).toFixed(3)})`;
+          journalBlock.style.boxShadow =
+            `0 ${mix(24, 48, shellProgress).toFixed(2)}px ${mix(56, 96, shellProgress).toFixed(2)}px rgba(0,0,0,${mix(0.08, 0.24, shellProgress).toFixed(3)}), ` +
+            `inset 0 1px 0 rgba(255,255,255,${mix(0.03, 0.08, shellProgress).toFixed(3)})`;
+          journalBlock.style.backdropFilter =
+            `blur(${mix(8, 22, shellProgress).toFixed(2)}px) saturate(${mix(112, 146, shellProgress).toFixed(1)}%)`;
+
+          if (journalHeading) {
+            journalHeading.style.width = `${mix(compact ? 92 : 44, 100, headingProgress).toFixed(2)}%`;
+            journalHeading.style.borderRadius = `${mix(999, 28, headingProgress).toFixed(2)}px`;
+            journalHeading.style.opacity = mix(0.42, 1, headingProgress).toFixed(3);
+            journalHeading.style.filter = `blur(${mix(12, 0, headingProgress).toFixed(2)}px)`;
+            journalHeading.style.transform =
+              `translateY(${mix(42, 0, headingProgress).toFixed(2)}px) ` +
+              `scale(${mix(0.88, 1, headingProgress).toFixed(4)})`;
+          }
+
+          if (journalGrid) {
+            journalGrid.style.opacity = mix(0.02, 1, cardsProgress).toFixed(3);
+            journalGrid.style.transform = `translateY(${mix(34, 0, cardsProgress).toFixed(2)}px)`;
+          }
+
+          journalCards.forEach((card, index) => {
+            const localProgress = easeOutCubic(clamp((cardsProgress - index * 0.1) / 0.7));
+            const lateralShift = compact ? 0 : index === 0 ? -16 : index === 2 ? 16 : 0;
+            const cardMedia = card.querySelector(".home-article-card__media");
+            const cardCover = card.querySelector(".home-article-card__cover, .home-article-card__cover--fallback");
+
+            card.style.opacity = mix(0.02, 1, localProgress).toFixed(3);
+            card.style.filter = `blur(${mix(18, 0, localProgress).toFixed(2)}px)`;
+            card.style.transform =
+              `translate3d(${mix(lateralShift, 0, localProgress).toFixed(2)}px, ${mix(92 + index * 10, 0, localProgress).toFixed(2)}px, 0) ` +
+              `scale(${mix(0.86, 1, localProgress).toFixed(4)}) ` +
+              `perspective(1400px) rotateX(${mix(-18 + index * 2, 0, localProgress).toFixed(2)}deg)`;
+            card.style.borderColor = `rgba(255,255,255,${mix(0.02, 0.12, localProgress).toFixed(3)})`;
+            card.style.background =
+              `linear-gradient(180deg, rgba(255,255,255,${mix(0.03, 0.08, localProgress).toFixed(3)}), rgba(255,255,255,0.015)), ` +
+              `rgba(14,18,24,${mix(0.18, 0.56, localProgress).toFixed(3)})`;
+            card.style.boxShadow =
+              `0 ${mix(16, 34, localProgress).toFixed(2)}px ${mix(34, 78, localProgress).toFixed(2)}px rgba(0,0,0,${mix(0.04, 0.22, localProgress).toFixed(3)}), ` +
+              `inset 0 1px 0 rgba(255,255,255,${mix(0.04, 0.08, localProgress).toFixed(3)})`;
+
+            if (cardMedia) {
+              cardMedia.style.transform = `scale(${mix(1.08, 1, localProgress).toFixed(4)})`;
+              cardMedia.style.filter =
+                `blur(${mix(4, 0, localProgress).toFixed(2)}px) ` +
+                `brightness(${mix(0.82, 1, localProgress).toFixed(3)})`;
+            }
+
+            if (cardCover) {
+              cardCover.style.opacity = mix(0.68, 1, localProgress).toFixed(3);
+            }
+          });
+        },
+      });
+
+      const sparkStage = document.querySelector('[data-scroll-stage="spark"]');
+      const sparkBlock = document.querySelector("[data-home-reveal]");
+      const sparkHeading = sparkBlock?.querySelector(".home-block-heading--inspiration");
+      const sparkShell = sparkBlock?.querySelector(".home-inspiration-shell");
+      const islandBar = sparkBlock?.querySelector(".home-inspiration-shell__bar");
+      const islandTheme = sparkBlock?.querySelector(".home-inspiration-shell__theme");
+      const islandTitle = sparkBlock?.querySelector(".home-inspiration-shell__title");
+      const islandPanel = sparkBlock?.querySelector(".home-inspiration-shell__panel");
+      const islandContent = sparkBlock?.querySelector(".home-inspiration-shell__content");
+      const islandProseNodes = islandContent
+        ? Array.from(islandContent.querySelectorAll(".prose, .prose--inspiration"))
+        : [];
+
+      registerStageController(sparkStage, {
+        onUpdate: (progress, { compact }) => {
+          if (!sparkBlock || !sparkShell) {
+            return;
+          }
+
+          const shellProgress = easeInOutCubic(clamp((progress - 0.02) / 0.98));
+          const barProgress = easeOutCubic(clamp((progress - 0.08) / 0.92));
+          const panelProgress = easeOutCubic(clamp((progress - 0.46) / 0.54));
+          const shellWidth = sparkShell.clientWidth || sparkBlock.clientWidth || window.innerWidth;
+          const barClosedWidth = compact ? Math.max(228, shellWidth * 0.72) : Math.min(420, shellWidth * 0.42);
+          const barOpenWidth = shellWidth;
+
+          sparkBlock.style.opacity = mix(0.14, 1, shellProgress).toFixed(3);
+          sparkBlock.style.transform =
+            `translateY(${mix(128, 0, shellProgress).toFixed(2)}px) ` +
+            `scale(${mix(0.93, 1, shellProgress).toFixed(4)})`;
+          sparkBlock.style.borderRadius = `${mix(34, 28, shellProgress).toFixed(2)}px`;
+          sparkBlock.style.background =
+            `linear-gradient(180deg, rgba(255,255,255,${mix(0.008, 0.03, shellProgress).toFixed(3)}), transparent 22%), ` +
+            `rgba(10,13,17,${mix(0.72, 0.94, shellProgress).toFixed(3)})`;
+          sparkBlock.style.boxShadow =
+            `0 ${mix(18, 44, shellProgress).toFixed(2)}px ${mix(40, 88, shellProgress).toFixed(2)}px rgba(0,0,0,${mix(0.06, 0.24, shellProgress).toFixed(3)}), ` +
+            `inset 0 1px 0 rgba(255,255,255,${mix(0.03, 0.07, shellProgress).toFixed(3)})`;
+
+          if (sparkHeading) {
+            sparkHeading.style.opacity = mix(0.28, 1, shellProgress).toFixed(3);
+            sparkHeading.style.transform =
+              `translateY(${mix(38, 0, shellProgress).toFixed(2)}px) ` +
+              `scale(${mix(0.92, 1, shellProgress).toFixed(4)})`;
+            sparkHeading.style.filter = `blur(${mix(10, 0, shellProgress).toFixed(2)}px)`;
+          }
+
+          if (islandBar) {
+            islandBar.style.width = `${mix(barClosedWidth, barOpenWidth, barProgress).toFixed(2)}px`;
+            islandBar.style.minHeight = `${mix(compact ? 62 : 66, compact ? 74 : 82, barProgress).toFixed(2)}px`;
+            islandBar.style.paddingLeft = `${mix(compact ? 1 : 1.1, compact ? 1.28 : 1.6, barProgress).toFixed(3)}rem`;
+            islandBar.style.paddingRight = `${mix(compact ? 1 : 1.1, compact ? 1.28 : 1.6, barProgress).toFixed(3)}rem`;
+            islandBar.style.borderRadius = `${mix(999, 30, barProgress).toFixed(2)}px`;
+            islandBar.style.background = `rgba(12,16,22,${mix(0.84, 0.96, barProgress).toFixed(3)})`;
+            islandBar.style.boxShadow =
+              `0 ${mix(12, 28, barProgress).toFixed(2)}px ${mix(26, 62, barProgress).toFixed(2)}px rgba(0,0,0,${mix(0.1, 0.32, barProgress).toFixed(3)}), ` +
+              `inset 0 1px 0 rgba(255,255,255,${mix(0.03, 0.08, barProgress).toFixed(3)})`;
+            islandBar.style.transform =
+              `translateY(${mix(34, 0, barProgress).toFixed(2)}px) ` +
+              `scale(${mix(0.93, 1, barProgress).toFixed(4)})`;
+          }
+
+          if (islandTheme) {
+            islandTheme.style.fontSize = `${mix(compact ? 0.76 : 0.8, compact ? 0.88 : 0.92, barProgress).toFixed(3)}rem`;
+            islandTheme.style.letterSpacing = `${mix(0.1, 0.16, barProgress).toFixed(3)}em`;
+            islandTheme.style.opacity = mix(0.62, 1, barProgress).toFixed(3);
+            islandTheme.style.transform = `translateY(${mix(8, 0, barProgress).toFixed(2)}px)`;
+          }
+
+          if (islandTitle) {
+            islandTitle.style.fontSize = `${mix(compact ? 1 : 1.04, compact ? 1.14 : 1.2, barProgress).toFixed(3)}rem`;
+            islandTitle.style.letterSpacing = `${mix(0, 0.016, barProgress).toFixed(3)}em`;
+            islandTitle.style.opacity = mix(0.62, 1, barProgress).toFixed(3);
+            islandTitle.style.transform = `translateY(${mix(10, 0, barProgress).toFixed(2)}px)`;
+          }
+
+          if (islandPanel) {
+            islandPanel.style.marginTop = `${mix(0.2, 1, panelProgress).toFixed(3)}rem`;
+            islandPanel.style.maxHeight = `${mix(0, compact ? 920 : 760, panelProgress).toFixed(2)}px`;
+            islandPanel.style.opacity = mix(0, 1, panelProgress).toFixed(3);
+            islandPanel.style.filter = `blur(${mix(18, 0, panelProgress).toFixed(2)}px)`;
+            islandPanel.style.clipPath = `inset(0 0 ${mix(100, 0, panelProgress).toFixed(2)}% 0 round 28px)`;
+            islandPanel.style.transform =
+              `perspective(1600px) rotateX(${mix(-22, 0, panelProgress).toFixed(2)}deg) ` +
+              `translateY(${mix(88, 0, panelProgress).toFixed(2)}px) ` +
+              `scale(${mix(0.9, 1, panelProgress).toFixed(4)})`;
+            islandPanel.style.boxShadow =
+              `0 ${mix(16, 32, panelProgress).toFixed(2)}px ${mix(36, 72, panelProgress).toFixed(2)}px rgba(0,0,0,${mix(0.08, 0.24, panelProgress).toFixed(3)})`;
+          }
+
+          if (islandContent) {
+            islandContent.style.opacity = mix(0, 1, panelProgress).toFixed(3);
+            islandContent.style.transform =
+              `translateY(${mix(28, 0, panelProgress).toFixed(2)}px) ` +
+              `scale(${mix(0.97, 1, panelProgress).toFixed(4)})`;
+          }
+
+          islandProseNodes.forEach((node) => {
+            node.style.fontSize = `${mix(1.02, compact ? 1.14 : 1.18, panelProgress).toFixed(3)}rem`;
+          });
+        },
+      });
+
+      requestProgressUpdate();
       window.addEventListener("scroll", requestProgressUpdate, { passive: true });
+      window.addEventListener("wheel", requestProgressUpdate, { passive: true });
+      window.addEventListener("touchmove", requestProgressUpdate, { passive: true });
       window.addEventListener("resize", requestProgressUpdate);
       window.addEventListener("orientationchange", requestProgressUpdate);
+    } catch (error) {
+      window.__homeProgressError = error instanceof Error ? error.message : String(error);
+      console.error("[home-progress]", error);
     }
   </script>
 </BaseLayout>
