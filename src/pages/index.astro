@@ -1,7 +1,6 @@
 ---
 import { render } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { siteConfig } from "../data/site";
 import { getWeeklyMottoForDate, weeklyMottos } from "../data/weekly-mottos";
 import {
   formatDate,
@@ -21,17 +20,10 @@ const currentQuery = Astro.url.searchParams.get("q") ?? "";
 const todayMotto = getWeeklyMottoForDate(new Date());
 const latestInspirationRender = latestInspiration ? await render(latestInspiration) : null;
 const LatestInspirationContent = latestInspirationRender?.Content ?? null;
-const latestUpdatedPost = posts[0];
 
-const homeFacts = [
-  { label: "Archive", value: `${posts.length} 篇文章` },
-  { label: "Spark", value: `${inspirations.length} 条灵感` },
-  {
-    label: "Latest",
-    value: latestUpdatedPost ? formatDate(getUpdatedDate(latestUpdatedPost)) : "持续更新中",
-  },
-  { label: "Field", value: "身体 / 训练 / 学习 / 脑科学" },
-];
+function splitMottoWords(value: string) {
+  return value.split(/\s+/).filter(Boolean);
+}
 ---
 
 <BaseLayout
@@ -54,18 +46,15 @@ const homeFacts = [
             {todayMotto.dayEn.toUpperCase()} · {todayMotto.dayZh}
           </p>
           <h1 class="home-motto-card__headline">
-            <span class="home-motto-card__en" data-motto-en>{todayMotto.en}</span>
+            <span class="home-motto-card__en" data-motto-en>
+              {splitMottoWords(todayMotto.en).map((word) => <span>{word}</span>)}
+            </span>
             <span class="home-motto-card__zh" data-motto-zh>{todayMotto.zh}</span>
           </h1>
         </div>
-
-        <p class="home-motto-card__note">
-          {siteConfig.title} 是一个长期写作站。格言按星期自动轮换，每天只留一句最值得反复看。
-        </p>
       </div>
 
-      <aside class="home-search-card" aria-label="站内搜索与站点概览">
-        <p class="home-search-card__label">Search the notebook</p>
+      <aside class="home-search-card" aria-label="站内搜索">
         <form class="search-form search-form--hero" action={withBasePath("/search/")} method="get">
           <input
             type="search"
@@ -75,16 +64,6 @@ const homeFacts = [
           />
           <button type="submit">搜索</button>
         </form>
-        <p class="home-search-card__hint">搜标题、正文、标签、资料和灵感。</p>
-
-        <dl class="home-search-card__facts">
-          {homeFacts.map((item) => (
-            <div>
-              <dt>{item.label}</dt>
-              <dd>{item.value}</dd>
-            </div>
-          ))}
-        </dl>
       </aside>
     </div>
   </section>
@@ -164,7 +143,13 @@ const homeFacts = [
 
     if (today && dayNode && enNode && zhNode && ghostEnNode && ghostZhNode) {
       dayNode.textContent = `${today.dayEn.toUpperCase()} · ${today.dayZh}`;
-      enNode.textContent = today.en;
+      enNode.replaceChildren(
+        ...today.en.split(/\s+/).filter(Boolean).map((word) => {
+          const span = document.createElement("span");
+          span.textContent = word;
+          return span;
+        })
+      );
       zhNode.textContent = today.zh;
       ghostEnNode.textContent = today.en;
       ghostZhNode.textContent = today.zh;

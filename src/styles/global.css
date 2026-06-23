@@ -247,22 +247,22 @@ footer {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1.18fr) minmax(360px, 0.82fr);
-  gap: 1.2rem;
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+  gap: 1rem;
+  align-items: center;
 }
 
 .home-motto-card {
-  min-height: 430px;
-  padding: 2rem 2rem 1.55rem;
+  min-height: 420px;
+  padding: 1.9rem 1.9rem 1.75rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 .home-motto-card__main {
   display: grid;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .home-motto-card__eyebrow {
@@ -275,9 +275,10 @@ footer {
 
 .home-motto-card__headline {
   margin: 0;
-  max-width: 10ch;
-  line-height: 0.95;
-  letter-spacing: -0.05em;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 1.25rem;
 }
 
 .home-motto-card__en,
@@ -288,56 +289,53 @@ footer {
 .home-motto-card__en {
   color: #f3f4f6;
   font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
-  font-size: clamp(3.3rem, 8vw, 6.8rem);
+  font-size: clamp(3rem, 7.2vw, 6.2rem);
   font-weight: 500;
+  line-height: 0.88;
+  letter-spacing: -0.06em;
+}
+
+.home-motto-card__en span {
+  display: block;
 }
 
 .home-motto-card__zh {
-  margin-top: 0.65rem;
   color: #f0ad59;
-  font-family: "STSong", "Songti SC", "Noto Serif SC", serif;
-  font-size: clamp(2rem, 4.2vw, 3.5rem);
+  font-family: "STKaiti", "KaiTi", "Kaiti SC", "Songti SC", serif;
+  font-size: clamp(1.65rem, 3vw, 2.7rem);
   font-style: italic;
-  letter-spacing: 0.06em;
-}
-
-.home-motto-card__note {
-  margin: 1.35rem 0 0;
-  max-width: 33rem;
-  color: #b3bcc8;
-  font-size: 1rem;
-  line-height: 1.82;
+  line-height: 1.08;
+  letter-spacing: 0.14em;
+  text-align: right;
+  max-width: 4.5ch;
+  text-wrap: balance;
+  white-space: normal;
+  text-shadow: 0 0 24px rgba(240, 173, 89, 0.08);
+  justify-self: end;
 }
 
 .home-search-card {
-  align-self: stretch;
-  min-height: 430px;
-  padding: 1.5rem 1.45rem;
+  align-self: center;
+  min-height: auto;
+  padding: 1.2rem 1.15rem;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 0.95rem;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--line);
-  border-radius: 24px;
-  background: rgba(9, 12, 16, 0.84);
+  border-radius: 999px;
+  background: rgba(9, 12, 16, 0.76);
   backdrop-filter: blur(14px);
-}
-
-.home-search-card__label {
-  margin: 0 0 0.8rem;
-  color: #9ca6b3;
-  font-size: 0.82rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
 }
 
 .search-form--hero {
   display: flex;
   align-items: center;
   gap: 0.8rem;
+  width: 100%;
 }
 
 .search-form--hero input {
+  flex: 1;
   min-height: 58px;
   padding: 0 1.2rem;
   border-radius: 999px;
@@ -348,42 +346,6 @@ footer {
   min-height: 58px;
   padding: 0 1.3rem;
   border-radius: 999px;
-}
-
-.home-search-card__hint {
-  margin: 0;
-  color: #8f98a5;
-  font-size: 0.92rem;
-  line-height: 1.6;
-}
-
-.home-search-card__facts {
-  margin: auto 0 0;
-  display: grid;
-  gap: 0.85rem;
-}
-
-.home-search-card__facts div {
-  display: grid;
-  grid-template-columns: 84px minmax(0, 1fr);
-  gap: 0.7rem;
-  padding-top: 0.8rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.home-search-card__facts dt {
-  margin: 0;
-  color: #718094;
-  font-size: 0.8rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.home-search-card__facts dd {
-  margin: 0;
-  color: #f1f3f6;
-  font-size: 1rem;
-  line-height: 1.45;
 }
 
 .home-journal-block,
@@ -2006,7 +1968,8 @@ footer {
   }
 
   .home-search-card {
-    min-height: auto;
+    width: min(100%, 560px);
+    justify-self: end;
   }
 
   .home-article-grid {
@@ -2072,29 +2035,28 @@ footer {
   }
 
   .home-motto-card {
-    min-height: 360px;
-    padding: 1.45rem 1.1rem 1.15rem;
+    min-height: 340px;
+    padding: 1.35rem 1rem 1.1rem;
   }
 
   .home-search-card {
-    padding: 1.15rem 1rem;
-    border-radius: 20px;
+    width: 100%;
+    padding: 0.9rem;
+    border-radius: 24px;
   }
 
   .search-form--hero {
-    flex-direction: column;
+    flex-direction: row;
     max-width: 100%;
   }
 
   .search-form--hero input,
   .search-form--hero button {
-    width: 100%;
     min-height: 54px;
   }
 
-  .home-search-card__facts div {
-    grid-template-columns: 1fr;
-    gap: 0.3rem;
+  .search-form--hero button {
+    flex-shrink: 0;
   }
 
   .home-journal-block,
@@ -2111,6 +2073,21 @@ footer {
 
   .home-block-heading h2 {
     font-size: 2rem;
+  }
+
+  .home-motto-card__headline {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.85rem;
+  }
+
+  .home-motto-card__en {
+    font-size: clamp(2.8rem, 15vw, 4.8rem);
+  }
+
+  .home-motto-card__zh {
+    font-size: clamp(1.4rem, 6vw, 2rem);
+    max-width: 2.6em;
+    line-height: 1.12;
   }
 
   .home-article-grid {
