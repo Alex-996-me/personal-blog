@@ -1,98 +1,94 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import CategoryGrid from "../components/CategoryGrid.astro";
-import InspirationCard from "../components/InspirationCard.astro";
-import PostCard from "../components/PostCard.astro";
-import ResourceCard from "../components/ResourceCard.astro";
-import { modules, siteConfig } from "../data/site";
 import {
+  formatDate,
   getAllInspirations,
   getAllPosts,
-  getAllResources,
-  getCategoryCounts,
+  getInspirationHref,
+  getPostHref,
 } from "../lib/blog";
 import { withBasePath } from "../lib/paths";
 
-const [posts, inspirations, resources] = await Promise.all([
-  getAllPosts(),
-  getAllInspirations(),
-  getAllResources(),
-]);
+const [posts, inspirations] = await Promise.all([getAllPosts(), getAllInspirations()]);
 
-const latestPosts = posts.slice(0, 5);
-const latestInspirations = inspirations.slice(0, 4);
-const latestResources = resources.slice(0, 3);
-const categoryCounts = getCategoryCounts(posts);
+const latestPost = posts[0];
+const previousPost = posts[1];
+const latestInspiration = inspirations[0];
+const previousInspiration = inspirations[1];
+const currentQuery = Astro.url.searchParams.get("q") ?? "";
 ---
 
-<BaseLayout>
-  <section class="hero">
-    <span class="hero__eyebrow">个人博客</span>
-    <h1>{siteConfig.title}</h1>
-    <p>{siteConfig.tagline}</p>
+<BaseLayout
+  showSidebar={false}
+  wideContent={true}
+  bodyClass="body--home"
+  shellClass="page-shell--home"
+  panelClass="content-panel--home"
+>
+  <section class="home-search-panel" aria-label="首页搜索">
+    <form class="search-form search-form--home" action={withBasePath("/search/")} method="get">
+      <input
+        type="search"
+        name="q"
+        value={currentQuery}
+        placeholder="搜索文章标题、正文、标签、灵感"
+      />
+      <button type="submit">搜索</button>
+    </form>
   </section>
 
-  <section class="section-block">
-    <h2 class="section-title">最新文章</h2>
-    <div class="post-list">
-      {latestPosts.map((post) => (
-        <PostCard post={post} />
-      ))}
-    </div>
-  </section>
+  <section class="home-showcase" aria-label="首页内容">
+    {latestPost ? (
+      <article class="home-section">
+        <div class="home-section__header">
+          <p class="home-section__label">文章</p>
+          <a class="home-section__more" href={withBasePath(getPostHref(latestPost))}>阅读全文</a>
+        </div>
 
-  <section class="section-block">
-    <h2 class="section-title">每日灵感</h2>
-    <p class="section-intro">这里放短想法、片段记录和还没长成完整文章的念头。</p>
-    {latestInspirations.length > 0 ? (
-      <div class="inspiration-list">
-        {latestInspirations.map((inspiration) => (
-          <InspirationCard inspiration={inspiration} />
-        ))}
-      </div>
-    ) : (
-      <div class="empty-state">
-        这里暂时还没有公开的灵感条目。以后你发来的短感想、随手记和一句话记录都会集中放在这里。
-      </div>
-    )}
-  </section>
+        <a class="home-spotlight home-spotlight--post" href={withBasePath(getPostHref(latestPost))}>
+          <div class="home-spotlight__topline">
+            <span>{formatDate(latestPost.data.date)}</span>
+            <span>{latestPost.data.category}</span>
+          </div>
+          <h2>{latestPost.data.title}</h2>
+          <p class="home-spotlight__description">{latestPost.data.description}</p>
 
-  <section class="section-block">
-    <h2 class="section-title">栏目入口</h2>
-    <div class="module-grid">
-      {modules.map((module) => (
-        <a class="module-card" href={withBasePath(module.href)}>
-          <h3>{module.name}</h3>
-          <p>{module.description}</p>
+          {previousPost && (
+            <div class="home-spotlight__previous">
+              <span class="home-spotlight__previous-label">上一篇</span>
+              <span class="home-spotlight__previous-title">{previousPost.data.title}</span>
+            </div>
+          )}
         </a>
-      ))}
-    </div>
-  </section>
+      </article>
+    ) : null}
 
-  <section class="section-block">
-    <h2 class="section-title">分类入口</h2>
-    <p class="section-intro">长文继续按主题归档，方便以后回看。</p>
-    <CategoryGrid categories={categoryCounts} />
-  </section>
+    {latestInspiration ? (
+      <article class="home-section">
+        <div class="home-section__header">
+          <p class="home-section__label">灵感</p>
+          <a class="home-section__more" href={withBasePath("/daily/")}>进入灵感流</a>
+        </div>
 
-  <section class="section-block">
-    <h2 class="section-title">资料</h2>
-    <p class="section-intro">这里集中放讲义、PDF 和方便在线阅读的资料。</p>
-    {latestResources.length > 0 ? (
-      <div class="post-list">
-        {latestResources.map((resource) => (
-          <ResourceCard resource={resource} />
-        ))}
-      </div>
-    ) : (
-      <div class="empty-state">资料库还没有公开文件。等你把 PDF 或讲义放进来后，这里会自动显示。</div>
-    )}
-  </section>
+        <a
+          class="home-spotlight home-spotlight--inspiration"
+          href={withBasePath(getInspirationHref(latestInspiration))}
+        >
+          <div class="home-spotlight__topline">
+            <span>{formatDate(latestInspiration.data.date)}</span>
+            <span>{latestInspiration.data.theme}</span>
+          </div>
+          <h2>{latestInspiration.data.title}</h2>
+          <p class="home-spotlight__description">{latestInspiration.data.description}</p>
 
-  <section class="section-block">
-    <h2 class="section-title">关于作者</h2>
-    <div class="about-card">
-      <p>{siteConfig.author.bio}</p>
-    </div>
+          {previousInspiration && (
+            <div class="home-spotlight__previous">
+              <span class="home-spotlight__previous-label">上一条</span>
+              <span class="home-spotlight__previous-title">{previousInspiration.data.title}</span>
+            </div>
+          )}
+        </a>
+      </article>
+    ) : null}
   </section>
 </BaseLayout>
