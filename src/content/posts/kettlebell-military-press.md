@@ -8,7 +8,7 @@ tags:
   - 壶铃训练
   - 力量训练
 description: 壶铃军事推举动作记录，后续会继续补充动作要点和训练体会。
-cover: ''
+cover: /images/covers/kettlebell-military-press-cover.jpg
 youtube: ''
 fullSummary: []
 sectionSummaries: []

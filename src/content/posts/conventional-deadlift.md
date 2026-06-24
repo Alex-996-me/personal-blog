@@ -8,7 +8,7 @@ tags:
   - 杠铃训练
   - 力量训练
 description: 传统硬拉动作记录，后续会继续补充动作要点和训练体会。
-cover: ''
+cover: /images/covers/conventional-deadlift-cover.jpg
 youtube: ''
 fullSummary: []
 sectionSummaries: []

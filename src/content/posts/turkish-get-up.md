@@ -8,7 +8,7 @@ tags:
   - 壶铃训练
   - 力量训练
 description: 土耳其起立动作记录，后续会继续补充动作要点和训练体会。
-cover: ''
+cover: /images/covers/turkish-get-up-cover.jpg
 youtube: ''
 fullSummary: []
 sectionSummaries: []
