@@ -25,6 +25,7 @@ function isActive(href: string) {
       {showSearch && (
         <form class="header-search" action={withBasePath("/search/")} method="get" aria-label="站内搜索">
           <input
+            data-header-search-input
             type="search"
             name="q"
             value={searchQuery}
@@ -42,4 +43,13 @@ function isActive(href: string) {
       </nav>
     </div>
   </div>
+
+  <script is:inline>
+    const headerSearchInput = document.querySelector("[data-header-search-input]");
+    const currentQuery = new URLSearchParams(window.location.search).get("q") ?? "";
+
+    if (headerSearchInput && currentQuery && !headerSearchInput.value) {
+      headerSearchInput.value = currentQuery;
+    }
+  </script>
 </header>

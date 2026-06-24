@@ -24,14 +24,14 @@ const {
   title = siteConfig.title,
   description = siteConfig.description,
   ogImage = siteConfig.defaultOgImage,
-  showSidebar = true,
+  showSidebar = false,
   wideContent = false,
   bodyClass = "",
   shellClass = "",
   panelClass = "",
-  headerSearch = false,
+  headerSearch = true,
   headerSearchQuery = "",
-  headerSearchPlaceholder = "",
+  headerSearchPlaceholder = "搜索文章、正文、标签、灵感",
 } = Astro.props;
 
 const pageTitle = title === siteConfig.title ? title : `${title} | ${siteConfig.title}`;

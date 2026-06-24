@@ -1,5 +1,5 @@
 ---
-import { formatDate, getCategoryHref, getPostHref } from "../lib/blog";
+import { formatDate, getCategoryHref, getPostHref, getUpdatedDate } from "../lib/blog";
 import { withBasePath } from "../lib/paths";
 import type { Post } from "../lib/blog";
 
@@ -8,22 +8,32 @@ interface Props {
 }
 
 const { post } = Astro.props;
+const postHref = withBasePath(getPostHref(post));
+const categoryHref = withBasePath(getCategoryHref(post.data.category));
+const updated = getUpdatedDate(post);
 ---
 
 <article class="post-card">
+  <a class:list={["post-card__media", !post.data.cover && "post-card__media--fallback"]} href={postHref} aria-hidden="true" tabindex="-1">
+    {post.data.cover ? (
+      <img class="post-card__cover" src={withBasePath(post.data.cover)} alt="" />
+    ) : (
+      <div class="post-card__cover post-card__cover--fallback">
+        <span>{post.data.category}</span>
+        <strong>{post.data.title}</strong>
+      </div>
+    )}
+  </a>
+
   <div class="post-card__content">
     <div class="post-card__meta">
+      <a href={categoryHref}>{post.data.category}</a>
       <span>{formatDate(post.data.date)}</span>
-      <a href={withBasePath(getCategoryHref(post.data.category))}>{post.data.category}</a>
+      <span>更新 {formatDate(updated)}</span>
     </div>
     <h2 class="post-card__title">
-      <a href={withBasePath(getPostHref(post))}>{post.data.title}</a>
+      <a href={postHref}>{post.data.title}</a>
     </h2>
     <p class="post-card__description">{post.data.description}</p>
   </div>
-  {post.data.cover && (
-    <a class="post-card__media" href={withBasePath(getPostHref(post))} aria-hidden="true" tabindex="-1">
-      <img class="post-card__cover" src={withBasePath(post.data.cover)} alt="" />
-    </a>
-  )}
 </article>

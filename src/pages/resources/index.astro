@@ -6,8 +6,15 @@ import { getAllResources } from "../../lib/blog";
 const resources = await getAllResources();
 ---
 
-<BaseLayout title="资料" description="可在线阅读和下载的 PDF、讲义与参考材料。">
-  <section class="page-header">
+<BaseLayout
+  title="资料"
+  description="可在线阅读和下载的 PDF、讲义、课程资料与参考材料。"
+  wideContent={true}
+  bodyClass="body--archive"
+  shellClass="page-shell--archive"
+  panelClass="content-panel--archive"
+>
+  <section class="page-header page-header--archive">
     <h1>资料</h1>
     <p>这里集中放 PDF、讲义、课程资料和其他方便在线打开或下载的文件。</p>
   </section>
@@ -20,7 +27,7 @@ const resources = await getAllResources();
     </div>
   ) : (
     <div class="empty-state">
-      资料库还没有公开文件。你以后只需要把文件放进仓库，再补一份资料说明，它就会显示在这里。
+      资料库还没有公开文件。以后你只需要把文件放进仓库，再补一份资料说明，它就会显示在这里。
     </div>
   )}
 </BaseLayout>

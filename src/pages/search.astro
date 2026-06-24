@@ -1,35 +1,38 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getSearchEntries } from "../lib/blog";
-import { withBasePath } from "../lib/paths";
 
 const searchEntries = await getSearchEntries();
+const currentQuery = Astro.url.searchParams.get("q") ?? "";
 ---
 
-<BaseLayout title="搜索" description="搜索文章、每日灵感与资料。">
-  <section class="page-header">
-    <h1>搜索内容</h1>
-    <p>标题、正文、标签、摘要和资料说明都可以直接检索。</p>
+<BaseLayout
+  title="搜索"
+  description="搜索文章、每日灵感与资料。"
+  wideContent={true}
+  bodyClass="body--archive body--search"
+  shellClass="page-shell--archive"
+  panelClass="content-panel--archive"
+  headerSearchQuery={currentQuery}
+  headerSearchPlaceholder="搜索标题、正文、标签、灵感"
+>
+  <section class="page-header page-header--archive">
+    <p class="page-header__eyebrow">SEARCH</p>
+    <h1 id="search-heading">搜索</h1>
+    <p id="search-summary" class="search-page__summary">用顶部搜索框输入关键词。</p>
   </section>
 
-  <section class="search-page__panel sidebar-section">
-    <form class="search-page__form" action={withBasePath("/search/")} method="get">
-      <input id="search-input" type="search" name="q" placeholder="输入关键词" />
-      <button type="submit">搜索</button>
-    </form>
-    <p id="search-summary" class="search-page__summary">输入关键词后，会实时筛出相关内容。</p>
-    <div id="search-results" class="post-list"></div>
-  </section>
+  <div id="search-results" class="post-list"></div>
 
   <script define:vars={{ searchEntries }}>
     const entries = searchEntries;
-    const input = document.querySelector("#search-input");
     const results = document.querySelector("#search-results");
+    const heading = document.querySelector("#search-heading");
     const summary = document.querySelector("#search-summary");
     const params = new URLSearchParams(window.location.search);
-    const initialQuery = params.get("q") ?? "";
+    const query = params.get("q") ?? "";
 
-    const escapeHtml = (value) =>
+    const escapeHtml = (value = "") =>
       value
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
@@ -76,31 +79,49 @@ const searchEntries = await getSearchEntries();
         return entry.description;
       }
 
-      const start = Math.max(0, firstIndex - 30);
-      const end = Math.min(source.length, firstIndex + 90);
+      const start = Math.max(0, firstIndex - 34);
+      const end = Math.min(source.length, firstIndex + 120);
       const prefix = start > 0 ? "..." : "";
       const suffix = end < source.length ? "..." : "";
       return `${prefix}${source.slice(start, end).trim()}${suffix}`;
     };
 
-    const renderResults = (query) => {
-      const keywords = normalizeKeywords(query);
-      input.value = query;
+    const buildCover = (entry) => {
+      if (entry.cover) {
+        return `
+          <a class="post-card__media" href="${entry.url}" aria-hidden="true" tabindex="-1">
+            <img class="post-card__cover" src="${entry.cover}" alt="" />
+          </a>
+        `;
+      }
 
-      if (keywords.length === 0) {
-        summary.textContent = "输入关键词后，会实时筛出相关内容。";
-        results.innerHTML = "";
+      return `
+        <a class="post-card__media post-card__media--fallback" href="${entry.url}" aria-hidden="true" tabindex="-1">
+          <div class="post-card__cover post-card__cover--fallback">
+            <span>${escapeHtml(entry.kind)}</span>
+            <strong>${escapeHtml(entry.section)}</strong>
+          </div>
+        </a>
+      `;
+    };
+
+    const renderResults = (value) => {
+      const keywords = normalizeKeywords(value);
+
+      if (!value.trim()) {
+        heading.textContent = "搜索";
+        summary.textContent = "用顶部搜索框输入关键词。";
+        results.innerHTML = '<div class="empty-state">现在上方搜索框已经固定在顶部，输入任何关键词就可以直接检索文章、灵感和资料。</div>';
         return;
       }
 
-      const filtered = entries.filter((entry) => {
-        return keywords.every((keyword) => entry.text.includes(keyword));
-      });
+      const filtered = entries.filter((entry) => keywords.every((keyword) => entry.text.includes(keyword)));
 
-      summary.textContent = `找到 ${filtered.length} 条和“${query}”相关的内容。`;
+      heading.textContent = `搜索：${value}`;
+      summary.textContent = `找到 ${filtered.length} 条与“${value}”相关的内容。`;
 
       if (filtered.length === 0) {
-        results.innerHTML = '<div class="empty-state">没有找到匹配结果，可以换个关键词试试。</div>';
+        results.innerHTML = '<div class="empty-state">没有找到匹配结果，可以换一个关键词试试。</div>';
         return;
       }
 
@@ -108,37 +129,24 @@ const searchEntries = await getSearchEntries();
         .map(
           (entry) => `
             <article class="post-card">
+              ${buildCover(entry)}
               <div class="post-card__content">
                 <div class="post-card__meta">
-                  <span>发布：${escapeHtml(entry.date)}</span>
-                  <span>更新：${escapeHtml(entry.updated)}</span>
                   <span>${escapeHtml(entry.kind)}</span>
                   <span>${escapeHtml(entry.section)}</span>
+                  <span>更新 ${escapeHtml(entry.updated)}</span>
                 </div>
                 <h2 class="post-card__title">
                   <a href="${entry.url}">${highlightTerms(entry.title, keywords)}</a>
                 </h2>
                 <p class="post-card__description">${highlightTerms(createSnippet(entry, keywords), keywords)}</p>
               </div>
-              ${
-                entry.cover
-                  ? `
-                    <a class="post-card__media" href="${entry.url}" aria-hidden="true" tabindex="-1">
-                      <img class="post-card__cover" src="${entry.cover}" alt="" />
-                    </a>
-                  `
-                  : ""
-              }
             </article>
           `,
         )
         .join("");
     };
 
-    input.addEventListener("input", (event) => {
-      renderResults(event.currentTarget.value);
-    });
-
-    renderResults(initialQuery);
+    renderResults(query);
   </script>
 </BaseLayout>

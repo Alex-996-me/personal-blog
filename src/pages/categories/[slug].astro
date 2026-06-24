@@ -21,8 +21,15 @@ const posts = await getAllPosts();
 const filteredPosts = posts.filter((post) => post.data.category === category.name);
 ---
 
-<BaseLayout title={category.name} description={category.description}>
-  <section class="page-header">
+<BaseLayout
+  title={category.name}
+  description={category.description}
+  wideContent={true}
+  bodyClass="body--archive"
+  shellClass="page-shell--archive"
+  panelClass="content-panel--archive"
+>
+  <section class="page-header page-header--archive">
     <h1>{category.name}</h1>
     <p>{category.description}</p>
   </section>

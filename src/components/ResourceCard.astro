@@ -22,10 +22,21 @@ const hasGroupedAssets = (resource.data.groups ?? []).length > 0;
 ---
 
 <article class="resource-card">
+  <a class:list={["post-card__media", !cover && "post-card__media--fallback"]} href={resourceHref} aria-hidden="true" tabindex="-1">
+    {cover ? (
+      <img class="post-card__cover" src={cover} alt="" />
+    ) : (
+      <div class="post-card__cover post-card__cover--fallback">
+        <span>资料</span>
+        <strong>{resource.data.title}</strong>
+      </div>
+    )}
+  </a>
+
   <div class="resource-card__content">
     <div class="post-card__meta">
-      <span>{formatDate(resource.data.date)}</span>
       <span>资料</span>
+      <span>{formatDate(resource.data.date)}</span>
     </div>
     <h2 class="post-card__title">
       <a href={resourceHref}>{resource.data.title}</a>
@@ -56,9 +67,4 @@ const hasGroupedAssets = (resource.data.groups ?? []).length > 0;
       )}
     </div>
   </div>
-  {cover && (
-    <a class="post-card__media" href={resourceHref} aria-hidden="true" tabindex="-1">
-      <img class="post-card__cover" src={cover} alt="" />
-    </a>
-  )}
 </article>
