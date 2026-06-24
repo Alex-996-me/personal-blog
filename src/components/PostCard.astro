@@ -11,6 +11,7 @@ const { post } = Astro.props;
 const postHref = withBasePath(getPostHref(post));
 const categoryHref = withBasePath(getCategoryHref(post.data.category));
 const updated = getUpdatedDate(post);
+const fallbackLead = post.data.tags.slice(0, 2).join(" / ") || formatDate(updated);
 ---
 
 <article class="post-card">
@@ -20,7 +21,7 @@ const updated = getUpdatedDate(post);
     ) : (
       <div class="post-card__cover post-card__cover--fallback">
         <span>{post.data.category}</span>
-        <strong>{post.data.title}</strong>
+        <p>{fallbackLead}</p>
       </div>
     )}
   </a>

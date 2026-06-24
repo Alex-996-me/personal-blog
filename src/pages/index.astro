@@ -76,11 +76,12 @@ function splitMottoWords(value: string) {
                   src={withBasePath(post.data.cover)}
                   alt={post.data.title}
                   loading="lazy"
+                  decoding="async"
                 />
               ) : (
                 <div class="home-article-card__cover home-article-card__cover--fallback">
                   <span>{post.data.category}</span>
-                  <strong>{post.data.title}</strong>
+                  <p>{post.data.tags.slice(0, 2).join(" / ") || post.data.description}</p>
                 </div>
               )}
             </div>

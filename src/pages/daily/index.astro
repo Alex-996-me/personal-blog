@@ -1,8 +1,14 @@
 ---
+import { render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import InspirationStreamItem from "../../components/InspirationStreamItem.astro";
-import { inspirationThemes } from "../../data/site";
-import { getAllInspirations, getInspirationThemeAnchor } from "../../lib/blog";
+import { inspirationThemes, siteConfig } from "../../data/site";
+import {
+  formatDate,
+  getAllInspirations,
+  getInspirationAnchorId,
+  getInspirationThemeAnchor,
+  getInspirationUpdatedDate,
+} from "../../lib/blog";
 
 const inspirations = await getAllInspirations();
 const themeSections = inspirationThemes
@@ -12,67 +18,225 @@ const themeSections = inspirationThemes
     items: inspirations.filter((inspiration) => inspiration.data.theme === theme.name),
   }))
   .filter((theme) => theme.items.length > 0);
+
+const initialTheme = themeSections[0];
+
+const renderedThemeSections = await Promise.all(
+  themeSections.map(async (theme) => ({
+    ...theme,
+    cards: await Promise.all(
+      theme.items.map(async (inspiration, index) => {
+        const { Content } = await render(inspiration);
+        const updated = getInspirationUpdatedDate(inspiration);
+
+        return {
+          inspiration,
+          Content,
+          index,
+          updated,
+          hasUpdated: updated.valueOf() !== inspiration.data.date.valueOf(),
+        };
+      }),
+    ),
+  })),
+);
 ---
 
 <BaseLayout
   title="每日灵感"
-  description="像推文流一样展开的短想法、随手记和片段记录。"
+  description="按主题展开的公开灵感页。一屏一条，向下翻阅。"
   showSidebar={false}
   wideContent={true}
   bodyClass="body--daily"
   shellClass="page-shell--daily"
   panelClass="content-panel--daily"
 >
-  <section class="page-header">
+  <section class="page-header page-header--daily-flip">
     <h1>每日灵感</h1>
-    <p>这里不做“点进去看全文”的短文章列表，而是把每条灵感直接铺开，像一条条可回看的公开推文流。</p>
+    <p>先选主题，再往下翻。每一屏只保留一条灵感。</p>
   </section>
 
-  {themeSections.length > 0 ? (
+  {renderedThemeSections.length > 0 ? (
     <>
-      <nav class="daily-theme-nav" aria-label="每日灵感主题导航">
-        {themeSections.map((theme) => (
-          <a href={`#${theme.anchorId}`}>
-            <span class="daily-theme-nav__mark">{theme.mark}</span>
-            <span>{theme.name}</span>
-            <span class="daily-theme-nav__count">{theme.items.length}</span>
-          </a>
+      <nav class="daily-theme-picker" aria-label="灵感主题筛选">
+        {renderedThemeSections.map((theme) => (
+          <button
+            type="button"
+            class="daily-theme-picker__button"
+            data-theme-filter={theme.slug}
+            aria-pressed={theme.slug === initialTheme?.slug ? "true" : "false"}
+          >
+            <span class="daily-theme-picker__mark">{theme.mark}</span>
+            <span class="daily-theme-picker__name">{theme.name}</span>
+            <span class="daily-theme-picker__count">{theme.cards.length}</span>
+          </button>
         ))}
       </nav>
 
-      <div class="daily-theme-sections">
-        {themeSections.map((theme) => (
-          <section id={theme.anchorId} class="daily-theme-section">
-            <header class="daily-theme-section__header">
-              <div class="daily-theme-section__brand">
-                <div class="daily-theme-section__logo" aria-hidden="true">
-                  <span class="daily-theme-section__logo-mark">{theme.mark}</span>
-                  <span class="daily-theme-section__logo-code">{theme.code}</span>
-                </div>
-                <div>
-                  <p class="daily-theme-section__eyebrow">主题</p>
-                  <h2>{theme.name}</h2>
-                </div>
-              </div>
-              <div class="daily-theme-section__meta">
-                <p class="daily-theme-section__count">{theme.items.length} 条</p>
-                <a class="daily-theme-section__jump" href={`#${theme.anchorId}`}>定位</a>
+      <div class="daily-flip-shell">
+        {renderedThemeSections.map((theme) => (
+          <section
+            id={theme.anchorId}
+            class="daily-flip-deck"
+            data-theme-deck={theme.slug}
+            hidden={theme.slug !== initialTheme?.slug}
+          >
+            <header class="daily-flip-deck__intro">
+              <p class="daily-flip-deck__eyebrow">{theme.code}</p>
+              <div class="daily-flip-deck__summary">
+                <h2>{theme.name}</h2>
+                <p class="daily-flip-deck__description">{theme.description}</p>
               </div>
             </header>
-            <p class="daily-theme-section__description">{theme.description}</p>
 
-            <div class="inspiration-stream">
-              {theme.items.map((inspiration) => (
-                <InspirationStreamItem inspiration={inspiration} />
+            <div class="daily-flip-pages" data-daily-pages-root>
+              {theme.cards.map(({ inspiration, Content, index, updated, hasUpdated }) => (
+                <article
+                  id={getInspirationAnchorId(inspiration)}
+                  class="daily-flip-page"
+                  data-daily-page
+                >
+                  <div class="daily-flip-page__frame">
+                    <aside class="daily-flip-page__rail">
+                      <div class="daily-flip-page__rail-main">
+                        <div class="daily-flip-page__rail-top">
+                          <span class="daily-flip-page__theme-mark">{theme.mark}</span>
+                          <span class="daily-flip-page__theme-name">{theme.name}</span>
+                        </div>
+                        <span class="daily-flip-page__theme-ghost" aria-hidden="true">{theme.mark}</span>
+                        <p class="daily-flip-page__theme-description">{theme.description}</p>
+                      </div>
+                      <div class="daily-flip-page__rail-bottom">
+                        <div class="daily-flip-page__counter">
+                          <span>{String(index + 1).padStart(2, "0")}</span>
+                          <small>/ {String(theme.cards.length).padStart(2, "0")}</small>
+                        </div>
+                        <div class="daily-flip-page__dates">
+                          <span>{formatDate(inspiration.data.date)}</span>
+                          {hasUpdated && <span>更新 {formatDate(updated)}</span>}
+                        </div>
+                      </div>
+                    </aside>
+
+                    <div class="daily-flip-page__body">
+                      <header class="daily-flip-page__header">
+                        <div class="daily-flip-page__identity">
+                          <span class="daily-flip-page__avatar" aria-hidden="true">
+                            {siteConfig.author.avatarLabel}
+                          </span>
+                          <span>{siteConfig.author.name}</span>
+                          <span>{siteConfig.author.handle}</span>
+                        </div>
+                        <h3>{inspiration.data.title}</h3>
+                      </header>
+
+                      <div class="daily-flip-page__content prose prose--inspiration">
+                        <Content />
+                      </div>
+                    </div>
+                  </div>
+                </article>
               ))}
             </div>
           </section>
         ))}
       </div>
+
+      <script is:inline define:vars={{ initialThemeSlug: initialTheme?.slug ?? "" }}>
+        const themeButtons = Array.from(document.querySelectorAll("[data-theme-filter]"));
+        const themeDecks = Array.from(document.querySelectorAll("[data-theme-deck]"));
+        let pageObserver;
+
+        const activatePages = () => {
+          if (pageObserver) {
+            pageObserver.disconnect();
+          }
+
+          const visibleDeck = themeDecks.find((deck) => !deck.hidden);
+          const pagesRoot = visibleDeck?.querySelector("[data-daily-pages-root]") ?? null;
+          const visiblePages = Array.from(visibleDeck?.querySelectorAll("[data-daily-page]") ?? []);
+
+          pageObserver = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                entry.target.classList.toggle(
+                  "is-active",
+                  entry.isIntersecting && entry.intersectionRatio > 0.56,
+                );
+              });
+            },
+            {
+              root: pagesRoot,
+              threshold: [0.28, 0.56, 0.82],
+              rootMargin: "0px",
+            },
+          );
+
+          visiblePages.forEach((page, index) => {
+            if (index === 0) {
+              page.classList.add("is-active");
+            } else {
+              page.classList.remove("is-active");
+            }
+            pageObserver.observe(page);
+          });
+        };
+
+        const setTheme = (slug, options = {}) => {
+          const { scroll = true } = options;
+          const nextDeck = themeDecks.find((deck) => deck.dataset.themeDeck === slug);
+
+          if (!nextDeck) {
+            return;
+          }
+
+          themeDecks.forEach((deck) => {
+            deck.hidden = deck !== nextDeck;
+          });
+
+          themeButtons.forEach((button) => {
+            const active = button.dataset.themeFilter === slug;
+            button.setAttribute("aria-pressed", active ? "true" : "false");
+            button.classList.toggle("is-active", active);
+          });
+
+          const nextHash = `theme-${slug}`;
+          if (window.location.hash !== `#${nextHash}`) {
+            history.replaceState(null, "", `${window.location.pathname}${window.location.search}#${nextHash}`);
+          }
+
+          const pagesRoot = nextDeck.querySelector("[data-daily-pages-root]");
+          pagesRoot?.scrollTo({ top: 0, behavior: "auto" });
+          activatePages();
+
+          if (scroll) {
+            nextDeck.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        };
+
+        themeButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const slug = button.dataset.themeFilter;
+            if (slug) {
+              setTheme(slug);
+            }
+          });
+        });
+
+        let matchedThemeFromHash = "";
+        if (window.location.hash.startsWith("#theme-")) {
+          matchedThemeFromHash = window.location.hash.replace("#theme-", "");
+        } else if (window.location.hash.startsWith("#daily-theme-")) {
+          matchedThemeFromHash = window.location.hash.replace("#daily-theme-", "");
+        }
+
+        setTheme(matchedThemeFromHash || initialThemeSlug, { scroll: false });
+      </script>
     </>
   ) : (
-    <div class="empty-state">
-      这里暂时还是空的。以后你发来的感想、片段记录和突然想明白的一句话，都会直接展开出现在这里。
-    </div>
+    <div class="empty-state">这里暂时还没有灵感内容。</div>
   )}
 </BaseLayout>
