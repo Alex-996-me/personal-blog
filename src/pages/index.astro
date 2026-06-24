@@ -43,94 +43,85 @@ function splitMottoWords(value: string) {
 
     <div class="home-hero__grid">
       <div class="home-motto-card">
-        <div class="home-motto-card__main">
-          <p class="home-motto-card__eyebrow" data-motto-day>
-            {todayMotto.dayEn.toUpperCase()} · {todayMotto.dayZh}
-          </p>
-          <h1 class="home-motto-card__headline">
-            <span class="home-motto-card__en" data-motto-en>
-              {splitMottoWords(todayMotto.en).map((word) => <span>{word}</span>)}
-            </span>
-            <span class="home-motto-card__zh" data-motto-zh>{todayMotto.zh}</span>
-          </h1>
-        </div>
+        <p class="home-motto-card__eyebrow" data-motto-day>
+          {todayMotto.dayEn.toUpperCase()} · {todayMotto.dayZh}
+        </p>
+
+        <h1 class="home-motto-card__headline">
+          <span class="home-motto-card__en" data-motto-en>
+            {splitMottoWords(todayMotto.en).map((word) => <span>{word}</span>)}
+          </span>
+          <span class="home-motto-card__zh" data-motto-zh>{todayMotto.zh}</span>
+        </h1>
       </div>
     </div>
   </section>
 
-  <section class="home-scroll-stage home-scroll-stage--journal" data-scroll-stage="journal">
-    <div class="home-scroll-stage__sticky">
-      <section class="home-journal-block" data-home-journal aria-label="Latest journal articles">
-        <div class="home-block-heading home-block-heading--journal">
-          <div class="home-block-heading__left">
-            <span class="home-block-heading__index">§ 01 · JOURNAL</span>
-            <h2>The journal <em>three recently revised entries</em></h2>
-          </div>
+  <section class="home-stage home-stage--journal" data-home-stage>
+    <div class="home-stage__surface home-stage__surface--journal">
+      <div class="home-block-heading home-block-heading--journal">
+        <div class="home-block-heading__left">
+          <span class="home-block-heading__index">01 · JOURNAL</span>
+          <h2>最新文章</h2>
         </div>
+      </div>
 
-        <div class="home-article-grid">
-          {latestPosts.map((post, index) => (
-            <a
-              class="home-article-card"
-              data-journal-card
-              style={`--journal-card-index:${index};`}
-              href={withBasePath(getPostHref(post))}
-            >
-              <div class="home-article-card__media">
-                {post.data.cover ? (
-                  <img
-                    class="home-article-card__cover"
-                    src={withBasePath(post.data.cover)}
-                    alt={post.data.title}
-                    loading="lazy"
-                  />
-                ) : (
-                  <div class="home-article-card__cover home-article-card__cover--fallback">
-                    <span>{post.data.category}</span>
-                    <strong>{post.data.title}</strong>
-                  </div>
-                )}
-              </div>
-              <div class="home-article-card__body">
-                <div class="home-article-card__meta">
-                  <span>Updated {formatDate(getUpdatedDate(post))}</span>
+      <div class="home-article-grid">
+        {latestPosts.map((post) => (
+          <a class="home-article-card" href={withBasePath(getPostHref(post))}>
+            <div class="home-article-card__media">
+              {post.data.cover ? (
+                <img
+                  class="home-article-card__cover"
+                  src={withBasePath(post.data.cover)}
+                  alt={post.data.title}
+                  loading="lazy"
+                />
+              ) : (
+                <div class="home-article-card__cover home-article-card__cover--fallback">
                   <span>{post.data.category}</span>
+                  <strong>{post.data.title}</strong>
                 </div>
-                <h3>{post.data.title}</h3>
-                <p class="home-article-card__summary">{post.data.description}</p>
+              )}
+            </div>
+
+            <div class="home-article-card__body">
+              <div class="home-article-card__meta">
+                <span>{formatDate(getUpdatedDate(post))}</span>
+                <span>{post.data.category}</span>
               </div>
-            </a>
-          ))}
-        </div>
-      </section>
+              <h3>{post.data.title}</h3>
+              <p class="home-article-card__summary">{post.data.description}</p>
+            </div>
+          </a>
+        ))}
+      </div>
     </div>
   </section>
 
   {latestInspiration && LatestInspirationContent && (
-    <section class="home-scroll-stage home-scroll-stage--spark" data-scroll-stage="spark">
-      <div class="home-scroll-stage__sticky home-scroll-stage__sticky--spark">
-        <section class="home-inspiration-block" data-home-reveal aria-label="Latest inspiration">
-          <div class="home-block-heading home-block-heading--inspiration">
-            <div class="home-block-heading__left">
-              <span class="home-block-heading__index">§ 02 · SPARK</span>
-              <h2>Latest spark <em>drag down to unfold</em></h2>
-            </div>
-            <a class="home-block-heading__all" href={withBasePath("/daily/")}>ALL →</a>
+    <section class="home-stage home-stage--spark" data-home-stage>
+      <div class="home-stage__surface home-stage__surface--spark">
+        <div class="home-block-heading home-block-heading--spark">
+          <div class="home-block-heading__left">
+            <span class="home-block-heading__index">02 · SPARK</span>
+            <h2>最新灵感</h2>
+          </div>
+          <a class="home-block-heading__all" href={withBasePath("/daily/")}>ALL</a>
+        </div>
+
+        <div class="home-inspiration-shell">
+          <div class="home-inspiration-shell__bar">
+            <span class="home-inspiration-shell__theme">{latestInspiration.data.theme}</span>
+            <span class="home-inspiration-shell__title">{latestInspiration.data.title}</span>
           </div>
 
-          <div class="home-inspiration-shell">
-            <div class="home-inspiration-shell__bar">
-              <span class="home-inspiration-shell__theme">{latestInspiration.data.theme}</span>
-              <span class="home-inspiration-shell__title">{latestInspiration.data.title}</span>
-            </div>
-
-            <div class="home-inspiration-shell__panel">
-              <div class="home-inspiration-shell__content">
-                <LatestInspirationContent />
-              </div>
+          <div class="home-inspiration-shell__panel">
+            <div class="home-inspiration-shell__content">
+              <LatestInspirationContent />
             </div>
           </div>
-        </section>
+        </div>
       </div>
     </section>
   )}
@@ -138,6 +129,7 @@ function splitMottoWords(value: string) {
   <script is:inline define:vars={{ weeklyMottos }}>
     const getMondayFirstIndex = (day) => (day + 6) % 7;
     const today = weeklyMottos[getMondayFirstIndex(new Date().getDay())];
+
     const dayNode = document.querySelector("[data-motto-day]");
     const enNode = document.querySelector("[data-motto-en]");
     const zhNode = document.querySelector("[data-motto-zh]");
@@ -158,262 +150,27 @@ function splitMottoWords(value: string) {
       ghostZhNode.textContent = today.zh;
     }
 
-    try {
-      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
-      const mix = (from, to, progress) => from + (to - from) * progress;
-      const easeOutCubic = (value) => 1 - Math.pow(1 - clamp(value), 3);
-      const easeInOutCubic = (value) => {
-        const progress = clamp(value);
-        return progress < 0.5
-          ? 4 * progress * progress * progress
-          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-      };
+    const stages = Array.from(document.querySelectorAll("[data-home-stage]"));
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      const stageControllers = [];
-      let updateQueued = false;
-
-      const registerStageController = (stage, { onUpdate, leadFactor = 1 }) => {
-        if (!stage || typeof onUpdate !== "function") {
-          return;
-        }
-
-        const state = { current: 0, target: 0 };
-
-        stageControllers.push(() => {
-          const rect = stage.getBoundingClientRect();
-          const viewportHeight = window.innerHeight;
-          const travel = Math.max(rect.height - viewportHeight, viewportHeight * 0.42);
-          const lead = viewportHeight * leadFactor;
-          let target = clamp((lead - rect.top) / (travel + lead));
-
-          if (prefersReducedMotion) {
-            target = target > 0.08 ? 1 : 0;
-          }
-
-          state.target = target;
-          state.current = state.target;
-
-          onUpdate(state.current, {
-            rect,
-            viewportHeight,
-            compact: window.innerWidth <= 720,
-          });
-
-          return false;
-        });
-      };
-
-      const renderControllers = () => {
-        stageControllers.forEach((update) => {
-          update();
-        });
-      };
-
-      const requestProgressUpdate = () => {
-        if (updateQueued) {
-          return;
-        }
-
-        updateQueued = true;
-        window.setTimeout(() => {
-          updateQueued = false;
-          renderControllers();
-        }, 0);
-      };
-
-      const journalStage = document.querySelector('[data-scroll-stage="journal"]');
-      const journalBlock = document.querySelector("[data-home-journal]");
-      const journalHeading = journalBlock?.querySelector(".home-block-heading--journal");
-      const journalGrid = journalBlock?.querySelector(".home-article-grid");
-      const journalCards = journalBlock ? Array.from(journalBlock.querySelectorAll("[data-journal-card]")) : [];
-
-      registerStageController(journalStage, {
-        leadFactor: 0.82,
-        onUpdate: (progress, { compact }) => {
-          if (!journalBlock) {
-            return;
-          }
-
-          const shellProgress = easeInOutCubic(clamp(progress / 0.56));
-          const headingProgress = easeOutCubic(clamp((progress - 0.02) / 0.3));
-          const cardsProgress = easeOutCubic(clamp((progress - 0.05) / 0.34));
-
-          journalBlock.style.opacity = mix(0.72, 1, shellProgress).toFixed(3);
-          journalBlock.style.transform =
-            `translateY(${mix(8, 0, shellProgress).toFixed(2)}px) ` +
-            `scale(${mix(0.994, 1, shellProgress).toFixed(4)})`;
-          journalBlock.style.borderRadius = `${mix(28, 24, shellProgress).toFixed(2)}px`;
-          journalBlock.style.background =
-            `linear-gradient(180deg, rgba(255,255,255,${mix(0.018, 0.048, shellProgress).toFixed(3)}), transparent 24%), ` +
-            `rgba(11,14,18,${mix(0.76, 0.93, shellProgress).toFixed(3)})`;
-          journalBlock.style.boxShadow =
-            `0 ${mix(18, 42, shellProgress).toFixed(2)}px ${mix(38, 88, shellProgress).toFixed(2)}px rgba(0,0,0,${mix(0.1, 0.24, shellProgress).toFixed(3)}), ` +
-            `inset 0 1px 0 rgba(255,255,255,${mix(0.04, 0.08, shellProgress).toFixed(3)})`;
-          journalBlock.style.backdropFilter =
-            `blur(${mix(10, 22, shellProgress).toFixed(2)}px) saturate(${mix(120, 148, shellProgress).toFixed(1)}%)`;
-
-          if (journalHeading) {
-            journalHeading.style.width = `${mix(compact ? 100 : 82, 100, headingProgress).toFixed(2)}%`;
-            journalHeading.style.borderRadius = `${mix(999, 24, headingProgress).toFixed(2)}px`;
-            journalHeading.style.opacity = mix(0.88, 1, headingProgress).toFixed(3);
-            journalHeading.style.filter = `blur(${mix(1, 0, headingProgress).toFixed(2)}px)`;
-            journalHeading.style.transform =
-              `translateY(${mix(2, 0, headingProgress).toFixed(2)}px) ` +
-              `scale(${mix(0.994, 1, headingProgress).toFixed(4)})`;
-          }
-
-          if (journalGrid) {
-            journalGrid.style.opacity = mix(0.62, 1, cardsProgress).toFixed(3);
-            journalGrid.style.transform = `translateY(${mix(2, 0, cardsProgress).toFixed(2)}px)`;
-          }
-
-          journalCards.forEach((card, index) => {
-            const localProgress = easeOutCubic(clamp((cardsProgress - index * 0.08) / 0.76));
-            const lateralShift = compact ? 0 : index === 0 ? -10 : index === 2 ? 10 : 0;
-            const cardMedia = card.querySelector(".home-article-card__media");
-            const cardCover = card.querySelector(".home-article-card__cover, .home-article-card__cover--fallback");
-
-            card.style.opacity = mix(0.58, 1, localProgress).toFixed(3);
-            card.style.filter = `blur(${mix(1.1, 0, localProgress).toFixed(2)}px)`;
-            card.style.transform =
-              `translate3d(${mix(lateralShift, 0, localProgress).toFixed(2)}px, ${mix(6 + index * 2, 0, localProgress).toFixed(2)}px, 0) ` +
-              `scale(${mix(0.994, 1, localProgress).toFixed(4)}) ` +
-              `perspective(1400px) rotateX(${mix(-1 + index * 0.28, 0, localProgress).toFixed(2)}deg)`;
-            card.style.borderColor = `rgba(255,255,255,${mix(0.04, 0.12, localProgress).toFixed(3)})`;
-            card.style.background =
-              `linear-gradient(180deg, rgba(255,255,255,${mix(0.045, 0.09, localProgress).toFixed(3)}), rgba(255,255,255,0.018)), ` +
-              `rgba(14,18,24,${mix(0.24, 0.58, localProgress).toFixed(3)})`;
-            card.style.boxShadow =
-              `0 ${mix(12, 30, localProgress).toFixed(2)}px ${mix(24, 66, localProgress).toFixed(2)}px rgba(0,0,0,${mix(0.06, 0.22, localProgress).toFixed(3)}), ` +
-              `inset 0 1px 0 rgba(255,255,255,${mix(0.05, 0.08, localProgress).toFixed(3)})`;
-
-            if (cardMedia) {
-              cardMedia.style.transform = `scale(${mix(1.02, 1, localProgress).toFixed(4)})`;
-              cardMedia.style.filter =
-                `blur(${mix(1.8, 0, localProgress).toFixed(2)}px) ` +
-                `brightness(${mix(0.9, 1, localProgress).toFixed(3)})`;
-            }
-
-            if (cardCover) {
-              cardCover.style.opacity = mix(0.78, 1, localProgress).toFixed(3);
-            }
+    if (!reducedMotion && stages.length > 0) {
+      const stageObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const target = entry.target;
+            const active = entry.isIntersecting && entry.intersectionRatio > 0.14;
+            target.classList.toggle("is-active", active);
           });
         },
-      });
-
-      const sparkStage = document.querySelector('[data-scroll-stage="spark"]');
-      const sparkBlock = document.querySelector("[data-home-reveal]");
-      const sparkHeading = sparkBlock?.querySelector(".home-block-heading--inspiration");
-      const sparkShell = sparkBlock?.querySelector(".home-inspiration-shell");
-      const islandBar = sparkBlock?.querySelector(".home-inspiration-shell__bar");
-      const islandTheme = sparkBlock?.querySelector(".home-inspiration-shell__theme");
-      const islandTitle = sparkBlock?.querySelector(".home-inspiration-shell__title");
-      const islandPanel = sparkBlock?.querySelector(".home-inspiration-shell__panel");
-      const islandContent = sparkBlock?.querySelector(".home-inspiration-shell__content");
-      const islandProseNodes = islandContent
-        ? Array.from(islandContent.querySelectorAll(".prose, .prose--inspiration"))
-        : [];
-
-      registerStageController(sparkStage, {
-        leadFactor: 0.65,
-        onUpdate: (progress, { compact }) => {
-          if (!sparkBlock || !sparkShell) {
-            return;
-          }
-
-          const shellProgress = easeInOutCubic(clamp(progress / 0.18));
-          const barProgress = easeOutCubic(clamp(progress / 0.12));
-          const panelProgress = easeOutCubic(clamp((progress - 0.05) / 0.14));
-          const shellWidth = sparkShell.clientWidth || sparkBlock.clientWidth || window.innerWidth;
-          const barClosedWidth = compact ? Math.max(232, shellWidth * 0.72) : Math.min(380, shellWidth * 0.38);
-          const barOpenWidth = shellWidth;
-
-          sparkBlock.style.opacity = mix(0.54, 1, shellProgress).toFixed(3);
-          sparkBlock.style.transform =
-            `translateY(${mix(12, 0, shellProgress).toFixed(2)}px) ` +
-            `scale(${mix(0.992, 1, shellProgress).toFixed(4)})`;
-          sparkBlock.style.borderRadius = `${mix(28, 24, shellProgress).toFixed(2)}px`;
-          sparkBlock.style.background =
-            `linear-gradient(180deg, rgba(255,255,255,${mix(0.012, 0.032, shellProgress).toFixed(3)}), transparent 22%), ` +
-            `rgba(10,13,17,${mix(0.78, 0.94, shellProgress).toFixed(3)})`;
-          sparkBlock.style.boxShadow =
-            `0 ${mix(14, 38, shellProgress).toFixed(2)}px ${mix(28, 82, shellProgress).toFixed(2)}px rgba(0,0,0,${mix(0.08, 0.24, shellProgress).toFixed(3)}), ` +
-            `inset 0 1px 0 rgba(255,255,255,${mix(0.03, 0.07, shellProgress).toFixed(3)})`;
-
-          if (sparkHeading) {
-            sparkHeading.style.opacity = mix(0.82, 1, shellProgress).toFixed(3);
-            sparkHeading.style.transform =
-              `translateY(${mix(2, 0, shellProgress).toFixed(2)}px) ` +
-              `scale(${mix(0.994, 1, shellProgress).toFixed(4)})`;
-            sparkHeading.style.filter = `blur(${mix(1, 0, shellProgress).toFixed(2)}px)`;
-          }
-
-          if (islandBar) {
-            islandBar.style.width = `${mix(barClosedWidth, barOpenWidth, barProgress).toFixed(2)}px`;
-            islandBar.style.minHeight = `${mix(compact ? 60 : 62, compact ? 86 : 98, barProgress).toFixed(2)}px`;
-            islandBar.style.paddingLeft = `${mix(compact ? 0.95 : 1.05, compact ? 1.4 : 1.9, barProgress).toFixed(3)}rem`;
-            islandBar.style.paddingRight = `${mix(compact ? 0.95 : 1.05, compact ? 1.4 : 1.9, barProgress).toFixed(3)}rem`;
-            islandBar.style.borderRadius = `${mix(999, 24, barProgress).toFixed(2)}px`;
-            islandBar.style.background = `rgba(12,16,22,${mix(0.88, 0.97, barProgress).toFixed(3)})`;
-            islandBar.style.boxShadow =
-              `0 ${mix(10, 24, barProgress).toFixed(2)}px ${mix(18, 56, barProgress).toFixed(2)}px rgba(0,0,0,${mix(0.12, 0.3, barProgress).toFixed(3)}), ` +
-              `inset 0 1px 0 rgba(255,255,255,${mix(0.04, 0.08, barProgress).toFixed(3)})`;
-            islandBar.style.transform =
-              `translateY(${mix(6, 0, barProgress).toFixed(2)}px) ` +
-              `scale(${mix(0.99, 1, barProgress).toFixed(4)})`;
-          }
-
-          if (islandTheme) {
-            islandTheme.style.fontSize = `${mix(compact ? 0.8 : 0.82, compact ? 0.92 : 0.98, barProgress).toFixed(3)}rem`;
-            islandTheme.style.letterSpacing = `${mix(0.08, 0.14, barProgress).toFixed(3)}em`;
-            islandTheme.style.opacity = mix(0.82, 1, barProgress).toFixed(3);
-            islandTheme.style.transform = `translateY(${mix(2, 0, barProgress).toFixed(2)}px)`;
-          }
-
-          if (islandTitle) {
-            islandTitle.style.fontSize = `${mix(compact ? 1.06 : 1.08, compact ? 1.18 : 1.28, barProgress).toFixed(3)}rem`;
-            islandTitle.style.letterSpacing = `${mix(0, 0.012, barProgress).toFixed(3)}em`;
-            islandTitle.style.opacity = mix(0.82, 1, barProgress).toFixed(3);
-            islandTitle.style.transform = `translateY(${mix(2, 0, barProgress).toFixed(2)}px)`;
-          }
-
-          if (islandPanel) {
-            islandPanel.style.marginTop = `${mix(0.08, 0.7, panelProgress).toFixed(3)}rem`;
-            islandPanel.style.maxHeight = `${mix(0, compact ? 860 : 700, panelProgress).toFixed(2)}px`;
-            islandPanel.style.opacity = mix(0, 1, panelProgress).toFixed(3);
-            islandPanel.style.filter = `blur(${mix(2.2, 0, panelProgress).toFixed(2)}px)`;
-            islandPanel.style.clipPath = `inset(0 0 ${mix(100, 0, panelProgress).toFixed(2)}% 0 round 28px)`;
-            islandPanel.style.transform =
-              `perspective(1600px) rotateX(${mix(-2.2, 0, panelProgress).toFixed(2)}deg) ` +
-              `translateY(${mix(6, 0, panelProgress).toFixed(2)}px) ` +
-              `scale(${mix(0.994, 1, panelProgress).toFixed(4)})`;
-            islandPanel.style.boxShadow =
-              `0 ${mix(12, 28, panelProgress).toFixed(2)}px ${mix(20, 62, panelProgress).toFixed(2)}px rgba(0,0,0,${mix(0.08, 0.22, panelProgress).toFixed(3)})`;
-          }
-
-          if (islandContent) {
-            islandContent.style.opacity = mix(0, 1, panelProgress).toFixed(3);
-            islandContent.style.transform =
-              `translateY(${mix(10, 0, panelProgress).toFixed(2)}px) ` +
-              `scale(${mix(0.99, 1, panelProgress).toFixed(4)})`;
-          }
-
-          islandProseNodes.forEach((node) => {
-            node.style.fontSize = `${mix(1.06, compact ? 1.17 : 1.22, panelProgress).toFixed(3)}rem`;
-          });
+        {
+          threshold: [0.14, 0.22, 0.36],
+          rootMargin: "0px 0px -8% 0px",
         },
-      });
+      );
 
-      requestProgressUpdate();
-      window.addEventListener("scroll", requestProgressUpdate, { passive: true });
-      window.addEventListener("wheel", requestProgressUpdate, { passive: true });
-      window.addEventListener("touchmove", requestProgressUpdate, { passive: true });
-      window.addEventListener("resize", requestProgressUpdate);
-      window.addEventListener("orientationchange", requestProgressUpdate);
-    } catch (error) {
-      window.__homeProgressError = error instanceof Error ? error.message : String(error);
-      console.error("[home-progress]", error);
+      stages.forEach((stage) => stageObserver.observe(stage));
+    } else {
+      stages.forEach((stage) => stage.classList.add("is-active"));
     }
   </script>
 </BaseLayout>
