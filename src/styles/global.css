@@ -4024,3 +4024,42 @@ footer {
   }
 }
 
+.body--home .home-stage--spark-static .home-stage__surface {
+  opacity: 1;
+  transform: none;
+}
+
+.body--home .home-stage--spark-static .home-inspiration-shell__bar {
+  width: 100%;
+  min-height: 88px;
+  padding: 0 1.45rem;
+  border-radius: 24px;
+  transform: none;
+  opacity: 1;
+  box-shadow:
+    0 24px 54px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.body--home .home-stage--spark-static .home-inspiration-shell__panel {
+  max-height: none;
+  opacity: 1;
+  overflow: visible;
+  clip-path: inset(0 0 0 0 round 26px);
+  transform: none;
+  filter: none;
+}
+
+.body--home .home-stage--spark-static .home-inspiration-shell__content {
+  opacity: 1;
+  transform: none;
+}
+
+@media (max-width: 720px) {
+  .body--home .home-stage--spark-static .home-inspiration-shell__bar {
+    min-height: 78px;
+    padding: 0 1.05rem;
+    border-radius: 20px;
+  }
+}
+
