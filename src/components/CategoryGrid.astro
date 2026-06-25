@@ -1,24 +1,32 @@
----
-import type { CategoryDefinition } from "../data/site";
+﻿---
+import type { TopicTileDefinition } from "../data/site";
 import { withBasePath } from "../lib/paths";
+import TopicIcon from "./TopicIcon.astro";
 
-interface CategoryWithCount extends CategoryDefinition {
-  count: number;
+interface TopicWithCount extends TopicTileDefinition {
+  count?: number;
 }
 
 interface Props {
-  categories: CategoryWithCount[];
+  topics: TopicWithCount[];
 }
 
-const { categories } = Astro.props;
+const { topics } = Astro.props;
 ---
 
-<div class="category-grid">
-  {categories.map((category) => (
-    <a class="category-card" href={withBasePath(`/categories/${category.slug}/`)}>
-      <h3>{category.name}</h3>
-      <p>{category.description}</p>
-      <span class="category-card__count">{category.count} 篇文章</span>
+<div class="topic-matrix">
+  {topics.map((topic) => (
+    <a class="topic-matrix__card" href={withBasePath(topic.href)}>
+      <div class="topic-matrix__icon">
+        <TopicIcon name={topic.icon} />
+      </div>
+      <div class="topic-matrix__body">
+        <div class="topic-matrix__heading-row">
+          <h3>{topic.name}</h3>
+          {typeof topic.count === "number" && <span>{topic.count}</span>}
+        </div>
+        <p>{topic.description}</p>
+      </div>
     </a>
   ))}
 </div>

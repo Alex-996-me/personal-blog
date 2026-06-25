@@ -1,10 +1,11 @@
----
+﻿---
 import Header from "../components/Header.astro";
 import Sidebar from "../components/Sidebar.astro";
 import Footer from "../components/Footer.astro";
 import { siteConfig } from "../data/site";
 import { withBasePath } from "../lib/paths";
 import "../styles/global.css";
+import "../styles/site-refresh.css";
 
 interface Props {
   title?: string;
@@ -29,9 +30,6 @@ const {
   bodyClass = "",
   shellClass = "",
   panelClass = "",
-  headerSearch = true,
-  headerSearchQuery = "",
-  headerSearchPlaceholder = "搜索文章、正文、标签、灵感",
 } = Astro.props;
 
 const pageTitle = title === siteConfig.title ? title : `${title} | ${siteConfig.title}`;
@@ -60,11 +58,7 @@ const ogImageUrl = new URL(withBasePath(ogImage), site).toString();
     <meta property="og:image" content={ogImageUrl} />
   </head>
   <body class={bodyClass}>
-    <Header
-      showSearch={headerSearch}
-      searchQuery={headerSearchQuery}
-      searchPlaceholder={headerSearchPlaceholder}
-    />
+    <Header />
     <div class:list={["page-shell", !showSidebar && "page-shell--single", shellClass]}>
       <main class="content-column">
         <div class:list={["content-panel", wideContent && "content-panel--wide", panelClass]}>

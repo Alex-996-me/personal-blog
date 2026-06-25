@@ -31,6 +31,19 @@ export type SearchEntry = {
   url: string;
 };
 
+export type SearchTermSuggestion = {
+  term: string;
+  count: number;
+};
+
+export type SearchTopicPreview = {
+  title: string;
+  section: string;
+  kind: SearchEntry["kind"];
+  updated: string;
+  url: string;
+};
+
 function getEntrySlug<T extends { id: string }>(entry: T) {
   return entry.id.replace(/\.(md|mdx)$/i, "");
 }
@@ -334,6 +347,56 @@ export async function getSearchEntries() {
   return [...postEntries, ...inspirationEntries, ...resourceEntries]
     .sort((left, right) => right.sortTime - left.sortTime)
     .map(({ sortTime: _sortTime, ...entry }) => entry);
+}
+
+function cleanSearchTerm(value: string) {
+  return value
+    .replace(/^#/, "")
+    .replace(/^每日灵感\s*\/\s*/u, "")
+    .replace(/[()（）]/g, "")
+    .trim();
+}
+
+export function getFrequentSearchTerms(entries: SearchEntry[], limit = 12) {
+  const counts = new Map<string, number>();
+  const blockedTerms = new Set(["文章", "资料", "每日灵感"]);
+
+  const addTerm = (value: string, weight = 1) => {
+    const term = cleanSearchTerm(value);
+
+    if (!term || term.length < 2 || term.length > 12 || blockedTerms.has(term)) {
+      return;
+    }
+
+    counts.set(term, (counts.get(term) ?? 0) + weight);
+  };
+
+  entries.forEach((entry) => {
+    entry.tags.forEach((tag) => addTerm(tag, 4));
+    entry.section
+      .split(/[\/、，,\s]+/u)
+      .map((segment) => segment.trim())
+      .filter(Boolean)
+      .forEach((segment) => addTerm(segment, 2));
+
+    const titleTerms = entry.title.match(/[A-Za-z][A-Za-z0-9-]+|[\u4e00-\u9fff]{2,6}/gu) ?? [];
+    titleTerms.forEach((term) => addTerm(term, 1));
+  });
+
+  return [...counts.entries()]
+    .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0], "zh-CN"))
+    .slice(0, limit)
+    .map(([term, count]) => ({ term, count }));
+}
+
+export function getRecentSearchTopics(entries: SearchEntry[], limit = 6): SearchTopicPreview[] {
+  return entries.slice(0, limit).map((entry) => ({
+    title: entry.title,
+    section: entry.section,
+    kind: entry.kind,
+    updated: entry.updated,
+    url: entry.url,
+  }));
 }
 
 export function extractYoutubeId(value: string) {

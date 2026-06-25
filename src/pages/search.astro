@@ -1,8 +1,15 @@
----
+﻿---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getSearchEntries } from "../lib/blog";
+import {
+  getFrequentSearchTerms,
+  getRecentSearchTopics,
+  getSearchEntries,
+} from "../lib/blog";
+import { withBasePath } from "../lib/paths";
 
 const searchEntries = await getSearchEntries();
+const frequentTerms = getFrequentSearchTerms(searchEntries, 14);
+const recentTopics = getRecentSearchTopics(searchEntries, 8);
 const currentQuery = Astro.url.searchParams.get("q") ?? "";
 ---
 
@@ -10,30 +17,80 @@ const currentQuery = Astro.url.searchParams.get("q") ?? "";
   title="搜索"
   description="搜索文章、每日灵感与资料。"
   wideContent={true}
-  bodyClass="body--archive body--search"
-  shellClass="page-shell--archive"
-  panelClass="content-panel--archive"
-  headerSearchQuery={currentQuery}
-  headerSearchPlaceholder="搜索标题、正文、标签、灵感"
+  bodyClass="body--hub-search"
+  shellClass="page-shell--hub-search"
+  panelClass="content-panel--hub-search"
 >
-  <section class="page-header page-header--archive">
-    <p class="page-header__eyebrow">SEARCH</p>
-    <h1 id="search-heading">搜索</h1>
-    <p id="search-summary" class="search-page__summary">用顶部搜索框输入关键词。</p>
+  <section class="lab-search">
+    <a class="post-backlink" href={withBasePath("/")}>← 返回首页</a>
+
+    <div class="lab-search__hero">
+      <p class="lab-search__eyebrow">SEARCH</p>
+      <h1>搜索站内内容</h1>
+      <p class="lab-search__intro">输入关键词后，结果会在下方即时刷新。下面也放了最近话题和我写作里出现频率更高的词。</p>
+
+      <label class="lab-search__input-wrap" for="lab-search-input">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="6.5"></circle>
+          <path d="M16 16l4.5 4.5"></path>
+        </svg>
+        <input
+          id="lab-search-input"
+          type="search"
+          value={currentQuery}
+          placeholder="搜索文章、正文、标签、灵感、资料"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </label>
+    </div>
+
+    <div class="lab-search__meta-grid">
+      <section class="lab-search__panel">
+        <h2>推荐搜索词</h2>
+        <div class="lab-search__chips" id="lab-search-chips">
+          {frequentTerms.map((item) => (
+            <button type="button" class="lab-search__chip" data-search-term={item.term}>
+              <span>{item.term}</span>
+              <small>{item.count}</small>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section class="lab-search__panel">
+        <h2>最近话题</h2>
+        <div class="lab-search__topic-list">
+          {recentTopics.map((topic) => (
+            <a class="lab-search__topic" href={topic.url}>
+              <strong>{topic.title}</strong>
+              <span>{topic.section}</span>
+              <small>{topic.updated}</small>
+            </a>
+          ))}
+        </div>
+      </section>
+    </div>
+
+    <section class="lab-search__results-wrap">
+      <div class="lab-search__results-head">
+        <h2 id="lab-search-results-title">搜索结果</h2>
+        <p id="lab-search-results-summary">输入关键词后，下方会即时刷新。</p>
+      </div>
+      <div id="lab-search-results" class="lab-search__results"></div>
+    </section>
   </section>
 
-  <div id="search-results" class="post-list"></div>
-
-  <script define:vars={{ searchEntries }}>
+  <script define:vars={{ searchEntries, initialQuery: currentQuery }}>
     const entries = searchEntries;
-    const results = document.querySelector("#search-results");
-    const heading = document.querySelector("#search-heading");
-    const summary = document.querySelector("#search-summary");
-    const params = new URLSearchParams(window.location.search);
-    const query = params.get("q") ?? "";
+    const input = document.querySelector("#lab-search-input");
+    const results = document.querySelector("#lab-search-results");
+    const summary = document.querySelector("#lab-search-results-summary");
+    const title = document.querySelector("#lab-search-results-title");
+    const chipButtons = Array.from(document.querySelectorAll("[data-search-term]"));
 
     const escapeHtml = (value = "") =>
-      value
+      String(value)
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
@@ -41,14 +98,16 @@ const currentQuery = Astro.url.searchParams.get("q") ?? "";
 
     const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+    const normalizeQuery = (value) => value.trim().toLowerCase();
+
     const normalizeKeywords = (value) =>
-      value
-        .trim()
-        .toLowerCase()
+      normalizeQuery(value)
         .split(/\s+/)
         .filter(Boolean);
 
-    const highlightTerms = (text, keywords) => {
+    const highlight = (text, query) => {
+      const keywords = normalizeKeywords(query);
+
       if (!text || keywords.length === 0) {
         return escapeHtml(text);
       }
@@ -58,11 +117,12 @@ const currentQuery = Astro.url.searchParams.get("q") ?? "";
     };
 
     const createSnippet = (entry, keywords) => {
+      const source = entry.snippet || entry.description || "";
+
       if (keywords.length === 0) {
-        return entry.description;
+        return source.slice(0, 118);
       }
 
-      const source = entry.snippet || entry.description;
       const lowerSource = source.toLowerCase();
       const firstIndex = keywords.reduce((current, keyword) => {
         const index = lowerSource.indexOf(keyword);
@@ -76,77 +136,166 @@ const currentQuery = Astro.url.searchParams.get("q") ?? "";
       }, -1);
 
       if (firstIndex === -1) {
-        return entry.description;
+        return source.slice(0, 118);
       }
 
-      const start = Math.max(0, firstIndex - 34);
-      const end = Math.min(source.length, firstIndex + 120);
+      const start = Math.max(0, firstIndex - 40);
+      const end = Math.min(source.length, firstIndex + 130);
       const prefix = start > 0 ? "..." : "";
       const suffix = end < source.length ? "..." : "";
       return `${prefix}${source.slice(start, end).trim()}${suffix}`;
     };
 
-    const buildCover = (entry) => {
-      if (entry.cover) {
-        return `
-          <a class="post-card__media" href="${entry.url}" aria-hidden="true" tabindex="-1">
-            <img class="post-card__cover" src="${entry.cover}" alt="" />
-          </a>
-        `;
+    const scoreEntry = (entry, keywords, query) => {
+      const titleText = (entry.title ?? "").toLowerCase();
+      const descriptionText = (entry.description ?? "").toLowerCase();
+      const snippetText = (entry.snippet ?? "").toLowerCase();
+      const sectionText = (entry.section ?? "").toLowerCase();
+      const tags = Array.isArray(entry.tags) ? entry.tags.map((tag) => String(tag).toLowerCase()) : [];
+      const text = (entry.text ?? "").toLowerCase();
+
+      if (
+        !keywords.every(
+          (keyword) =>
+            text.includes(keyword) ||
+            titleText.includes(keyword) ||
+            descriptionText.includes(keyword) ||
+            snippetText.includes(keyword) ||
+            sectionText.includes(keyword) ||
+            tags.some((tag) => tag.includes(keyword)),
+        )
+      ) {
+        return -1;
       }
 
-      return `
-        <a class="post-card__media post-card__media--fallback" href="${entry.url}" aria-hidden="true" tabindex="-1">
-          <div class="post-card__cover post-card__cover--fallback">
-            <span>${escapeHtml(entry.kind)}</span>
-            <strong>${escapeHtml(entry.section)}</strong>
-          </div>
-        </a>
-      `;
+      let score = 0;
+
+      keywords.forEach((keyword) => {
+        if (titleText === keyword) {
+          score += 320;
+        } else if (titleText.includes(keyword)) {
+          score += 220;
+        }
+
+        if (tags.some((tag) => tag === keyword)) {
+          score += 180;
+        } else if (tags.some((tag) => tag.includes(keyword))) {
+          score += 120;
+        }
+
+        if (descriptionText.includes(keyword)) {
+          score += 92;
+        }
+
+        if (sectionText.includes(keyword)) {
+          score += 68;
+        }
+
+        if (snippetText.includes(keyword)) {
+          score += 42;
+        }
+      });
+
+      if (query && titleText.includes(query)) {
+        score += 140;
+      }
+
+      if (query && descriptionText.includes(query)) {
+        score += 60;
+      }
+
+      return score;
+    };
+
+    const renderEmpty = (message) => {
+      results.innerHTML = `<div class="lab-search__empty">${escapeHtml(message)}</div>`;
     };
 
     const renderResults = (value) => {
+      const query = normalizeQuery(value);
       const keywords = normalizeKeywords(value);
 
-      if (!value.trim()) {
-        heading.textContent = "搜索";
-        summary.textContent = "用顶部搜索框输入关键词。";
-        results.innerHTML = '<div class="empty-state">现在上方搜索框已经固定在顶部，输入任何关键词就可以直接检索文章、灵感和资料。</div>';
+      if (!query) {
+        title.textContent = "搜索结果";
+        summary.textContent = "输入关键词后，下方会即时刷新。";
+        renderEmpty("现在可以直接输入关键词，也可以点击上方推荐词开始搜索。");
+        history.replaceState(null, "", window.location.pathname);
         return;
       }
 
-      const filtered = entries.filter((entry) => keywords.every((keyword) => entry.text.includes(keyword)));
+      const ranked = entries
+        .map((entry) => ({
+          entry,
+          score: scoreEntry(entry, keywords, query),
+        }))
+        .filter((item) => item.score >= 0)
+        .sort((left, right) => right.score - left.score)
+        .slice(0, 18)
+        .map((item) => item.entry);
 
-      heading.textContent = `搜索：${value}`;
-      summary.textContent = `找到 ${filtered.length} 条与“${value}”相关的内容。`;
+      history.replaceState(null, "", `${window.location.pathname}?q=${encodeURIComponent(value.trim())}`);
+      title.textContent = `搜索：${value.trim()}`;
+      summary.textContent = `找到 ${ranked.length} 条相关内容。`;
 
-      if (filtered.length === 0) {
-        results.innerHTML = '<div class="empty-state">没有找到匹配结果，可以换一个关键词试试。</div>';
+      if (ranked.length === 0) {
+        renderEmpty(`没有找到与“${value.trim()}”相关的内容。`);
         return;
       }
 
-      results.innerHTML = filtered
-        .map(
-          (entry) => `
-            <article class="post-card">
-              ${buildCover(entry)}
-              <div class="post-card__content">
-                <div class="post-card__meta">
+      results.innerHTML = ranked
+        .map((entry) => {
+          const tags = Array.isArray(entry.tags) ? entry.tags.slice(0, 4) : [];
+          return `
+            <a class="lab-search-result" href="${entry.url}">
+              ${
+                entry.cover
+                  ? `<div class="lab-search-result__media"><img src="${entry.cover}" alt="" /></div>`
+                  : `<div class="lab-search-result__media lab-search-result__media--fallback"><span>${escapeHtml(entry.kind)}</span></div>`
+              }
+              <div class="lab-search-result__body">
+                <div class="lab-search-result__meta">
                   <span>${escapeHtml(entry.kind)}</span>
                   <span>${escapeHtml(entry.section)}</span>
                   <span>更新 ${escapeHtml(entry.updated)}</span>
                 </div>
-                <h2 class="post-card__title">
-                  <a href="${entry.url}">${highlightTerms(entry.title, keywords)}</a>
-                </h2>
-                <p class="post-card__description">${highlightTerms(createSnippet(entry, keywords), keywords)}</p>
+                <h3>${highlight(entry.title ?? "", value)}</h3>
+                <p>${highlight(createSnippet(entry, keywords), value)}</p>
+                ${
+                  tags.length > 0
+                    ? `<div class="lab-search-result__tags">${tags
+                        .map((tag) => `<span>#${escapeHtml(tag)}</span>`)
+                        .join("")}</div>`
+                    : ""
+                }
               </div>
-            </article>
-          `,
-        )
+            </a>
+          `;
+        })
         .join("");
     };
 
-    renderResults(query);
+    input?.addEventListener("input", (event) => {
+      renderResults(event.currentTarget.value);
+    });
+
+    input?.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.currentTarget.blur();
+      }
+    });
+
+    chipButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const term = button.dataset.searchTerm ?? "";
+        if (!input) {
+          return;
+        }
+        input.value = term;
+        input.focus();
+        renderResults(term);
+      });
+    });
+
+    renderResults(initialQuery);
   </script>
 </BaseLayout>

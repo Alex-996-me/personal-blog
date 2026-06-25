@@ -1,4 +1,4 @@
----
+﻿---
 import { render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { inspirationThemes, siteConfig } from "../../data/site";
@@ -9,6 +9,7 @@ import {
   getInspirationThemeAnchor,
   getInspirationUpdatedDate,
 } from "../../lib/blog";
+import { withBasePath } from "../../lib/paths";
 
 const inspirations = await getAllInspirations();
 const themeSections = inspirationThemes
@@ -52,8 +53,9 @@ const renderedThemeSections = await Promise.all(
   panelClass="content-panel--daily"
 >
   <section class="page-header page-header--daily-flip">
+    <a class="post-backlink" href={withBasePath("/")}>← 返回首页</a>
     <h1>每日灵感</h1>
-    <p>先选主题，再往下翻。每一屏只保留一条灵感。</p>
+    <p>先选主题，再往下翻。每一屏只保留一条灵感，不把它挤成信息流。</p>
   </section>
 
   {renderedThemeSections.length > 0 ? (
@@ -106,6 +108,7 @@ const renderedThemeSections = await Promise.all(
                         <span class="daily-flip-page__theme-ghost" aria-hidden="true">{theme.mark}</span>
                         <p class="daily-flip-page__theme-description">{theme.description}</p>
                       </div>
+
                       <div class="daily-flip-page__rail-bottom">
                         <div class="daily-flip-page__counter">
                           <span>{String(index + 1).padStart(2, "0")}</span>

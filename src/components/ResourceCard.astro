@@ -28,7 +28,7 @@ const hasGroupedAssets = (resource.data.groups ?? []).length > 0;
     ) : (
       <div class="post-card__cover post-card__cover--fallback">
         <span>资料</span>
-        <strong>{resource.data.title}</strong>
+        <p>{resource.data.description || "在线阅读与下载"}</p>
       </div>
     )}
   </a>

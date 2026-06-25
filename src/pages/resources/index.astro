@@ -1,7 +1,8 @@
----
+﻿---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ResourceCard from "../../components/ResourceCard.astro";
 import { getAllResources } from "../../lib/blog";
+import { withBasePath } from "../../lib/paths";
 
 const resources = await getAllResources();
 ---
@@ -15,6 +16,7 @@ const resources = await getAllResources();
   panelClass="content-panel--archive"
 >
   <section class="page-header page-header--archive">
+    <a class="post-backlink" href={withBasePath("/")}>← 返回首页</a>
     <h1>资料</h1>
     <p>这里集中放 PDF、讲义、课程资料和其他方便在线打开或下载的文件。</p>
   </section>

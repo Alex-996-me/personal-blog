@@ -1,15 +1,9 @@
----
+﻿---
 import { navigation, siteConfig } from "../data/site";
 import { withBasePath } from "../lib/paths";
 
 const pathname = Astro.url.pathname;
-const {
-  showSearch = false,
-  searchQuery = "",
-  searchPlaceholder = "搜索文章、正文、标签、灵感",
-} = Astro.props;
-
-const searchIndexUrl = withBasePath("/search-index.json");
+const searchHref = withBasePath("/search/");
 
 function isActive(href: string) {
   const target = withBasePath(href);
@@ -18,51 +12,15 @@ function isActive(href: string) {
   }
   return pathname.startsWith(target);
 }
+
+const isSearchActive = pathname.startsWith(searchHref);
 ---
 
 <header class="site-header">
   <div class="site-header__inner">
     <a class="site-brand" href={withBasePath("/")}>{siteConfig.title}</a>
+
     <div class="site-header__controls">
-      {showSearch && (
-        <div
-          class="header-search"
-          data-header-search
-          data-search-endpoint={searchIndexUrl}
-        >
-          <input
-            data-header-search-input
-            type="search"
-            name="q"
-            value={searchQuery}
-            placeholder={searchPlaceholder}
-            autocomplete="off"
-            spellcheck="false"
-            aria-label="站内搜索"
-            aria-autocomplete="list"
-            aria-expanded="false"
-            aria-controls="header-search-results"
-          />
-
-          <div
-            class="header-search__dropdown"
-            id="header-search-results"
-            data-header-search-dropdown
-            hidden
-          >
-            <div class="header-search__empty" data-header-search-empty>
-              输入关键词后，下方会即时出现相关文章、灵感和资料。
-            </div>
-            <div
-              class="header-search__results"
-              data-header-search-results
-              role="listbox"
-              aria-label="搜索建议"
-            ></div>
-          </div>
-        </div>
-      )}
-
       <nav class="site-nav" aria-label="顶部导航">
         {navigation.map((item) => (
           <a href={withBasePath(item.href)} class={isActive(item.href) ? "is-active" : undefined}>
@@ -70,339 +28,20 @@ function isActive(href: string) {
           </a>
         ))}
       </nav>
+
+      <div class="site-header__actions">
+        <a
+          class:list={["site-search-link", isSearchActive && "is-active"]}
+          href={searchHref}
+          aria-label="打开站内搜索"
+          title="搜索"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5"></circle>
+            <path d="M16 16l4.5 4.5"></path>
+          </svg>
+        </a>
+      </div>
     </div>
   </div>
-
-  <script is:inline>
-    const headerSearchRoot = document.querySelector("[data-header-search]");
-
-    if (headerSearchRoot) {
-      const input = headerSearchRoot.querySelector("[data-header-search-input]");
-      const dropdown = headerSearchRoot.querySelector("[data-header-search-dropdown]");
-      const emptyState = headerSearchRoot.querySelector("[data-header-search-empty]");
-      const resultsNode = headerSearchRoot.querySelector("[data-header-search-results]");
-      const currentQuery = new URLSearchParams(window.location.search).get("q") ?? "";
-      const endpoint = headerSearchRoot.dataset.searchEndpoint ?? "";
-
-      if (input && currentQuery && !input.value) {
-        input.value = currentQuery;
-      }
-
-      if (input && dropdown && emptyState && resultsNode && endpoint) {
-        let entriesCache = null;
-        let visibleEntries = [];
-        let activeIndex = -1;
-        let focusWithinDropdown = false;
-
-        const escapeHtml = (value = "") =>
-          String(value)
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;");
-
-        const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-        const normalizeQuery = (value) => value.trim().toLowerCase();
-
-        const normalizeKeywords = (value) =>
-          normalizeQuery(value)
-            .split(/\s+/)
-            .filter(Boolean);
-
-        const highlight = (text, query) => {
-          const keywords = normalizeKeywords(query);
-
-          if (!text || keywords.length === 0) {
-            return escapeHtml(text);
-          }
-
-          const pattern = new RegExp(`(${keywords.map(escapeRegExp).join("|")})`, "gi");
-          return escapeHtml(text).replace(pattern, '<mark class="search-hit">$1</mark>');
-        };
-
-        const openDropdown = () => {
-          dropdown.hidden = false;
-          headerSearchRoot.classList.add("is-open");
-          input.setAttribute("aria-expanded", "true");
-        };
-
-        const closeDropdown = () => {
-          dropdown.hidden = true;
-          headerSearchRoot.classList.remove("is-open");
-          input.setAttribute("aria-expanded", "false");
-          activeIndex = -1;
-        };
-
-        const getSnippet = (entry, keywords) => {
-          const source = entry.snippet || entry.description || "";
-
-          if (keywords.length === 0) {
-            return source.slice(0, 96);
-          }
-
-          const lowerSource = source.toLowerCase();
-          const firstIndex = keywords.reduce((current, keyword) => {
-            const index = lowerSource.indexOf(keyword);
-            if (index === -1) {
-              return current;
-            }
-            if (current === -1) {
-              return index;
-            }
-            return Math.min(current, index);
-          }, -1);
-
-          if (firstIndex === -1) {
-            return source.slice(0, 96);
-          }
-
-          const start = Math.max(0, firstIndex - 30);
-          const end = Math.min(source.length, firstIndex + 92);
-          const prefix = start > 0 ? "..." : "";
-          const suffix = end < source.length ? "..." : "";
-          return `${prefix}${source.slice(start, end).trim()}${suffix}`;
-        };
-
-        const scoreEntry = (entry, keywords, wholeQuery) => {
-          const title = (entry.title ?? "").toLowerCase();
-          const description = (entry.description ?? "").toLowerCase();
-          const snippet = (entry.snippet ?? "").toLowerCase();
-          const section = (entry.section ?? "").toLowerCase();
-          const tags = Array.isArray(entry.tags) ? entry.tags.map((tag) => String(tag).toLowerCase()) : [];
-          const text = (entry.text ?? "").toLowerCase();
-
-          if (
-            !keywords.every(
-              (keyword) =>
-                text.includes(keyword) ||
-                title.includes(keyword) ||
-                description.includes(keyword) ||
-                snippet.includes(keyword) ||
-                section.includes(keyword) ||
-                tags.some((tag) => tag.includes(keyword)),
-            )
-          ) {
-            return -1;
-          }
-
-          let score = 0;
-
-          keywords.forEach((keyword) => {
-            if (title === keyword) {
-              score += 340;
-            } else if (title.includes(keyword)) {
-              score += 220;
-            }
-
-            if (tags.some((tag) => tag === keyword)) {
-              score += 180;
-            } else if (tags.some((tag) => tag.includes(keyword))) {
-              score += 120;
-            }
-
-            if (description.includes(keyword)) {
-              score += 90;
-            }
-
-            if (section.includes(keyword)) {
-              score += 68;
-            }
-
-            if (snippet.includes(keyword)) {
-              score += 52;
-            }
-
-            const textIndex = text.indexOf(keyword);
-            if (textIndex !== -1) {
-              score += Math.max(0, 44 - Math.min(44, textIndex / 20));
-            }
-          });
-
-          if (wholeQuery && title.includes(wholeQuery)) {
-            score += 150;
-          }
-
-          if (wholeQuery && description.includes(wholeQuery)) {
-            score += 80;
-          }
-
-          if (wholeQuery && section.includes(wholeQuery)) {
-            score += 54;
-          }
-
-          return score;
-        };
-
-        const updateActiveItem = () => {
-          const items = Array.from(resultsNode.querySelectorAll("[data-search-result-index]"));
-          items.forEach((item, index) => {
-            const isActive = index === activeIndex;
-            item.classList.toggle("is-active", isActive);
-            item.setAttribute("aria-selected", isActive ? "true" : "false");
-          });
-        };
-
-        const renderResults = (query) => {
-          const wholeQuery = normalizeQuery(query);
-          const keywords = normalizeKeywords(query);
-
-          if (!wholeQuery) {
-            visibleEntries = [];
-            resultsNode.innerHTML = "";
-            emptyState.textContent = "输入关键词后，下方会即时出现相关文章、灵感和资料。";
-            closeDropdown();
-            return;
-          }
-
-          const rankedEntries = (entriesCache ?? [])
-            .map((entry) => ({
-              entry,
-              score: scoreEntry(entry, keywords, wholeQuery),
-            }))
-            .filter((item) => item.score >= 0)
-            .sort((left, right) => right.score - left.score)
-            .slice(0, 6);
-
-          visibleEntries = rankedEntries.map((item) => item.entry);
-          activeIndex = visibleEntries.length > 0 ? 0 : -1;
-
-          if (visibleEntries.length === 0) {
-            resultsNode.innerHTML = "";
-            emptyState.textContent = `没有找到与“${wholeQuery}”相关的内容。`;
-            openDropdown();
-            return;
-          }
-
-          emptyState.textContent = "";
-          resultsNode.innerHTML = visibleEntries
-            .map((entry, index) => {
-              const tags = Array.isArray(entry.tags) ? entry.tags.slice(0, 3) : [];
-              return `
-                <a
-                  class="header-search__item${index === activeIndex ? " is-active" : ""}"
-                  href="${entry.url}"
-                  data-search-result-index="${index}"
-                  role="option"
-                  aria-selected="${index === activeIndex ? "true" : "false"}"
-                >
-                  <div class="header-search__item-top">
-                    <span class="header-search__kind">${escapeHtml(entry.kind ?? "")}</span>
-                    <span class="header-search__section">${escapeHtml(entry.section ?? "")}</span>
-                  </div>
-                  <strong class="header-search__title">${highlight(entry.title ?? "", wholeQuery)}</strong>
-                  <span class="header-search__snippet">${highlight(getSnippet(entry, keywords), wholeQuery)}</span>
-                  ${
-                    tags.length > 0
-                      ? `<span class="header-search__tags">${tags
-                          .map((tag) => `<span class="header-search__tag">#${escapeHtml(tag)}</span>`)
-                          .join("")}</span>`
-                      : ""
-                  }
-                </a>
-              `;
-            })
-            .join("");
-
-          openDropdown();
-          updateActiveItem();
-        };
-
-        const loadEntries = async () => {
-          if (entriesCache) {
-            return entriesCache;
-          }
-
-          const response = await fetch(endpoint, {
-            headers: {
-              accept: "application/json",
-            },
-          });
-
-          entriesCache = await response.json();
-          return entriesCache;
-        };
-
-        const handleInput = async () => {
-          try {
-            await loadEntries();
-            renderResults(input.value);
-          } catch (error) {
-            resultsNode.innerHTML = "";
-            emptyState.textContent = "搜索索引暂时没有加载成功，请稍后再试。";
-            openDropdown();
-            console.error("[header-search]", error);
-          }
-        };
-
-        input.addEventListener("focus", handleInput);
-        input.addEventListener("input", handleInput);
-
-        input.addEventListener("keydown", (event) => {
-          if (!visibleEntries.length) {
-            if (event.key === "Escape") {
-              closeDropdown();
-            }
-            return;
-          }
-
-          if (event.key === "ArrowDown") {
-            event.preventDefault();
-            activeIndex = (activeIndex + 1 + visibleEntries.length) % visibleEntries.length;
-            openDropdown();
-            updateActiveItem();
-            return;
-          }
-
-          if (event.key === "ArrowUp") {
-            event.preventDefault();
-            activeIndex = (activeIndex - 1 + visibleEntries.length) % visibleEntries.length;
-            openDropdown();
-            updateActiveItem();
-            return;
-          }
-
-          if (event.key === "Enter") {
-            event.preventDefault();
-            const targetEntry = visibleEntries[Math.max(activeIndex, 0)];
-            if (targetEntry?.url) {
-              window.location.href = targetEntry.url;
-            }
-            return;
-          }
-
-          if (event.key === "Escape") {
-            event.preventDefault();
-            closeDropdown();
-          }
-        });
-
-        dropdown.addEventListener("mousedown", () => {
-          focusWithinDropdown = true;
-        });
-
-        dropdown.addEventListener("mouseup", () => {
-          focusWithinDropdown = false;
-        });
-
-        document.addEventListener("pointerdown", (event) => {
-          if (!headerSearchRoot.contains(event.target)) {
-            closeDropdown();
-          }
-        });
-
-        input.addEventListener("blur", () => {
-          window.setTimeout(() => {
-            if (!focusWithinDropdown && !headerSearchRoot.contains(document.activeElement)) {
-              closeDropdown();
-            }
-          }, 80);
-        });
-
-        if (currentQuery) {
-          handleInput();
-        }
-      }
-    }
-  </script>
 </header>

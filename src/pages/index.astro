@@ -1,136 +1,233 @@
----
+﻿---
 import { render } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import CategoryGrid from "../components/CategoryGrid.astro";
 import { getWeeklyMottoForDate, weeklyMottos } from "../data/weekly-mottos";
+import { siteConfig, topicMatrix } from "../data/site";
 import {
   formatDate,
   getAllInspirations,
   getAllPosts,
+  getAllResources,
+  getCategoryCounts,
   getPostHref,
   getUpdatedDate,
 } from "../lib/blog";
 import { withBasePath } from "../lib/paths";
 
-const [posts, inspirations] = await Promise.all([getAllPosts(), getAllInspirations()]);
+const [posts, inspirations, resources] = await Promise.all([
+  getAllPosts(),
+  getAllInspirations(),
+  getAllResources(),
+]);
 
 const latestPosts = posts.slice(0, 3);
 const latestInspiration = inspirations[0];
-const currentQuery = Astro.url.searchParams.get("q") ?? "";
 const todayMotto = getWeeklyMottoForDate(new Date());
 const latestInspirationRender = latestInspiration ? await render(latestInspiration) : null;
 const LatestInspirationContent = latestInspirationRender?.Content ?? null;
+const categoryCounts = getCategoryCounts(posts, { includeHidden: false });
+const topicTiles = topicMatrix.map((topic) => ({
+  ...topic,
+  count:
+    topic.slug === "resources"
+      ? resources.length
+      : (categoryCounts.find((category) => category.slug === topic.slug)?.count ?? 0),
+}));
 
 function splitMottoWords(value: string) {
   return value.split(/\s+/).filter(Boolean);
+}
+
+function splitChineseMotto(value: string) {
+  const normalized = value.trim();
+  const parts = normalized
+    .split(/[，、；]/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length > 1) {
+    return parts;
+  }
+
+  if (normalized.length <= 4) {
+    const midpoint = Math.ceil(normalized.length / 2);
+    return [normalized.slice(0, midpoint), normalized.slice(midpoint)].filter(Boolean);
+  }
+
+  if (normalized.length <= 6) {
+    return [normalized.slice(0, 3), normalized.slice(3)].filter(Boolean);
+  }
+
+  return [normalized];
 }
 ---
 
 <BaseLayout
   showSidebar={false}
   wideContent={true}
-  bodyClass="body--home"
-  shellClass="page-shell--home"
-  panelClass="content-panel--home"
-  headerSearch={true}
-  headerSearchQuery={currentQuery}
-  headerSearchPlaceholder="搜索文章、正文、标签、灵感"
+  bodyClass="body--hub-home"
+  shellClass="page-shell--hub-home"
+  panelClass="content-panel--hub-home"
 >
-  <section class="home-hero">
-    <div class="home-hero__backdrop" aria-hidden="true">
-      <span class="home-hero__ghost home-hero__ghost--en" data-motto-ghost-en>{todayMotto.en}</span>
-      <span class="home-hero__ghost home-hero__ghost--zh" data-motto-ghost-zh>{todayMotto.zh}</span>
-    </div>
+  <div class="lab-home">
+    <section class="lab-hero">
+      <div class="lab-hero__grid"></div>
+      <div class="lab-hero__backdrop" aria-hidden="true">
+        <span class="lab-hero__ghost lab-hero__ghost--en" data-motto-ghost-en>{todayMotto.en}</span>
+        <span class="lab-hero__ghost lab-hero__ghost--zh" data-motto-ghost-zh>{todayMotto.zh}</span>
+      </div>
 
-    <div class="home-hero__grid">
-      <div class="home-motto-card">
-        <p class="home-motto-card__eyebrow" data-motto-day>
+      <div class="lab-hero__content">
+        <p class="lab-hero__eyebrow" data-motto-day>
           {todayMotto.dayEn.toUpperCase()} · {todayMotto.dayZh}
         </p>
 
-        <h1 class="home-motto-card__headline">
-          <span class="home-motto-card__en" data-motto-en>
+        <div class="lab-hero__headline">
+          <div class="lab-hero__en" data-motto-en>
             {splitMottoWords(todayMotto.en).map((word) => <span>{word}</span>)}
-          </span>
-          <span class="home-motto-card__zh" data-motto-zh>{todayMotto.zh}</span>
-        </h1>
-      </div>
-    </div>
-  </section>
-
-  <section class="home-stage home-stage--journal" data-home-stage>
-    <div class="home-stage__surface home-stage__surface--journal">
-      <div class="home-block-heading home-block-heading--journal">
-        <div class="home-block-heading__left">
-          <span class="home-block-heading__index">01 · JOURNAL</span>
-          <h2>最新文章</h2>
-        </div>
-      </div>
-
-      <div class="home-article-grid">
-        {latestPosts.map((post) => (
-          <a class="home-article-card" href={withBasePath(getPostHref(post))}>
-            <div class="home-article-card__media">
-              {post.data.cover ? (
-                <img
-                  class="home-article-card__cover"
-                  src={withBasePath(post.data.cover)}
-                  alt={post.data.title}
-                  loading="lazy"
-                  decoding="async"
-                />
-              ) : (
-                <div class="home-article-card__cover home-article-card__cover--fallback">
-                  <span>{post.data.category}</span>
-                  <p>{post.data.tags.slice(0, 2).join(" / ") || post.data.description}</p>
-                </div>
-              )}
-            </div>
-
-            <div class="home-article-card__body">
-              <div class="home-article-card__meta">
-                <span>{formatDate(getUpdatedDate(post))}</span>
-                <span>{post.data.category}</span>
-              </div>
-              <h3>{post.data.title}</h3>
-              <p class="home-article-card__summary">{post.data.description}</p>
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  {latestInspiration && LatestInspirationContent && (
-    <section class="home-stage home-stage--spark home-stage--spark-static is-active">
-      <div class="home-stage__surface home-stage__surface--spark">
-        <div class="home-block-heading home-block-heading--spark">
-          <div class="home-block-heading__left">
-            <span class="home-block-heading__index">02 · SPARK</span>
-            <h2>最新灵感</h2>
-          </div>
-          <a class="home-block-heading__all" href={withBasePath("/daily/")}>ALL</a>
-        </div>
-
-        <div class="home-inspiration-shell">
-          <div class="home-inspiration-shell__bar">
-            <span class="home-inspiration-shell__theme">{latestInspiration.data.theme}</span>
-            <span class="home-inspiration-shell__title">{latestInspiration.data.title}</span>
           </div>
 
-          <div class="home-inspiration-shell__panel">
-            <div class="home-inspiration-shell__content">
-              <LatestInspirationContent />
-            </div>
+          <div class="lab-hero__zh" data-motto-zh>
+            {splitChineseMotto(todayMotto.zh).map((part) => <span>{part}</span>)}
           </div>
         </div>
       </div>
     </section>
-  )}
+
+    <section class="lab-stage lab-stage--journal" data-lab-stage>
+      <div class="lab-stage__surface">
+        <div class="lab-section-heading">
+          <div>
+            <p class="lab-section-heading__eyebrow">01 · JOURNAL</p>
+            <h2>最近更新的三篇文章</h2>
+          </div>
+        </div>
+
+        <div class="lab-article-grid">
+          {latestPosts.map((post) => (
+            <a class="lab-article-card" href={withBasePath(getPostHref(post))}>
+              <div class="lab-article-card__media">
+                {post.data.cover ? (
+                  <img
+                    class="lab-article-card__cover"
+                    src={withBasePath(post.data.cover)}
+                    alt={post.data.title}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : (
+                  <div class="lab-article-card__fallback">
+                    <span>{post.data.category}</span>
+                    <p>{post.data.tags.slice(0, 2).join(" / ") || post.data.description}</p>
+                  </div>
+                )}
+              </div>
+              <div class="lab-article-card__body">
+                <div class="lab-article-card__meta">
+                  <span>{post.data.category}</span>
+                  <span>更新 {formatDate(getUpdatedDate(post))}</span>
+                </div>
+                <h3>{post.data.title}</h3>
+                <p>{post.data.description}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {latestInspiration && LatestInspirationContent && (
+      <section class="lab-stage lab-stage--spark" data-lab-stage>
+        <div class="lab-stage__surface">
+          <div class="lab-section-heading lab-section-heading--compact">
+            <div>
+              <p class="lab-section-heading__eyebrow">02 · SPARK</p>
+              <h2>最新灵感</h2>
+            </div>
+            <a class="lab-section-heading__all" href={withBasePath("/daily/")}>ALL</a>
+          </div>
+
+          <div class="lab-spark">
+            <div class="lab-spark__island">
+              <span class="lab-spark__theme">{latestInspiration.data.theme}</span>
+              <span class="lab-spark__title">{latestInspiration.data.title}</span>
+            </div>
+
+            <div class="lab-spark__panel">
+              <div class="lab-spark__content prose prose--inspiration">
+                <LatestInspirationContent />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )}
+
+    <section class="lab-topic-section">
+      <div class="lab-section-heading">
+        <div>
+          <p class="lab-section-heading__eyebrow">03 · TOPIC MATRIX</p>
+          <h2>按主题进入</h2>
+        </div>
+      </div>
+
+      <CategoryGrid topics={topicTiles} />
+    </section>
+
+    <section class="lab-about-section">
+      <div class="lab-section-heading">
+        <div>
+          <p class="lab-section-heading__eyebrow">04 · ABOUT</p>
+          <h2>{siteConfig.author.name}</h2>
+        </div>
+      </div>
+
+      <div class="lab-about-card">
+        <div class="lab-about-card__image-wrap">
+          <img
+            class="lab-about-card__image"
+            src={withBasePath(siteConfig.author.portrait)}
+            alt={`${siteConfig.author.name} 的照片`}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+
+        <div class="lab-about-card__content">
+          <p class="lab-about-card__lead">{siteConfig.author.shortBio}</p>
+          <p>{siteConfig.author.bio}</p>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <script is:inline define:vars={{ weeklyMottos }}>
     const getMondayFirstIndex = (day) => (day + 6) % 7;
-    const today = weeklyMottos[getMondayFirstIndex(new Date().getDay())];
+    const splitChineseMotto = (value) => {
+      const normalized = value.trim();
+      const parts = normalized
+        .split(/[，、；]/)
+        .map((part) => part.trim())
+        .filter(Boolean);
 
+      if (parts.length > 1) {
+        return parts;
+      }
+
+      if (normalized.length <= 4) {
+        const midpoint = Math.ceil(normalized.length / 2);
+        return [normalized.slice(0, midpoint), normalized.slice(midpoint)].filter(Boolean);
+      }
+
+      if (normalized.length <= 6) {
+        return [normalized.slice(0, 3), normalized.slice(3)].filter(Boolean);
+      }
+
+      return [normalized];
+    };
+
+    const today = weeklyMottos[getMondayFirstIndex(new Date().getDay())];
     const dayNode = document.querySelector("[data-motto-day]");
     const enNode = document.querySelector("[data-motto-en]");
     const zhNode = document.querySelector("[data-motto-zh]");
@@ -146,30 +243,34 @@ function splitMottoWords(value: string) {
           return span;
         }),
       );
-      zhNode.textContent = today.zh;
+      zhNode.replaceChildren(
+        ...splitChineseMotto(today.zh).map((part) => {
+          const span = document.createElement("span");
+          span.textContent = part;
+          return span;
+        }),
+      );
       ghostEnNode.textContent = today.en;
       ghostZhNode.textContent = today.zh;
     }
 
-    const stages = Array.from(document.querySelectorAll("[data-home-stage]"));
+    const stages = Array.from(document.querySelectorAll("[data-lab-stage]"));
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (!reducedMotion && stages.length > 0) {
-      const stageObserver = new IntersectionObserver(
+      const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            const target = entry.target;
-            const active = entry.isIntersecting && entry.intersectionRatio > 0.14;
-            target.classList.toggle("is-active", active);
+            entry.target.classList.toggle("is-active", entry.isIntersecting && entry.intersectionRatio > 0.22);
           });
         },
         {
-          threshold: [0.14, 0.22, 0.36],
-          rootMargin: "0px 0px -8% 0px",
+          threshold: [0.18, 0.22, 0.34, 0.52],
+          rootMargin: "0px 0px -10% 0px",
         },
       );
 
-      stages.forEach((stage) => stageObserver.observe(stage));
+      stages.forEach((stage) => observer.observe(stage));
     } else {
       stages.forEach((stage) => stage.classList.add("is-active"));
     }

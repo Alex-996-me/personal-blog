@@ -1,8 +1,9 @@
----
+﻿---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PostCard from "../../components/PostCard.astro";
 import { categories } from "../../data/site";
 import { getAllPosts, getCategoryBySlug } from "../../lib/blog";
+import { withBasePath } from "../../lib/paths";
 
 export async function getStaticPaths() {
   return categories.map((category) => ({
@@ -30,6 +31,7 @@ const filteredPosts = posts.filter((post) => post.data.category === category.nam
   panelClass="content-panel--archive"
 >
   <section class="page-header page-header--archive">
+    <a class="post-backlink" href={withBasePath("/")}>← 返回首页</a>
     <h1>{category.name}</h1>
     <p>{category.description}</p>
   </section>

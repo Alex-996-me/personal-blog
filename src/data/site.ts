@@ -1,4 +1,4 @@
-export type CategoryDefinition = {
+﻿export type CategoryDefinition = {
   name: string;
   slug: string;
   description: string;
@@ -9,6 +9,14 @@ export type ModuleDefinition = {
   name: string;
   href: string;
   description: string;
+};
+
+export type TopicTileDefinition = {
+  name: string;
+  slug: string;
+  href: string;
+  description: string;
+  icon: "reading" | "health" | "training" | "neuroscience" | "tools" | "resources";
 };
 
 export const inspirationThemeNames = ["思考", "生活", "科学"] as const;
@@ -29,8 +37,9 @@ export const siteConfig = {
     name: "海粟",
     handle: "@n1lab",
     avatarLabel: "N1",
+    portrait: "/images/home/author-life.jpg",
     shortBio: "大二学生。关心身体、营养、训练、脑科学、学习和生活意义，也会把还没想明白的问题慢慢记下来。",
-    bio: "这是一个公开日记本，不是自媒体，也不是作品集。我会记录读书、播客、训练、饮食实验、大学阶段的迷茫、保研或留学的犹豫、AI 工具，以及一些还没有想明白的问题。我不保证自己永远正确，但希望自己持续诚实。",
+    bio: "这个博客不是自媒体，也不是作品集。它更像一个公开日记本，用来记录读书、播客、训练、饮食实验、大学迷茫、保研或留学的犹豫、AI 工具，以及一些我暂时还没有想明白的问题。我不保证自己永远正确，但希望自己持续诚实。",
   },
   defaultOgImage: "/images/og-default.svg",
 };
@@ -71,6 +80,51 @@ export const categories: CategoryDefinition[] = [
 
 export const visibleCategories = categories.filter((category) => !category.hidden);
 
+export const topicMatrix: TopicTileDefinition[] = [
+  {
+    name: "读书",
+    slug: "reading",
+    href: "/categories/reading/",
+    description: "书、播客、课程与阅读之后的再思考。",
+    icon: "reading",
+  },
+  {
+    name: "健康",
+    slug: "health",
+    href: "/categories/health/",
+    description: "饮食、睡眠、恢复、体检与身体实验。",
+    icon: "health",
+  },
+  {
+    name: "训练",
+    slug: "training",
+    href: "/categories/training/",
+    description: "杠铃、壶铃、动作记录和训练方法。",
+    icon: "training",
+  },
+  {
+    name: "脑科学",
+    slug: "neuroscience",
+    href: "/categories/neuroscience/",
+    description: "注意力、学习、情绪与大脑模型。",
+    icon: "neuroscience",
+  },
+  {
+    name: "工具",
+    slug: "tools",
+    href: "/categories/tools/",
+    description: "真正帮到我的软件、工作流与方法论。",
+    icon: "tools",
+  },
+  {
+    name: "资料",
+    slug: "resources",
+    href: "/resources/",
+    description: "集中存放 PDF、课程资料、音频与可下载文档。",
+    icon: "resources",
+  },
+];
+
 export const inspirationThemes: InspirationThemeDefinition[] = [
   {
     name: "思考",
@@ -104,7 +158,7 @@ export const modules: ModuleDefinition[] = [
   {
     name: "资料",
     href: "/resources/",
-    description: "集中放 PDF、课程资料、讲义和可下载的参考材料。",
+    description: "集中存放 PDF、课程资料、讲义和可下载的参考材料。",
   },
 ];
 
@@ -117,5 +171,4 @@ export const navigation = [
   { label: "脑科学", href: "/categories/neuroscience/" },
   { label: "工具", href: "/categories/tools/" },
   { label: "资料", href: "/resources/" },
-  { label: "关于", href: "/about/" },
 ];

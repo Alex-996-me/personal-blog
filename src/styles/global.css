@@ -4024,42 +4024,144 @@ footer {
   }
 }
 
-.body--home .home-stage--spark-static .home-stage__surface {
+.body--home .home-hero__ghost--zh {
+  top: auto;
+  right: clamp(0.8rem, 2vw, 2.2rem);
+  bottom: clamp(0.8rem, 1.8vw, 1.8rem);
+  transform: none;
+  max-width: 4.8em;
+  color: rgba(240, 173, 89, 0.1);
+  font-size: clamp(2.5rem, 4.8vw, 4.3rem);
+  line-height: 1.05;
+  letter-spacing: 0.16em;
+  text-align: right;
+}
+
+.body--home .home-motto-card__headline {
+  align-items: end;
+}
+
+.body--home .home-motto-card__zh {
+  display: grid;
+  justify-items: end;
+  align-self: end;
+  gap: 0.08em;
+  padding-bottom: 0.28rem;
+  color: #f2b968;
+  font-size: clamp(1.92rem, 3.2vw, 3.25rem);
+  font-style: normal;
+  line-height: 0.96;
+  letter-spacing: 0.12em;
+  text-align: right;
+  max-width: 4.8em;
+}
+
+.body--home .home-motto-card__zh span {
+  display: block;
+  text-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.body--home .home-stage--spark .home-stage__surface {
   opacity: 1;
   transform: none;
 }
 
-.body--home .home-stage--spark-static .home-inspiration-shell__bar {
-  width: 100%;
-  min-height: 88px;
-  padding: 0 1.45rem;
-  border-radius: 24px;
-  transform: none;
+.body--home .home-stage--spark .home-inspiration-shell__bar {
+  width: min(520px, 100%);
+  min-height: 78px;
   opacity: 1;
-  box-shadow:
-    0 24px 54px rgba(0, 0, 0, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-.body--home .home-stage--spark-static .home-inspiration-shell__panel {
-  max-height: none;
+.body--home .home-stage--spark .home-inspiration-shell__panel {
+  max-height: 15.5rem;
   opacity: 1;
-  overflow: visible;
+  overflow: hidden;
   clip-path: inset(0 0 0 0 round 26px);
-  transform: none;
+  transform: translateY(-8px) scale(0.995);
   filter: none;
 }
 
-.body--home .home-stage--spark-static .home-inspiration-shell__content {
+.body--home .home-stage--spark .home-inspiration-shell__content {
+  position: relative;
+  padding: 1.35rem 1.45rem 1.95rem;
   opacity: 1;
   transform: none;
 }
 
+.body--home .home-stage--spark .home-inspiration-shell__content::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5.5rem;
+  background: linear-gradient(180deg, rgba(12, 16, 21, 0), rgba(12, 16, 21, 0.98));
+  pointer-events: none;
+  transition: opacity 0.34s ease;
+}
+
+.body--home .home-stage--spark .home-inspiration-shell__title {
+  font-size: clamp(1.28rem, 2.1vw, 2.08rem);
+}
+
+.body--home .home-stage--spark .home-inspiration-shell__content .prose,
+.body--home .home-stage--spark .home-inspiration-shell__content .prose--inspiration {
+  font-size: clamp(1.2rem, 1.4vw, 1.5rem);
+  line-height: 1.98;
+}
+
+.body--home .home-stage--spark.is-active .home-inspiration-shell__panel {
+  max-height: 880px;
+  transform: none;
+}
+
+.body--home .home-stage--spark.is-active .home-inspiration-shell__content::after {
+  opacity: 0;
+}
+
+.daily-flip-page__content.prose p,
+.daily-flip-page__content .prose p,
+.daily-flip-page__content.prose li,
+.daily-flip-page__content .prose li {
+  font-size: clamp(1.22rem, 1.42vw, 1.54rem);
+}
+
 @media (max-width: 720px) {
-  .body--home .home-stage--spark-static .home-inspiration-shell__bar {
-    min-height: 78px;
-    padding: 0 1.05rem;
-    border-radius: 20px;
+  .body--home .home-motto-card__headline {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.8rem;
+  }
+
+  .body--home .home-hero__ghost--zh {
+    right: 0.55rem;
+    bottom: 0.55rem;
+    max-width: 4em;
+    font-size: clamp(1.72rem, 6.8vw, 2.45rem);
+  }
+
+  .body--home .home-motto-card__zh {
+    max-width: none;
+    font-size: clamp(1.42rem, 6vw, 2rem);
+    gap: 0.05em;
+  }
+
+  .body--home .home-stage--spark .home-inspiration-shell__bar {
+    min-height: 74px;
+    padding: 0 1rem;
+    border-radius: 22px;
+  }
+
+  .body--home .home-stage--spark .home-inspiration-shell__panel {
+    max-height: 13.8rem;
+  }
+
+  .body--home .home-stage--spark .home-inspiration-shell__content {
+    padding: 1.12rem 1rem 1.72rem;
+  }
+
+  .body--home .home-stage--spark .home-inspiration-shell__content .prose,
+  .body--home .home-stage--spark .home-inspiration-shell__content .prose--inspiration {
+    font-size: 1.08rem;
   }
 }
 
