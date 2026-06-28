@@ -940,13 +940,14 @@
 
 .body--post-training .video-grid,
 .body--post-training .post-figure {
-  max-width: min(100%, 1120px);
+  max-width: min(100%, 1360px);
   margin-left: auto;
   margin-right: auto;
 }
 
 .body--post-training .video-grid {
-  gap: 1.2rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.4rem;
 }
 
 .body--post-training .video-grid .video-embed {

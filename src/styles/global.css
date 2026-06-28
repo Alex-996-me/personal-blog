@@ -169,7 +169,7 @@ footer {
 }
 
 .page-shell--post-training {
-  width: min(calc(100% - 2rem), 1220px);
+  width: min(calc(100% - 2rem), 1480px);
   grid-template-columns: minmax(0, 1fr);
 }
 

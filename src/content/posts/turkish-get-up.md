@@ -16,13 +16,6 @@ sectionSummaries: []
 
 这一篇先放动作视频，后续我会继续补充自己的训练笔记。
 
-<figure class="post-figure post-figure--medium">
-  <video controls playsinline preload="metadata" aria-label="土耳其起立动作视频">
-    <source src="/videos/training-movements/turkish-get-up.mp4" type="video/mp4" />
-  </video>
-  <figcaption>土耳其起立</figcaption>
-</figure>
-
 ## 动作细节
 
 - 土起不是速度项目，是关节控制项目。
@@ -46,6 +39,13 @@ sectionSummaries: []
 ## 视频示范
 
 <div class="video-grid">
+  <figure class="post-figure post-figure--wide">
+    <video controls playsinline preload="metadata" aria-label="土耳其起立动作视频">
+      <source src="/videos/training-movements/turkish-get-up.mp4" type="video/mp4" />
+    </video>
+    <figcaption>土耳其起立</figcaption>
+  </figure>
+
   <div class="embedded-video-card">
     <div class="video-embed">
       <iframe
