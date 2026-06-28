@@ -168,6 +168,11 @@ footer {
   grid-template-columns: minmax(0, var(--reading-width));
 }
 
+.page-shell--post-training {
+  width: min(calc(100% - 2rem), 1220px);
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .page-shell--archive {
   width: min(calc(100% - 1.5rem), 1480px);
   grid-template-columns: minmax(0, 1fr);
@@ -183,6 +188,10 @@ footer {
 }
 
 .content-panel--wide {
+  max-width: 100%;
+}
+
+.content-panel--post-training {
   max-width: 100%;
 }
 

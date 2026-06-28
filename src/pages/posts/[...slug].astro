@@ -23,13 +23,16 @@ const { Content } = await render(post);
 const youtubeEmbedUrl = getYoutubeEmbedUrl(post.data.youtube);
 const updated = getUpdatedDate(post);
 const categoryHref = withBasePath(getCategoryHref(post.data.category));
+const isTrainingPost = post.data.category === "训练";
 ---
 
 <BaseLayout
   title={post.data.title}
   description={post.data.description}
   ogImage={post.data.cover}
-  bodyClass="body--post"
+  bodyClass={["body--post", isTrainingPost && "body--post-training"].filter(Boolean).join(" ")}
+  shellClass={isTrainingPost ? "page-shell--post-training" : ""}
+  panelClass={isTrainingPost ? "content-panel--post-training" : ""}
 >
   <article>
     <a class="post-backlink" href={categoryHref}>← 返回{post.data.category}</a>
