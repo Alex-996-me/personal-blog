@@ -1182,6 +1182,11 @@
     max-width: 100%;
   }
 
+  .body--post-training .video-grid {
+    grid-template-columns: 1fr;
+    gap: 0.95rem;
+  }
+
   .prose h2 {
     font-size: 1.46rem;
   }
