@@ -1994,6 +1994,37 @@ footer {
   text-align: center;
 }
 
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.6rem 0 1.9rem;
+  align-items: start;
+}
+
+.video-grid > * {
+  min-width: 0;
+}
+
+.video-grid .post-figure,
+.video-grid .embedded-video-card {
+  max-width: none;
+  margin: 0;
+}
+
+.embedded-video-card {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.embedded-video-card__caption {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  text-align: center;
+}
+
 .post-figure--report {
   max-width: min(100%, 540px);
 }
@@ -2624,6 +2655,10 @@ footer {
   .report-grid .post-figure:last-child {
     grid-column: auto;
     max-width: none;
+  }
+
+  .video-grid {
+    grid-template-columns: 1fr;
   }
 
   .collapsible-table summary {
