@@ -929,6 +929,17 @@
   margin-top: 0.85rem;
 }
 
+.body--post .prose .point-lead {
+  display: inline-block;
+  margin: 0 0 0.45rem;
+  padding: 0.16rem 0.62rem 0.22rem;
+  border-radius: 999px;
+  background: #f2efe8;
+  color: #0e1116;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
 .body--post-training article {
   max-width: 100%;
 }
