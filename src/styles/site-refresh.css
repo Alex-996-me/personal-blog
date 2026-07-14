@@ -92,6 +92,204 @@
   gap: 1.05rem;
 }
 
+/* 首页只保留一条正在展开的灵感，像灵动岛一样先出现圆角标题条，再展开正文。 */
+.home-inspiration-carousel {
+  position: relative;
+  min-height: clamp(25rem, 45vw, 34rem);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 14% 18%, rgba(240, 173, 89, 0.075), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 38%),
+    #090c10;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.home-inspiration-carousel__grid {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+  background-size: 18px 18px;
+  opacity: 0.56;
+  pointer-events: none;
+}
+
+.home-inspiration-carousel__viewport {
+  position: relative;
+  min-height: clamp(25rem, 45vw, 34rem);
+}
+
+.home-inspiration-slide {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  align-content: center;
+  padding: clamp(1rem, 3vw, 2.25rem);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: perspective(1800px) rotateX(-7deg) rotateY(9deg) translateY(1.5rem) scale(0.982);
+  transform-origin: 50% 76%;
+  transition:
+    opacity 0.52s ease,
+    transform 0.72s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 0.72s;
+}
+
+.home-inspiration-slide.is-entering,
+.home-inspiration-slide.is-active,
+.home-inspiration-slide.is-leaving {
+  visibility: visible;
+}
+
+.home-inspiration-slide.is-active {
+  z-index: 3;
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+  transition-delay: 0s;
+}
+
+.home-inspiration-slide.is-leaving {
+  z-index: 2;
+  opacity: 0;
+  transform: perspective(1800px) rotateX(6deg) rotateY(-10deg) translateX(-1.5%) translateY(-0.9rem) scale(0.982);
+}
+
+.home-inspiration-slide__island {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  width: min(100%, 680px);
+  min-height: 4.35rem;
+  margin: 0 auto;
+  padding: 0.78rem 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.022)),
+    rgba(16, 21, 28, 0.94);
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition:
+    width 0.68s cubic-bezier(0.22, 1, 0.36, 1),
+    min-height 0.56s cubic-bezier(0.22, 1, 0.36, 1),
+    border-radius 0.52s ease,
+    transform 0.56s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-inspiration-slide.is-active .home-inspiration-slide__island {
+  width: min(100%, 1050px);
+  min-height: 4.8rem;
+  border-radius: 26px 26px 14px 14px;
+  transform: translateY(0.5rem);
+}
+
+.home-inspiration-slide__theme {
+  color: var(--accent);
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+}
+
+.home-inspiration-slide__island h1 {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: #f8fafc;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Songti SC", serif;
+  font-size: clamp(1.25rem, 2vw, 1.8rem);
+  font-weight: 600;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-inspiration-slide__more {
+  color: #c5cfdd;
+  font-size: 0.86rem;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.home-inspiration-slide__more:hover {
+  color: var(--accent);
+}
+
+.home-inspiration-slide__panel {
+  width: min(100%, 1050px);
+  max-height: 0;
+  margin: -0.1rem auto 0;
+  padding: 0 1.4rem;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-top: 0;
+  border-radius: 0 0 26px 26px;
+  background: rgba(9, 12, 16, 0.92);
+  opacity: 0;
+  transform: perspective(1500px) rotateX(-5deg) translateY(-0.7rem);
+  transform-origin: top;
+  transition:
+    max-height 0.64s cubic-bezier(0.22, 1, 0.36, 1),
+    padding 0.56s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.42s ease,
+    opacity 0.3s ease,
+    transform 0.64s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-inspiration-slide.is-active .home-inspiration-slide__panel {
+  max-height: 23rem;
+  padding: 1.65rem 1.5rem 1.55rem;
+  overflow-y: auto;
+  border-color: rgba(255, 255, 255, 0.065);
+  opacity: 1;
+  transform: none;
+}
+
+.home-inspiration-slide__content {
+  max-width: 890px;
+  margin: 0 auto;
+}
+
+.home-inspiration-slide__content.prose,
+.home-inspiration-slide__content .prose,
+.home-inspiration-slide__content.prose--inspiration,
+.home-inspiration-slide__content .prose--inspiration {
+  max-width: none;
+  color: #e8edf5;
+  font-size: clamp(1.08rem, 1.35vw, 1.4rem);
+  line-height: 1.95;
+}
+
+.home-inspiration-slide__content > :first-child,
+.home-inspiration-slide__content .prose > :first-child,
+.home-inspiration-slide__content .prose--inspiration > :first-child {
+  margin-top: 0;
+}
+
+.home-inspiration-slide__content > :last-child,
+.home-inspiration-slide__content .prose > :last-child,
+.home-inspiration-slide__content .prose--inspiration > :last-child {
+  margin-bottom: 0;
+}
+
+.home-inspiration-slide__content img {
+  display: block;
+  max-width: min(100%, 42rem);
+  max-height: 19rem;
+  margin: 0.8rem auto;
+  object-fit: contain;
+}
+
 .lab-hero {
   position: relative;
   min-height: 32rem;
@@ -1029,6 +1227,63 @@
 }
 
 @media (max-width: 900px) {
+  .home-inspiration-carousel,
+  .home-inspiration-carousel__viewport {
+    min-height: 28rem;
+    border-radius: 24px;
+  }
+
+  .home-inspiration-slide {
+    padding: 0.85rem;
+  }
+
+  .home-inspiration-slide__island {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.46rem 0.68rem;
+    width: 100%;
+    min-height: 4.2rem;
+    padding: 0.75rem 0.95rem;
+  }
+
+  .home-inspiration-slide.is-active .home-inspiration-slide__island {
+    width: 100%;
+    min-height: 4.65rem;
+    border-radius: 22px 22px 12px 12px;
+  }
+
+  .home-inspiration-slide__theme {
+    font-size: 0.76rem;
+  }
+
+  .home-inspiration-slide__island h1 {
+    font-size: clamp(1.12rem, 5vw, 1.45rem);
+  }
+
+  .home-inspiration-slide__more {
+    grid-column: 1 / -1;
+    justify-self: end;
+    margin-top: -0.12rem;
+    font-size: 0.8rem;
+  }
+
+  .home-inspiration-slide__panel {
+    width: 100%;
+    border-radius: 0 0 22px 22px;
+  }
+
+  .home-inspiration-slide.is-active .home-inspiration-slide__panel {
+    max-height: 18rem;
+    padding: 1.2rem 1rem 1.15rem;
+  }
+
+  .home-inspiration-slide__content.prose,
+  .home-inspiration-slide__content .prose,
+  .home-inspiration-slide__content.prose--inspiration,
+  .home-inspiration-slide__content .prose--inspiration {
+    font-size: 1.08rem;
+    line-height: 1.9;
+  }
+
   .site-header__inner,
   .site-footer__inner,
   .page-shell,
@@ -1255,6 +1510,18 @@
 }
 
 @media (max-width: 640px) {
+  .home-inspiration-carousel,
+  .home-inspiration-carousel__viewport {
+    min-height: 26rem;
+  }
+
+  .home-inspiration-slide__content.prose,
+  .home-inspiration-slide__content .prose,
+  .home-inspiration-slide__content.prose--inspiration,
+  .home-inspiration-slide__content .prose--inspiration {
+    font-size: 1.02rem;
+  }
+
   .site-brand {
     font-size: 1.04rem;
     letter-spacing: 0.1em;

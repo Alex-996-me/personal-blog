@@ -164,7 +164,6 @@ export const modules: ModuleDefinition[] = [
 
 export const navigation = [
   { label: "首页", href: "/" },
-  { label: "每日灵感", href: "/daily/" },
   { label: "读书", href: "/categories/reading/" },
   { label: "健康", href: "/categories/health/" },
   { label: "训练", href: "/categories/training/" },

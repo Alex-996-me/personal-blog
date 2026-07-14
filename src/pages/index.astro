@@ -2,7 +2,6 @@
 import { render } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import CategoryGrid from "../components/CategoryGrid.astro";
-import { getWeeklyMottoForDate, weeklyMottos } from "../data/weekly-mottos";
 import { siteConfig, topicMatrix } from "../data/site";
 import {
   formatDate,
@@ -22,10 +21,12 @@ const [posts, inspirations, resources] = await Promise.all([
 ]);
 
 const latestPosts = posts.slice(0, 3);
-const latestInspiration = inspirations[0];
-const todayMotto = getWeeklyMottoForDate(new Date());
-const latestInspirationRender = latestInspiration ? await render(latestInspiration) : null;
-const LatestInspirationContent = latestInspirationRender?.Content ?? null;
+const renderedInspirations = await Promise.all(
+  inspirations.map(async (inspiration) => {
+    const { Content } = await render(inspiration);
+    return { inspiration, Content };
+  }),
+);
 const categoryCounts = getCategoryCounts(posts, { includeHidden: false });
 const topicTiles = topicMatrix.map((topic) => ({
   ...topic,
@@ -34,33 +35,6 @@ const topicTiles = topicMatrix.map((topic) => ({
       ? resources.length
       : (categoryCounts.find((category) => category.slug === topic.slug)?.count ?? 0),
 }));
-
-function splitMottoWords(value: string) {
-  return value.split(/\s+/).filter(Boolean);
-}
-
-function splitChineseMotto(value: string) {
-  const normalized = value.trim();
-  const parts = normalized
-    .split(/[，、；]/)
-    .map((part) => part.trim())
-    .filter(Boolean);
-
-  if (parts.length > 1) {
-    return parts;
-  }
-
-  if (normalized.length <= 4) {
-    const midpoint = Math.ceil(normalized.length / 2);
-    return [normalized.slice(0, midpoint), normalized.slice(midpoint)].filter(Boolean);
-  }
-
-  if (normalized.length <= 6) {
-    return [normalized.slice(0, 3), normalized.slice(3)].filter(Boolean);
-  }
-
-  return [normalized];
-}
 ---
 
 <BaseLayout
@@ -71,29 +45,32 @@ function splitChineseMotto(value: string) {
   panelClass="content-panel--hub-home"
 >
   <div class="lab-home">
-    <section class="lab-hero">
-      <div class="lab-hero__grid"></div>
-      <div class="lab-hero__backdrop" aria-hidden="true">
-        <span class="lab-hero__ghost lab-hero__ghost--en" data-motto-ghost-en>{todayMotto.en}</span>
-        <span class="lab-hero__ghost lab-hero__ghost--zh" data-motto-ghost-zh>{todayMotto.zh}</span>
-      </div>
+    {renderedInspirations.length > 0 && (
+      <section class="home-inspiration-carousel" data-home-inspiration-carousel aria-label="每日灵感轮播">
+        <div class="home-inspiration-carousel__grid" aria-hidden="true"></div>
+        <div class="home-inspiration-carousel__viewport">
+          {renderedInspirations.map(({ inspiration, Content }, index) => (
+            <article
+              class:list={["home-inspiration-slide", index === 0 && "is-active"]}
+              data-home-inspiration-slide
+              aria-hidden={index === 0 ? "false" : "true"}
+            >
+              <div class="home-inspiration-slide__island">
+                <span class="home-inspiration-slide__theme">{inspiration.data.theme}</span>
+                <h1>{inspiration.data.title}</h1>
+                <a class="home-inspiration-slide__more" href={withBasePath("/daily/")}>查看更多灵感</a>
+              </div>
 
-      <div class="lab-hero__content">
-        <p class="lab-hero__eyebrow" data-motto-day>
-          {todayMotto.dayEn.toUpperCase()} · {todayMotto.dayZh}
-        </p>
-
-        <div class="lab-hero__headline">
-          <div class="lab-hero__en" data-motto-en>
-            {splitMottoWords(todayMotto.en).map((word) => <span>{word}</span>)}
-          </div>
-
-          <div class="lab-hero__zh" data-motto-zh>
-            {splitChineseMotto(todayMotto.zh).map((part) => <span>{part}</span>)}
-          </div>
+              <div class="home-inspiration-slide__panel">
+                <div class="home-inspiration-slide__content prose prose--inspiration">
+                  <Content />
+                </div>
+              </div>
+            </article>
+          ))}
         </div>
-      </div>
-    </section>
+      </section>
+    )}
 
     <section class="lab-stage lab-stage--journal" data-lab-stage>
       <div class="lab-stage__surface">
@@ -137,37 +114,10 @@ function splitChineseMotto(value: string) {
       </div>
     </section>
 
-    {latestInspiration && LatestInspirationContent && (
-      <section class="lab-stage lab-stage--spark" data-lab-stage>
-        <div class="lab-stage__surface">
-          <div class="lab-section-heading lab-section-heading--compact">
-            <div>
-              <p class="lab-section-heading__eyebrow">02 · SPARK</p>
-              <h2>最新灵感</h2>
-            </div>
-            <a class="lab-section-heading__all" href={withBasePath("/daily/")}>ALL</a>
-          </div>
-
-          <div class="lab-spark">
-            <div class="lab-spark__island">
-              <span class="lab-spark__theme">{latestInspiration.data.theme}</span>
-              <span class="lab-spark__title">{latestInspiration.data.title}</span>
-            </div>
-
-            <div class="lab-spark__panel">
-              <div class="lab-spark__content prose prose--inspiration">
-                <LatestInspirationContent />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    )}
-
     <section class="lab-topic-section">
       <div class="lab-section-heading">
         <div>
-          <p class="lab-section-heading__eyebrow">03 · TOPIC MATRIX</p>
+          <p class="lab-section-heading__eyebrow">02 · TOPIC MATRIX</p>
           <h2>按主题进入</h2>
         </div>
       </div>
@@ -178,7 +128,7 @@ function splitChineseMotto(value: string) {
     <section class="lab-about-section">
       <div class="lab-section-heading">
         <div>
-          <p class="lab-section-heading__eyebrow">04 · ABOUT</p>
+          <p class="lab-section-heading__eyebrow">03 · ABOUT</p>
           <h2>{siteConfig.author.name}</h2>
         </div>
       </div>
@@ -202,56 +152,40 @@ function splitChineseMotto(value: string) {
     </section>
   </div>
 
-  <script is:inline define:vars={{ weeklyMottos }}>
-    const getMondayFirstIndex = (day) => (day + 6) % 7;
-    const splitChineseMotto = (value) => {
-      const normalized = value.trim();
-      const parts = normalized
-        .split(/[，、；]/)
-        .map((part) => part.trim())
-        .filter(Boolean);
+  <script is:inline>
+    const carousel = document.querySelector("[data-home-inspiration-carousel]");
+    const inspirationSlides = Array.from(document.querySelectorAll("[data-home-inspiration-slide]"));
+    let activeInspirationIndex = 0;
 
-      if (parts.length > 1) {
-        return parts;
+    const showInspiration = (nextIndex) => {
+      if (nextIndex === activeInspirationIndex || !inspirationSlides[nextIndex]) {
+        return;
       }
 
-      if (normalized.length <= 4) {
-        const midpoint = Math.ceil(normalized.length / 2);
-        return [normalized.slice(0, midpoint), normalized.slice(midpoint)].filter(Boolean);
-      }
+      const currentSlide = inspirationSlides[activeInspirationIndex];
+      const nextSlide = inspirationSlides[nextIndex];
 
-      if (normalized.length <= 6) {
-        return [normalized.slice(0, 3), normalized.slice(3)].filter(Boolean);
-      }
+      currentSlide.classList.remove("is-active");
+      currentSlide.classList.add("is-leaving");
+      currentSlide.setAttribute("aria-hidden", "true");
 
-      return [normalized];
+      nextSlide.classList.remove("is-leaving");
+      nextSlide.classList.add("is-entering");
+      nextSlide.setAttribute("aria-hidden", "false");
+
+      requestAnimationFrame(() => {
+        nextSlide.classList.add("is-active");
+        nextSlide.classList.remove("is-entering");
+      });
+
+      window.setTimeout(() => currentSlide.classList.remove("is-leaving"), 760);
+      activeInspirationIndex = nextIndex;
     };
 
-    const today = weeklyMottos[getMondayFirstIndex(new Date().getDay())];
-    const dayNode = document.querySelector("[data-motto-day]");
-    const enNode = document.querySelector("[data-motto-en]");
-    const zhNode = document.querySelector("[data-motto-zh]");
-    const ghostEnNode = document.querySelector("[data-motto-ghost-en]");
-    const ghostZhNode = document.querySelector("[data-motto-ghost-zh]");
-
-    if (today && dayNode && enNode && zhNode && ghostEnNode && ghostZhNode) {
-      dayNode.textContent = `${today.dayEn.toUpperCase()} · ${today.dayZh}`;
-      enNode.replaceChildren(
-        ...today.en.split(/\s+/).filter(Boolean).map((word) => {
-          const span = document.createElement("span");
-          span.textContent = word;
-          return span;
-        }),
-      );
-      zhNode.replaceChildren(
-        ...splitChineseMotto(today.zh).map((part) => {
-          const span = document.createElement("span");
-          span.textContent = part;
-          return span;
-        }),
-      );
-      ghostEnNode.textContent = today.en;
-      ghostZhNode.textContent = today.zh;
+    if (carousel && inspirationSlides.length > 1) {
+      window.setInterval(() => {
+        showInspiration((activeInspirationIndex + 1) % inspirationSlides.length);
+      }, 10000);
     }
 
     const stages = Array.from(document.querySelectorAll("[data-lab-stage]"));
