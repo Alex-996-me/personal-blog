@@ -290,6 +290,59 @@
   object-fit: contain;
 }
 
+.home-inspiration-slide__vortex {
+  position: absolute;
+  z-index: 4;
+  bottom: clamp(1rem, 2.4vw, 1.75rem);
+  left: clamp(1rem, 2.4vw, 1.75rem);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.46rem;
+  padding: 0.42rem 0.72rem 0.42rem 0.44rem;
+  border: 1px solid rgba(143, 174, 226, 0.24);
+  border-radius: 999px;
+  background: rgba(12, 17, 24, 0.82);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+  color: #b9c8de;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  backdrop-filter: blur(12px);
+  transition:
+    color 0.22s ease,
+    border-color 0.22s ease,
+    background 0.22s ease,
+    transform 0.22s ease;
+}
+
+.home-inspiration-slide__vortex svg {
+  width: 1.7rem;
+  height: 1.7rem;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: home-vortex-turn 9s linear infinite;
+}
+
+.home-inspiration-slide__vortex:hover {
+  color: var(--accent);
+  border-color: rgba(240, 173, 89, 0.45);
+  background: rgba(21, 27, 35, 0.96);
+  transform: translateY(-2px);
+}
+
+@keyframes home-vortex-turn {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-inspiration-slide__vortex svg {
+    animation: none;
+  }
+}
+
 .lab-hero {
   position: relative;
   min-height: 32rem;

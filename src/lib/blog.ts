@@ -108,7 +108,10 @@ export async function getAllPosts() {
 
 export async function getAllInspirations() {
   const inspirations = await getCollection("inspirations");
-  return sortDatedEntries(inspirations.filter((entry) => entry.data.published !== false));
+  // 首页灵感是按首次发布顺序翻阅，编辑旧灵感不会改变它在队列中的位置。
+  return [...inspirations]
+    .filter((entry) => entry.data.published !== false)
+    .sort((left, right) => right.data.date.valueOf() - left.data.date.valueOf());
 }
 
 export async function getAllResources() {
