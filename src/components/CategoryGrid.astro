@@ -15,8 +15,13 @@ const { topics } = Astro.props;
 ---
 
 <div class="topic-matrix">
-  {topics.map((topic) => (
-    <a class="topic-matrix__card" href={withBasePath(topic.href)}>
+  {topics.map((topic, index) => (
+    <a
+      class="topic-matrix__card"
+      href={withBasePath(topic.href)}
+      data-reveal
+      data-reveal-delay={index + 1}
+    >
       <div class="topic-matrix__icon">
         <TopicIcon name={topic.icon} />
       </div>
