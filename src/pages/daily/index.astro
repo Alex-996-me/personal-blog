@@ -44,8 +44,8 @@ const renderedThemeSections = await Promise.all(
 ---
 
 <BaseLayout
-  title="每日灵感"
-  description="按主题展开的公开灵感页。一屏一条，向下翻阅。"
+  title="explained"
+  description="一条短标题，一句解释。按主题向下翻阅。"
   showSidebar={false}
   wideContent={true}
   bodyClass="body--daily"
@@ -54,13 +54,13 @@ const renderedThemeSections = await Promise.all(
 >
   <section class="page-header page-header--daily-flip">
     <a class="post-backlink" href={withBasePath("/")}>← 返回首页</a>
-    <h1>每日灵感</h1>
-    <p>先选主题，再往下翻。每一屏只保留一条灵感，不把它挤成信息流。</p>
+    <h1>explained</h1>
+    <p>一条标题，一句解释。先选主题，再向下翻阅。</p>
   </section>
 
   {renderedThemeSections.length > 0 ? (
     <>
-      <nav class="daily-theme-picker" aria-label="灵感主题筛选">
+      <nav class="daily-theme-picker" aria-label="explained 主题筛选">
         {renderedThemeSections.map((theme) => (
           <button
             type="button"

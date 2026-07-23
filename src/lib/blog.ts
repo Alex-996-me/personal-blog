@@ -23,7 +23,7 @@ export type SearchEntry = {
   date: string;
   updated: string;
   section: string;
-  kind: "文章" | "每日灵感" | "资料";
+  kind: "文章" | "explained" | "资料";
   tags: string[];
   cover: string;
   text: string;
@@ -314,8 +314,8 @@ export async function getSearchEntries() {
       description: inspiration.data.description,
       date: inspiration.data.date.toISOString().slice(0, 10),
       updated: getInspirationUpdatedDate(inspiration).toISOString().slice(0, 10),
-      section: `每日灵感 / ${inspiration.data.theme}`,
-      kind: "每日灵感",
+      section: `explained / ${inspiration.data.theme}`,
+      kind: "explained",
       tags: inspiration.data.tags,
       cover: "",
       text: buildInspirationSearchText(inspiration),
@@ -355,14 +355,14 @@ export async function getSearchEntries() {
 function cleanSearchTerm(value: string) {
   return value
     .replace(/^#/, "")
-    .replace(/^每日灵感\s*\/\s*/u, "")
+    .replace(/^(每日灵感|explained)\s*\/\s*/u, "")
     .replace(/[()（）]/g, "")
     .trim();
 }
 
 export function getFrequentSearchTerms(entries: SearchEntry[], limit = 12) {
   const counts = new Map<string, number>();
-  const blockedTerms = new Set(["文章", "资料", "每日灵感"]);
+  const blockedTerms = new Set(["文章", "资料", "每日灵感", "explained"]);
 
   const addTerm = (value: string, weight = 1) => {
     const term = cleanSearchTerm(value);

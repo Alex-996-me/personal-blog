@@ -13,10 +13,6 @@ import {
   getPostHref,
   getUpdatedDate,
 } from "../lib/blog";
-import {
-  getInspirationRecommendation,
-  getInspirationRecommendationHref,
-} from "../lib/inspiration-recommendations";
 import { withBasePath } from "../lib/paths";
 
 const [posts, inspirations, resources] = await Promise.all([
@@ -29,11 +25,7 @@ const latestPosts = posts.slice(0, 3);
 const renderedInspirations = await Promise.all(
   inspirations.map(async (inspiration) => {
     const { Content } = await render(inspiration);
-    return {
-      inspiration,
-      Content,
-      recommendation: getInspirationRecommendation(inspiration, posts),
-    };
+    return { inspiration, Content };
   }),
 );
 const categoryCounts = getCategoryCounts(posts, { includeHidden: false });
@@ -58,18 +50,18 @@ const topicTiles = topicMatrix.map((topic) => ({
       <section
         class="home-thought"
         data-home-inspiration-carousel
-        aria-label="每日灵感"
+        aria-label="explained"
         aria-live="polite"
       >
         <div class="home-thought__texture" aria-hidden="true"></div>
         <div class="home-thought__topline">
-          <span>DAILY THOUGHT</span>
+          <span>EXPLAINED</span>
           <span class="home-thought__rule" aria-hidden="true"></span>
           <span>N=1 LAB / 01</span>
         </div>
 
         <div class="home-thought__viewport">
-          {renderedInspirations.map(({ inspiration, Content, recommendation }, index) => (
+          {renderedInspirations.map(({ inspiration, Content }, index) => (
             <article
               class:list={["home-thought__slide", index === 0 && "is-active"]}
               data-home-inspiration-slide
@@ -87,31 +79,17 @@ const topicTiles = topicMatrix.map((topic) => ({
               </div>
 
               <div class="home-thought__actions" data-reveal data-reveal-delay="2">
-                {recommendation && (
-                  <a
-                    class="home-thought__recommendation"
-                    href={withBasePath(getInspirationRecommendationHref(recommendation))}
-                    aria-label={`阅读推荐文章：${recommendation.post.data.title}`}
-                    title={`推荐阅读：${recommendation.post.data.title}`}
-                  >
-                    <span class="home-thought__vortex" aria-hidden="true">
-                      <svg viewBox="0 0 48 48" fill="none">
-                        <path d="M38 16.5c-2.8-5.3-8.4-8.7-14.4-8.2-8.1.6-14.2 7.7-13.6 15.8.6 8.1 7.7 14.2 15.8 13.6 6.2-.5 11.2-4.8 12.8-10.4" />
-                        <path d="M33.1 18.5c-2.1-3.2-6-4.8-9.7-3.7-4.8 1.4-7.5 6.5-6.1 11.3s6.5 7.5 11.3 6.1c3.3-1 5.7-3.8 6.1-7.1" />
-                        <path d="M28.7 20.6c-1.2-1.4-3.3-1.8-5-1-2.3 1.1-3.2 3.9-2.1 6.2 1.1 2.3 3.9 3.2 6.2 2.1 1.5-.7 2.4-2.2 2.4-3.8" />
-                      </svg>
-                    </span>
-                    <span>相关思考：{recommendation.post.data.title}</span>
-                  </a>
-                )}
-                <a class="home-thought__all" href={withBasePath("/daily/")}>查看更多灵感 <span aria-hidden="true">↗</span></a>
+                <button class="home-thought__next" type="button" data-home-inspiration-next>
+                  下一条 <span aria-hidden="true">↓</span>
+                </button>
+                <a class="home-thought__all" href={withBasePath("/daily/")}>查看更多 explained <span aria-hidden="true">↗</span></a>
               </div>
             </article>
           ))}
         </div>
 
         <div class="home-thought__footer">
-          <span>灵感会在你停留时继续流动</span>
+          <span>停留时每 3 秒切换一条</span>
           <span class="home-thought__progress" aria-hidden="true"><span data-home-inspiration-progress></span></span>
         </div>
       </section>
@@ -205,13 +183,15 @@ const topicTiles = topicMatrix.map((topic) => ({
     const carousel = document.querySelector("[data-home-inspiration-carousel]");
     const inspirationSlides = Array.from(document.querySelectorAll("[data-home-inspiration-slide]"));
     const progressBar = document.querySelector("[data-home-inspiration-progress]");
+    const nextInspirationButton = document.querySelector("[data-home-inspiration-next]");
+    const inspirationDuration = 3000;
     let activeInspirationIndex = 0;
     let inspirationTimer = 0;
     let inspirationFrame = 0;
     let inspirationDeadline = 0;
-    let inspirationRemaining = 10000;
+    let inspirationRemaining = inspirationDuration;
     let isInspirationPaused = false;
-    const inspirationStorageKey = "n1lab-home-inspiration-carousel-v1";
+    const inspirationStorageKey = "n1lab-home-explained-carousel-v1";
     const inspirationFingerprint = inspirationSlides.map((slide) => slide.dataset.inspirationSlug).join("|");
 
     const persistInspirationState = () => {
@@ -238,7 +218,7 @@ const topicTiles = topicMatrix.map((topic) => ({
         const storedIndex = inspirationSlides.findIndex((slide) => slide.dataset.inspirationSlug === stored.slug);
         if (storedIndex < 0) return;
         activeInspirationIndex = storedIndex;
-        inspirationRemaining = Math.min(10000, Math.max(250, Number(stored.remaining) || 10000));
+        inspirationRemaining = Math.min(inspirationDuration, Math.max(250, Number(stored.remaining) || inspirationDuration));
         inspirationSlides.forEach((slide, index) => {
           const isActive = index === activeInspirationIndex;
           slide.classList.toggle("is-active", isActive);
@@ -259,7 +239,7 @@ const topicTiles = topicMatrix.map((topic) => ({
 
     const updateInspirationProgress = () => {
       if (!progressBar || !carousel || document.visibilityState !== "visible" || isInspirationPaused) return;
-      const progress = Math.min(1, Math.max(0, 1 - inspirationRemaining / 10000));
+      const progress = Math.min(1, Math.max(0, 1 - inspirationRemaining / inspirationDuration));
       progressBar.style.transform = `scaleX(${progress})`;
       inspirationRemaining = Math.max(0, inspirationDeadline - performance.now());
       inspirationFrame = requestAnimationFrame(updateInspirationProgress);
@@ -281,7 +261,7 @@ const topicTiles = topicMatrix.map((topic) => ({
       });
       window.setTimeout(() => currentSlide.classList.remove("is-leaving"), 760);
       activeInspirationIndex = nextIndex;
-      inspirationRemaining = 10000;
+      inspirationRemaining = inspirationDuration;
       persistInspirationState();
     };
 
@@ -299,7 +279,7 @@ const topicTiles = topicMatrix.map((topic) => ({
     const scheduleInspiration = () => {
       if (!carousel || inspirationSlides.length < 2 || document.visibilityState !== "visible" || isInspirationPaused) return;
       clearTimeout(inspirationTimer);
-      inspirationRemaining = Math.max(250, inspirationRemaining || 10000);
+      inspirationRemaining = Math.max(250, inspirationRemaining || inspirationDuration);
       inspirationDeadline = performance.now() + inspirationRemaining;
       inspirationTimer = window.setTimeout(() => {
         inspirationTimer = 0;
@@ -322,6 +302,10 @@ const topicTiles = topicMatrix.map((topic) => ({
       carousel.addEventListener("focusin", pauseInspirationTimer);
       carousel.addEventListener("focusout", () => {
         isInspirationPaused = false;
+        scheduleInspiration();
+      });
+      nextInspirationButton?.addEventListener("click", () => {
+        showInspiration((activeInspirationIndex + 1) % inspirationSlides.length);
         scheduleInspiration();
       });
       document.addEventListener("visibilitychange", () => {

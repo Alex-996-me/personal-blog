@@ -151,9 +151,9 @@ export const inspirationThemes: InspirationThemeDefinition[] = [
 
 export const modules: ModuleDefinition[] = [
   {
-    name: "每日灵感",
+    name: "explained",
     href: "/daily/",
-    description: "放短想法、随手记和一闪而过但值得留下的话。",
+    description: "用一个短标题和一句解释，留下值得反复看的想法。",
   },
   {
     name: "资料",

@@ -1,7 +1,7 @@
 ---
 title: 注意力被收割的时代，怎么重新拿回控制权
 date: '2026-05-23'
-updated: '2026-05-23'
+updated: '2026-07-23'
 category: 脑科学
 tags:
   - 注意力
@@ -10,7 +10,7 @@ tags:
   - 算法
   - 数字生活
 description: 在短视频、热搜和流媒体不断争夺注意力的时代，重新区分什么值得投入，以及怎样把控制权拿回自己手里。
-cover: ''
+cover: /images/posts/attention-control/attention-eyes-cover.png
 youtube: ''
 fullSummary:
   - 这篇文章讨论的核心不是效率技巧，而是注意力到底应该投给什么。
