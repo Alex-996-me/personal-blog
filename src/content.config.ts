@@ -37,6 +37,15 @@ const inspirationSchema = z.object({
   published: z.boolean().default(true),
 });
 
+const momentSchema = z.object({
+  title: z.string().default(""),
+  date: z.coerce.date(),
+  updated: z.coerce.date().optional(),
+  images: z.array(z.string()).default([]),
+  description: z.string().default(""),
+  published: z.boolean().default(true),
+});
+
 const resourceItemSchema = z.object({
   title: z.string(),
   file: z.string(),
@@ -73,6 +82,11 @@ const inspirations = defineCollection({
   schema: inspirationSchema,
 });
 
+const moments = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/moments" }),
+  schema: momentSchema,
+});
+
 const resources = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/resources" }),
   schema: resourceSchema,
@@ -81,5 +95,6 @@ const resources = defineCollection({
 export const collections = {
   posts,
   inspirations,
+  moments,
   resources,
 };

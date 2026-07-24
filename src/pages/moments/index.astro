@@ -1,0 +1,51 @@
+---
+import { render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { siteConfig } from "../../data/site";
+import { formatDate, getAllMoments } from "../../lib/blog";
+import { withBasePath } from "../../lib/paths";
+
+const moments = await getAllMoments();
+const renderedMoments = await Promise.all(
+  moments.map(async (moment) => ({
+    moment,
+    Content: (await render(moment)).Content,
+  })),
+);
+---
+
+<BaseLayout
+  title="moments"
+  description="moments"
+  showSidebar={false}
+  wideContent={true}
+  bodyClass="body--moments"
+  shellClass="page-shell--moments"
+  panelClass="content-panel--moments"
+>
+  <section class="page-header page-header--moments">
+    <a class="post-backlink" href={withBasePath("/")}>← 返回首页</a>
+    <h1>moments</h1>
+  </section>
+
+  <section class="moments-feed" aria-label="moments">
+    {renderedMoments.map(({ moment, Content }) => (
+      <article id={moment.id.replace(/\.(md|mdx)$/i, "")} class="moment-card">
+        <header class="moment-card__meta">
+          <span class="daily-flip-page__avatar" aria-hidden="true">{siteConfig.author.avatarLabel}</span>
+          <span>{siteConfig.author.name}</span>
+          <time datetime={moment.data.date.toISOString()}>{formatDate(moment.data.date)}</time>
+        </header>
+        {moment.data.title && <h2>{moment.data.title}</h2>}
+        {moment.data.images.length > 0 && (
+          <div class:list={["moment-card__images", moment.data.images.length === 1 && "is-single"]}>
+            {moment.data.images.map((image) => (
+              <img src={withBasePath(image)} alt={moment.data.title || "moment"} loading="lazy" decoding="async" />
+            ))}
+          </div>
+        )}
+        <div class="moment-card__content prose"><Content /></div>
+      </article>
+    ))}
+  </section>
+</BaseLayout>

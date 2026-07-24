@@ -57,7 +57,7 @@ const topicTiles = topicMatrix.map((topic) => ({
         <div class="home-thought__topline">
           <span>EXPLAINED</span>
           <span class="home-thought__rule" aria-hidden="true"></span>
-          <span>N=1 LAB / 01</span>
+          <span>N=1 LAB</span>
         </div>
 
         <div class="home-thought__viewport">
@@ -69,7 +69,6 @@ const topicTiles = topicMatrix.map((topic) => ({
               aria-hidden={index === 0 ? "false" : "true"}
             >
               <div class="home-thought__copy">
-                <p class="home-thought__theme" data-reveal>#{inspiration.data.theme}</p>
                 <div class="home-thought__title-mask">
                   <h1 data-reveal>{inspiration.data.title}</h1>
                 </div>
@@ -89,7 +88,6 @@ const topicTiles = topicMatrix.map((topic) => ({
         </div>
 
         <div class="home-thought__footer">
-          <span>停留时每 3 秒切换一条</span>
           <span class="home-thought__progress" aria-hidden="true"><span data-home-inspiration-progress></span></span>
         </div>
       </section>
@@ -101,7 +99,6 @@ const topicTiles = topicMatrix.map((topic) => ({
           <p class="home-section-heading__eyebrow">02 / JOURNAL</p>
           <h2 id="home-journal-title">最近文章</h2>
         </div>
-        <span class="home-section-heading__note">记录仍在继续</span>
       </div>
 
       <div class="home-journal__grid">
@@ -148,7 +145,6 @@ const topicTiles = topicMatrix.map((topic) => ({
           <p class="home-section-heading__eyebrow">03 / TOPIC MATRIX</p>
           <h2 id="home-topics-title">主题索引</h2>
         </div>
-        <span class="home-section-heading__note">从这里进入不同的研究方向</span>
       </div>
       <CategoryGrid topics={topicTiles} />
     </section>
@@ -305,6 +301,9 @@ const topicTiles = topicMatrix.map((topic) => ({
         scheduleInspiration();
       });
       nextInspirationButton?.addEventListener("click", () => {
+        isInspirationPaused = false;
+        clearTimeout(inspirationTimer);
+        stopInspirationFrame();
         showInspiration((activeInspirationIndex + 1) % inspirationSlides.length);
         scheduleInspiration();
       });

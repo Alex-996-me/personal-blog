@@ -156,6 +156,11 @@ export const modules: ModuleDefinition[] = [
     description: "用一个短标题和一句解释，留下值得反复看的想法。",
   },
   {
+    name: "moments",
+    href: "/moments/",
+    description: "日常生活的图文记录。",
+  },
+  {
     name: "资料",
     href: "/resources/",
     description: "集中存放 PDF、课程资料、讲义和可下载的参考材料。",
@@ -169,5 +174,6 @@ export const navigation = [
   { label: "训练", href: "/categories/training/" },
   { label: "脑科学", href: "/categories/neuroscience/" },
   { label: "工具", href: "/categories/tools/" },
+  { label: "moments", href: "/moments/" },
   { label: "资料", href: "/resources/" },
 ];

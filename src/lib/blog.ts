@@ -5,6 +5,7 @@ import { withBasePath } from "./paths";
 export type Post = CollectionEntry<"posts">;
 export type Inspiration = CollectionEntry<"inspirations">;
 export type InspirationTheme = Inspiration["data"]["theme"];
+export type Moment = CollectionEntry<"moments">;
 export type ResourceDocument = CollectionEntry<"resources">;
 export type ResourceGroup = ResourceDocument["data"]["groups"][number];
 export type ResourceItem = ResourceGroup["items"][number];
@@ -23,7 +24,7 @@ export type SearchEntry = {
   date: string;
   updated: string;
   section: string;
-  kind: "文章" | "explained" | "资料";
+  kind: "文章" | "explained" | "moments" | "资料";
   tags: string[];
   cover: string;
   text: string;
@@ -114,6 +115,11 @@ export async function getAllInspirations() {
     .sort((left, right) => right.data.date.valueOf() - left.data.date.valueOf());
 }
 
+export async function getAllMoments() {
+  const moments = await getCollection("moments");
+  return sortDatedEntries(moments.filter((entry) => entry.data.published !== false));
+}
+
 export async function getAllResources() {
   const resources = await getCollection("resources");
   return sortDatedEntries(resources.filter((entry) => entry.data.published !== false));
@@ -150,6 +156,10 @@ export function getPostHref(post: Post) {
 
 export function getInspirationHref(inspiration: Inspiration) {
   return `/daily/#${getInspirationAnchorId(inspiration)}`;
+}
+
+export function getMomentHref(moment: Moment) {
+  return `/moments/#${getEntrySlug(moment)}`;
 }
 
 export function getResourceHref(resource: ResourceDocument) {
@@ -208,6 +218,12 @@ function buildInspirationSearchText(inspiration: Inspiration) {
       inspiration.data.tags.join(" "),
       inspiration.body,
     ].join("\n\n"),
+  ).toLowerCase();
+}
+
+function buildMomentSearchText(moment: Moment) {
+  return stripMarkdownToText(
+    [moment.data.title, moment.data.description, moment.body].join("\n\n"),
   ).toLowerCase();
 }
 
@@ -287,9 +303,10 @@ export function getOfficeViewerUrl(value: string, site?: URL) {
 }
 
 export async function getSearchEntries() {
-  const [posts, inspirations, resources] = await Promise.all([
+  const [posts, inspirations, moments, resources] = await Promise.all([
     getAllPosts(),
     getAllInspirations(),
+    getAllMoments(),
     getAllResources(),
   ]);
 
@@ -325,6 +342,21 @@ export async function getSearchEntries() {
     }),
   );
 
+  const momentEntries: (SearchEntry & { sortTime: number })[] = moments.map((moment) => ({
+    title: moment.data.title || "moments",
+    description: moment.data.description,
+    date: moment.data.date.toISOString().slice(0, 10),
+    updated: getEntryUpdatedDate(moment).toISOString().slice(0, 10),
+    section: "moments",
+    kind: "moments",
+    tags: [],
+    cover: resolveSearchCover(moment.data.images[0]),
+    text: buildMomentSearchText(moment),
+    snippet: buildSearchSnippet(moment.body || moment.data.description),
+    url: withBasePath(getMomentHref(moment)),
+    sortTime: getEntryUpdatedDate(moment).valueOf(),
+  }));
+
   const resourceEntries: (SearchEntry & { sortTime: number })[] = resources.map((resource) => {
     const primaryFile = getResourcePrimaryFile(resource);
     const fallbackCover = !resource.data.cover && primaryFile && isImageResource(primaryFile)
@@ -347,7 +379,7 @@ export async function getSearchEntries() {
     };
   });
 
-  return [...postEntries, ...inspirationEntries, ...resourceEntries]
+  return [...postEntries, ...inspirationEntries, ...momentEntries, ...resourceEntries]
     .sort((left, right) => right.sortTime - left.sortTime)
     .map(({ sortTime: _sortTime, ...entry }) => entry);
 }
