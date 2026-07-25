@@ -2,7 +2,7 @@
 import { render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { siteConfig } from "../../data/site";
-import { formatDate, getAllMoments } from "../../lib/blog";
+import { getAllMoments } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
 
 const moments = await getAllMoments();
@@ -34,7 +34,6 @@ const renderedMoments = await Promise.all(
         <header class="moment-card__meta">
           <span class="daily-flip-page__avatar" aria-hidden="true">{siteConfig.author.avatarLabel}</span>
           <span>{siteConfig.author.name}</span>
-          <time datetime={moment.data.date.toISOString()}>{formatDate(moment.data.date)}</time>
         </header>
         {moment.data.title && <h2>{moment.data.title}</h2>}
         {moment.data.images.length > 0 && (

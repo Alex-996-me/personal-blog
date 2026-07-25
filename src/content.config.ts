@@ -17,7 +17,7 @@ const postSchema = z.object({
   title: z.string(),
   date: z.coerce.date(),
   updated: z.coerce.date().optional(),
-  category: z.enum(["日志", "读书", "健康", "训练", "脑科学", "工具"]),
+  category: z.enum(["日志", "读书", "健康", "训练", "脑科学", "工具", "世界"]),
   tags: z.array(z.string()).default([]),
   description: z.string(),
   cover: z.string().optional(),

@@ -16,7 +16,7 @@ export type TopicTileDefinition = {
   slug: string;
   href: string;
   description: string;
-  icon: "reading" | "health" | "training" | "neuroscience" | "tools" | "resources";
+  icon: "reading" | "health" | "training" | "neuroscience" | "tools" | "world" | "resources";
 };
 
 export const inspirationThemeNames = ["思考", "生活", "科学"] as const;
@@ -76,6 +76,11 @@ export const categories: CategoryDefinition[] = [
     slug: "tools",
     description: "记录真正帮到我的工具、方法与工作流。",
   },
+  {
+    name: "世界",
+    slug: "world",
+    description: "关于关系、行业、选择与更大的现实。",
+  },
 ];
 
 export const visibleCategories = categories.filter((category) => !category.hidden);
@@ -115,6 +120,13 @@ export const topicMatrix: TopicTileDefinition[] = [
     href: "/categories/tools/",
     description: "真正帮到我的软件、工作流与方法论。",
     icon: "tools",
+  },
+  {
+    name: "世界",
+    slug: "world",
+    href: "/categories/world/",
+    description: "关系、行业、选择与现实观察。",
+    icon: "world",
   },
   {
     name: "资料",
@@ -174,6 +186,7 @@ export const navigation = [
   { label: "训练", href: "/categories/training/" },
   { label: "脑科学", href: "/categories/neuroscience/" },
   { label: "工具", href: "/categories/tools/" },
+  { label: "世界", href: "/categories/world/" },
   { label: "moments", href: "/moments/" },
   { label: "资料", href: "/resources/" },
 ];
