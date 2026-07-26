@@ -11,9 +11,13 @@ youtube: ""
 
 情感上不支持，但本质上是这样。
 
+![关于两性经济学的原视频图文](/images/posts/world-economics/figures/image-01.webp)
+
 ## 两性经济学
 
 彩礼的本质是对女方的一种赎买，因为在婚姻中女性承担着远远高于男性的代价，而这笔代价理应受到补偿。
+
+![关于门槛与赚钱难度的原视频图文](/images/posts/world-economics/figures/image-02.webp)
 
 ## 择业和内卷
 
@@ -27,6 +31,8 @@ youtube: ""
 
 在相亲市场，这一现象体现得尤为淋漓尽致。
 
+![关于婚恋市场观察的原视频图文](/images/posts/world-economics/figures/image-03.webp)
+
 ## 认知红利
 
 当下时代唯一的红利只能是来自于认知。
@@ -36,3 +42,5 @@ youtube: ""
 ## 参考
 
 - [原视频](https://www.bilibili.com/video/BV1w7KF6WEb8?t=2039.1)
+
+![关于认知红利的原视频图文](/images/posts/world-economics/figures/image-04.webp)
