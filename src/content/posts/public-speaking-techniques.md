@@ -2,7 +2,7 @@
 title: "当中说话的技巧"
 date: "2026-06-30"
 updated: "2026-06-30"
-category: "读书"
+category: "体悟"
 tags:
   - 演讲
   - 表达

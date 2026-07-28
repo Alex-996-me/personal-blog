@@ -2,7 +2,7 @@
 title: 关于多元心智模型：跨领域学习，判断就更准？
 date: '2026-07-14'
 updated: '2026-07-14'
-category: 读书
+category: 体悟
 tags: [心智模型, 决策, 学习, 认知]
 description: 从多元心智模型、理性分类与试错出发，讨论知识如何在真实情境中转化为判断和行动。
 cover: /images/posts/mental-models-and-judgment/image-01.png

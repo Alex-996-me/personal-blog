@@ -4,6 +4,7 @@ date: "2026-07-25"
 updated: "2026-07-25"
 images:
   - "/images/moments/tianxi-seafood-rice/image-01.webp"
+hideToc: true
 description: "一次关于究极缤纷海鲜饭的体验。"
 published: true
 ---

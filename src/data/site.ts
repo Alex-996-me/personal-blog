@@ -52,9 +52,9 @@ export const categories: CategoryDefinition[] = [
     hidden: true,
   },
   {
-    name: "读书",
-    slug: "reading",
-    description: "记录阅读时的触动、摘记与追问。",
+    name: "体悟",
+    slug: "insights",
+    description: "读书、学习、注意力与认识世界之后的再思考。",
   },
   {
     name: "健康",
@@ -65,11 +65,6 @@ export const categories: CategoryDefinition[] = [
     name: "训练",
     slug: "training",
     description: "关于力量训练、壶铃与长期训练习惯。",
-  },
-  {
-    name: "脑科学",
-    slug: "neuroscience",
-    description: "关于注意力、学习、情绪与大脑的兴趣记录。",
   },
   {
     name: "工具",
@@ -87,10 +82,10 @@ export const visibleCategories = categories.filter((category) => !category.hidde
 
 export const topicMatrix: TopicTileDefinition[] = [
   {
-    name: "读书",
-    slug: "reading",
-    href: "/categories/reading/",
-    description: "书、播客、课程与阅读之后的再思考。",
+    name: "体悟",
+    slug: "insights",
+    href: "/categories/insights/",
+    description: "读书、学习、注意力与认识世界之后的再思考。",
     icon: "reading",
   },
   {
@@ -106,13 +101,6 @@ export const topicMatrix: TopicTileDefinition[] = [
     href: "/categories/training/",
     description: "杠铃、壶铃、动作记录和训练方法。",
     icon: "training",
-  },
-  {
-    name: "脑科学",
-    slug: "neuroscience",
-    href: "/categories/neuroscience/",
-    description: "注意力、学习、情绪与大脑模型。",
-    icon: "neuroscience",
   },
   {
     name: "工具",
@@ -168,7 +156,7 @@ export const modules: ModuleDefinition[] = [
     description: "用一个短标题和一句解释，留下值得反复看的想法。",
   },
   {
-    name: "moments",
+    name: "生活记录",
     href: "/moments/",
     description: "日常生活的图文记录。",
   },
@@ -181,12 +169,11 @@ export const modules: ModuleDefinition[] = [
 
 export const navigation = [
   { label: "首页", href: "/" },
-  { label: "读书", href: "/categories/reading/" },
+  { label: "体悟", href: "/categories/insights/" },
   { label: "健康", href: "/categories/health/" },
   { label: "训练", href: "/categories/training/" },
-  { label: "脑科学", href: "/categories/neuroscience/" },
   { label: "工具", href: "/categories/tools/" },
   { label: "世界", href: "/categories/world/" },
-  { label: "moments", href: "/moments/" },
+  { label: "生活记录", href: "/moments/" },
   { label: "资料", href: "/resources/" },
 ];

@@ -2,7 +2,7 @@
 title: 关于读书
 date: "2026-06-15"
 updated: "2026-06-15"
-category: 读书
+category: 体悟
 tags:
   - 选书
   - 终身学习

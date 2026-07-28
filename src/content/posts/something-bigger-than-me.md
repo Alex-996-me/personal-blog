@@ -2,7 +2,7 @@
 title: 寻找 something bigger than me
 date: Sun Apr 05
 updated: Sun Apr 05
-category: 读书
+category: 体悟
 tags:
   - 阅读
   - 意义感

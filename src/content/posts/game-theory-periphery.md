@@ -2,7 +2,7 @@
 title: 博弈论：边缘地带的崛起
 date: '2026-06-08'
 updated: '2026-06-08'
-category: 读书
+category: 体悟
 tags:
   - 博弈论
   - 历史

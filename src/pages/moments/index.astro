@@ -9,14 +9,14 @@ const moments = await getAllMoments();
 const renderedMoments = await Promise.all(
   moments.map(async (moment) => ({
     moment,
-    Content: (await render(moment)).Content,
+    Content: moment.body?.trim() ? (await render(moment)).Content : null,
   })),
 );
 ---
 
 <BaseLayout
-  title="moments"
-  description="moments"
+  title="生活记录"
+  description="生活记录"
   showSidebar={false}
   wideContent={true}
   bodyClass="body--moments"
@@ -25,10 +25,10 @@ const renderedMoments = await Promise.all(
 >
   <section class="page-header page-header--moments">
     <a class="post-backlink" href={withBasePath("/")}>← 返回首页</a>
-    <h1>moments</h1>
+    <h1>生活记录</h1>
   </section>
 
-  <section class="moments-feed" aria-label="moments">
+  <section class="moments-feed" aria-label="生活记录">
     {renderedMoments.map(({ moment, Content }) => (
       <article id={moment.id.replace(/\.(md|mdx)$/i, "")} class="moment-card">
         <header class="moment-card__meta">
@@ -36,14 +36,31 @@ const renderedMoments = await Promise.all(
           <span>{siteConfig.author.name}</span>
         </header>
         {moment.data.title && <h2>{moment.data.title}</h2>}
-        {moment.data.images.length > 0 && (
-          <div class:list={["moment-card__images", moment.data.images.length === 1 && "is-single"]}>
-            {moment.data.images.map((image) => (
-              <img src={withBasePath(image)} alt={moment.data.title || "moment"} loading="lazy" decoding="async" />
+        {moment.data.description && <p class="moment-card__lede">{moment.data.description}</p>}
+
+        {moment.data.items.length > 0 ? (
+          <div class="moment-card__entries">
+            {moment.data.items.map((item, index) => (
+              <figure class:list={["moment-card__entry", !item.title && !item.description && "is-image-only"]}>
+                <img src={withBasePath(item.image)} alt={item.title || `${moment.data.title} 图片 ${index + 1}`} loading="lazy" decoding="async" />
+                {(item.title || item.description) && (
+                  <figcaption>
+                    {item.title && <h3>{item.title}</h3>}
+                    {item.description && <p>{item.description}</p>}
+                  </figcaption>
+                )}
+              </figure>
             ))}
           </div>
-        )}
-        <div class="moment-card__content prose"><Content /></div>
+        ) : moment.data.images.length > 0 ? (
+          <div class:list={["moment-card__images", moment.data.images.length === 1 && "is-single"]}>
+            {moment.data.images.map((image) => (
+              <img src={withBasePath(image)} alt={moment.data.title || "生活记录"} loading="lazy" decoding="async" />
+            ))}
+          </div>
+        ) : null}
+
+        {Content && <div class="moment-card__content prose"><Content /></div>}
       </article>
     ))}
   </section>

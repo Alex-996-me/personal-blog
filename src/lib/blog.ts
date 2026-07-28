@@ -24,7 +24,7 @@ export type SearchEntry = {
   date: string;
   updated: string;
   section: string;
-  kind: "文章" | "explained" | "moments" | "资料";
+  kind: "文章" | "explained" | "生活记录" | "资料";
   tags: string[];
   cover: string;
   text: string;
@@ -222,8 +222,12 @@ function buildInspirationSearchText(inspiration: Inspiration) {
 }
 
 function buildMomentSearchText(moment: Moment) {
+  const itemText = (moment.data.items ?? [])
+    .flatMap((item) => [item.title, item.description])
+    .join(" ");
+
   return stripMarkdownToText(
-    [moment.data.title, moment.data.description, moment.body].join("\n\n"),
+    [moment.data.title, moment.data.description, itemText, moment.body].join("\n\n"),
   ).toLowerCase();
 }
 
@@ -343,14 +347,14 @@ export async function getSearchEntries() {
   );
 
   const momentEntries: (SearchEntry & { sortTime: number })[] = moments.map((moment) => ({
-    title: moment.data.title || "moments",
+    title: moment.data.title || "生活记录",
     description: moment.data.description,
     date: moment.data.date.toISOString().slice(0, 10),
     updated: getEntryUpdatedDate(moment).toISOString().slice(0, 10),
-    section: "moments",
-    kind: "moments",
+    section: "生活记录",
+    kind: "生活记录",
     tags: [],
-    cover: resolveSearchCover(moment.data.images[0]),
+    cover: resolveSearchCover(moment.data.items[0]?.image ?? moment.data.images[0]),
     text: buildMomentSearchText(moment),
     snippet: buildSearchSnippet(moment.body || moment.data.description),
     url: withBasePath(getMomentHref(moment)),

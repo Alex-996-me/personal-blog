@@ -1891,12 +1891,102 @@
   transform-origin: left center;
 }
 
+.home-life,
 .home-journal,
 .home-topics,
 .home-about {
   position: relative;
   padding: clamp(5.5rem, 12svh, 10rem) 0;
   border-bottom: 1px solid var(--home-line);
+}
+
+.home-life__record {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(16rem, 0.72fr);
+  min-height: clamp(20rem, 36vw, 32rem);
+  overflow: hidden;
+  border: 1px solid var(--home-line);
+  background: rgba(255, 255, 255, 0.018);
+  color: inherit;
+  transition: border-color 0.3s ease, background 0.3s ease, transform 0.45s var(--home-ease-expo);
+}
+
+.home-life__record:hover {
+  border-color: rgba(230, 170, 96, 0.45);
+  background: rgba(255, 255, 255, 0.035);
+  transform: translateY(-3px);
+}
+
+.home-life__media {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 76% 28%, rgba(230, 170, 96, 0.18), transparent 28%),
+    #151b23;
+}
+
+.home-life__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s var(--home-ease-expo);
+}
+
+.home-life__record:hover .home-life__media img {
+  transform: scale(1.025);
+}
+
+.home-life__media > span {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  color: var(--home-muted);
+  font-family: Georgia, serif;
+  font-size: clamp(2rem, 5vw, 4rem);
+}
+
+.home-life__copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(1.5rem, 4vw, 4rem);
+}
+
+.home-life__label {
+  color: var(--home-blue);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+}
+
+.home-life__copy h3 {
+  margin: 0.8rem 0 0;
+  color: var(--home-text);
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Songti SC", serif;
+  font-size: clamp(2rem, 4vw, 4.8rem);
+  font-weight: 500;
+  letter-spacing: -0.06em;
+  line-height: 1.02;
+}
+
+.home-life__copy p {
+  margin: 1.25rem 0 0;
+  color: var(--home-muted);
+  font-size: clamp(0.98rem, 1.3vw, 1.15rem);
+  line-height: 1.8;
+}
+
+.home-life__link {
+  margin-top: 2rem;
+  color: var(--home-gold);
+  font-size: 0.86rem;
+  letter-spacing: 0.06em;
+}
+
+.home-life__link span {
+  margin-left: 0.35rem;
 }
 
 .home-section-heading {
@@ -2204,6 +2294,7 @@ body.reveal-ready [data-reveal].is-visible {
     min-height: 4.2rem;
   }
 
+  .home-life,
   .home-journal,
   .home-topics,
   .home-about {
@@ -2275,6 +2366,7 @@ body.reveal-ready [data-reveal].is-visible {
   }
 
   .home-journal__grid,
+  .home-life__record,
   .home-about__layout {
     grid-template-columns: 1fr;
   }
@@ -2399,6 +2491,7 @@ body.reveal-ready [data-reveal].is-visible {
     font-size: clamp(2.7rem, 14vw, 4.6rem);
   }
 
+  .home-life,
   .home-journal,
   .home-topics,
   .home-about {
@@ -2599,6 +2692,80 @@ body.reveal-ready [data-reveal].is-visible {
   line-height: 1.85;
 }
 
+.moment-card__lede {
+  max-width: 54rem;
+  margin: 0.55rem 0 1.8rem;
+  color: #b9c3d0;
+  font-size: 0.98rem;
+  line-height: 1.8;
+}
+
+.moment-card__entries {
+  display: grid;
+  gap: clamp(1.4rem, 3vw, 2.6rem);
+  margin-top: 1.7rem;
+}
+
+.moment-card__entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(13rem, 0.7fr);
+  gap: clamp(1rem, 3vw, 2.4rem);
+  align-items: center;
+  margin: 0;
+  padding-bottom: clamp(1.4rem, 3vw, 2.6rem);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.moment-card__entry:nth-child(even):not(.is-image-only) {
+  grid-template-columns: minmax(13rem, 0.7fr) minmax(0, 1.65fr);
+}
+
+.moment-card__entry:nth-child(even):not(.is-image-only) img {
+  grid-column: 2;
+}
+
+.moment-card__entry:nth-child(even):not(.is-image-only) figcaption {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.moment-card__entry img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.6rem;
+  object-fit: cover;
+}
+
+.moment-card__entry.is-image-only {
+  display: block;
+}
+
+.moment-card__entry.is-image-only img {
+  aspect-ratio: 16 / 8.8;
+}
+
+.moment-card__entry figcaption {
+  min-width: 0;
+}
+
+.moment-card__entry h3 {
+  margin: 0;
+  color: var(--home-text);
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Songti SC", serif;
+  font-size: clamp(1.45rem, 2.6vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+}
+
+.moment-card__entry p {
+  margin: 0.75rem 0 0;
+  color: #aeb9c7;
+  font-size: clamp(0.88rem, 1.25vw, 1rem);
+  line-height: 1.8;
+}
+
 @media (max-width: 700px) {
   .home-thought__title-mask h1 {
     font-size: clamp(1.85rem, 8.3vw, 2.55rem);
@@ -2631,5 +2798,17 @@ body.reveal-ready [data-reveal].is-visible {
 
   .moment-card__images {
     grid-template-columns: 1fr;
+  }
+
+  .moment-card__entry,
+  .moment-card__entry:nth-child(even):not(.is-image-only) {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+
+  .moment-card__entry:nth-child(even):not(.is-image-only) img,
+  .moment-card__entry:nth-child(even):not(.is-image-only) figcaption {
+    grid-column: auto;
+    grid-row: auto;
   }
 }

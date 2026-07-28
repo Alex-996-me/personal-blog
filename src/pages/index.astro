@@ -6,22 +6,27 @@ import { siteConfig, topicMatrix } from "../data/site";
 import {
   formatDate,
   getAllInspirations,
+  getAllMoments,
   getAllPosts,
   getAllResources,
   getCategoryCounts,
   getInspirationSlug,
+  getMomentHref,
   getPostHref,
   getUpdatedDate,
 } from "../lib/blog";
 import { withBasePath } from "../lib/paths";
 
-const [posts, inspirations, resources] = await Promise.all([
+const [posts, inspirations, resources, moments] = await Promise.all([
   getAllPosts(),
   getAllInspirations(),
   getAllResources(),
+  getAllMoments(),
 ]);
 
 const latestPosts = posts.slice(0, 3);
+const latestMoment = moments[0];
+const latestMomentImage = latestMoment?.data.items[0]?.image ?? latestMoment?.data.images[0] ?? "";
 const renderedInspirations = await Promise.all(
   inspirations.map(async (inspiration) => {
     const { Content } = await render(inspiration);
@@ -93,10 +98,37 @@ const topicTiles = topicMatrix.map((topic) => ({
       </section>
     )}
 
+    {latestMoment && (
+      <section class="home-life" aria-labelledby="home-life-title">
+        <div class="home-section-heading" data-reveal>
+          <div>
+            <p class="home-section-heading__eyebrow">02 / LIFE RECORD</p>
+            <h2 id="home-life-title">生活记录</h2>
+          </div>
+        </div>
+
+        <a class="home-life__record" href={withBasePath(getMomentHref(latestMoment))} data-reveal data-reveal-delay="1">
+          <div class="home-life__media">
+            {latestMomentImage ? (
+              <img src={withBasePath(latestMomentImage)} alt={latestMoment.data.title || "生活记录"} loading="lazy" decoding="async" />
+            ) : (
+              <span>生活记录</span>
+            )}
+          </div>
+          <div class="home-life__copy">
+            <span class="home-life__label">LATEST / LIFE</span>
+            <h3>{latestMoment.data.title || "生活记录"}</h3>
+            {latestMoment.data.description && <p>{latestMoment.data.description}</p>}
+            <span class="home-life__link">查看这条记录 <span aria-hidden="true">→</span></span>
+          </div>
+        </a>
+      </section>
+    )}
+
     <section class="home-journal" aria-labelledby="home-journal-title">
       <div class="home-section-heading" data-reveal>
         <div>
-          <p class="home-section-heading__eyebrow">02 / JOURNAL</p>
+          <p class="home-section-heading__eyebrow">03 / JOURNAL</p>
           <h2 id="home-journal-title">最近文章</h2>
         </div>
       </div>
@@ -142,7 +174,7 @@ const topicTiles = topicMatrix.map((topic) => ({
     <section class="home-topics" aria-labelledby="home-topics-title">
       <div class="home-section-heading" data-reveal>
         <div>
-          <p class="home-section-heading__eyebrow">03 / TOPIC MATRIX</p>
+          <p class="home-section-heading__eyebrow">04 / TOPIC MATRIX</p>
           <h2 id="home-topics-title">主题索引</h2>
         </div>
       </div>
@@ -152,7 +184,7 @@ const topicTiles = topicMatrix.map((topic) => ({
     <section class="home-about" aria-labelledby="home-about-title">
       <div class="home-section-heading" data-reveal>
         <div>
-          <p class="home-section-heading__eyebrow">04 / ABOUT</p>
+          <p class="home-section-heading__eyebrow">05 / ABOUT</p>
           <h2 id="home-about-title">海粟</h2>
         </div>
       </div>
@@ -180,14 +212,14 @@ const topicTiles = topicMatrix.map((topic) => ({
     const inspirationSlides = Array.from(document.querySelectorAll("[data-home-inspiration-slide]"));
     const progressBar = document.querySelector("[data-home-inspiration-progress]");
     const nextInspirationButton = document.querySelector("[data-home-inspiration-next]");
-    const inspirationDuration = 3000;
+    const inspirationDuration = 2000;
     let activeInspirationIndex = 0;
     let inspirationTimer = 0;
     let inspirationFrame = 0;
     let inspirationDeadline = 0;
     let inspirationRemaining = inspirationDuration;
     let isInspirationPaused = false;
-    const inspirationStorageKey = "n1lab-home-explained-carousel-v1";
+    const inspirationStorageKey = "n1lab-home-explained-carousel-v2";
     const inspirationFingerprint = inspirationSlides.map((slide) => slide.dataset.inspirationSlug).join("|");
 
     const persistInspirationState = () => {
@@ -290,16 +322,6 @@ const topicTiles = topicMatrix.map((topic) => ({
       restoreInspirationState();
       isInspirationPaused = false;
       scheduleInspiration();
-      carousel.addEventListener("pointerenter", pauseInspirationTimer);
-      carousel.addEventListener("pointerleave", () => {
-        isInspirationPaused = false;
-        scheduleInspiration();
-      });
-      carousel.addEventListener("focusin", pauseInspirationTimer);
-      carousel.addEventListener("focusout", () => {
-        isInspirationPaused = false;
-        scheduleInspiration();
-      });
       nextInspirationButton?.addEventListener("click", () => {
         isInspirationPaused = false;
         clearTimeout(inspirationTimer);

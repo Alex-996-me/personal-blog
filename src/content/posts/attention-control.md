@@ -2,7 +2,7 @@
 title: 注意力被收割的时代，怎么重新拿回控制权
 date: '2026-05-23'
 updated: '2026-07-23'
-category: 脑科学
+category: 体悟
 tags:
   - 注意力
   - 专注

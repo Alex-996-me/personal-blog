@@ -2,7 +2,7 @@
 title: "从稀缺到余闲：不把自己塞满的智慧"
 date: "2026-06-29"
 updated: "2026-06-30"
-category: "读书"
+category: "体悟"
 tags:
   - 稀缺
   - 余闲

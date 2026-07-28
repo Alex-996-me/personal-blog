@@ -17,7 +17,7 @@ const postSchema = z.object({
   title: z.string(),
   date: z.coerce.date(),
   updated: z.coerce.date().optional(),
-  category: z.enum(["日志", "读书", "健康", "训练", "脑科学", "工具", "世界"]),
+  category: z.enum(["日志", "体悟", "健康", "训练", "工具", "世界"]),
   tags: z.array(z.string()).default([]),
   description: z.string(),
   cover: z.string().optional(),
@@ -42,6 +42,12 @@ const momentSchema = z.object({
   date: z.coerce.date(),
   updated: z.coerce.date().optional(),
   images: z.array(z.string()).default([]),
+  items: z.array(z.object({
+    image: z.string(),
+    title: z.string().default(""),
+    description: z.string().default(""),
+  })).default([]),
+  hideToc: z.boolean().default(false),
   description: z.string().default(""),
   published: z.boolean().default(true),
 });

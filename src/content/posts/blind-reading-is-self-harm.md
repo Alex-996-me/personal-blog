@@ -2,7 +2,7 @@
 title: "盲目阅读是隐性自残，真学习要靠主动加工"
 date: "2026-07-04"
 updated: "2026-07-04"
-category: "读书"
+category: "体悟"
 tags:
   - 阅读
   - 学习方法

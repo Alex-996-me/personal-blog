@@ -321,7 +321,9 @@ function createTocBlock(items) {
 }
 
 export function rehypeEnhanceBlogContent() {
-  return (tree) => {
+  return (tree, file) => {
+    const frontmatter = file?.data?.astro?.frontmatter ?? {};
+    const hideToc = frontmatter.hideToc === true;
     const makeSlug = createSlugger();
     const tocItems = [];
 
@@ -403,7 +405,7 @@ export function rehypeEnhanceBlogContent() {
     visit(tree);
 
     const tocBlock = createTocBlock(tocItems);
-    if (tocBlock) {
+    if (tocBlock && !hideToc) {
       tree.children.unshift(tocBlock);
     }
   };

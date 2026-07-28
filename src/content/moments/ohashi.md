@@ -7,6 +7,7 @@ images:
   - "/images/moments/ohashi/image-02.webp"
   - "/images/moments/ohashi/image-03.webp"
   - "/images/moments/ohashi/image-04.webp"
+hideToc: true
 description: "古北三巨头之一。"
 published: true
 ---
