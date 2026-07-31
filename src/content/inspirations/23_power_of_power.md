@@ -2,7 +2,7 @@
 title: "权力"
 date: "2026-07-31T21:21:00+08:00"
 updated: "2026-07-31T21:21:00+08:00"
-theme: "权力"
+theme: "思考"
 tags: ["权力", "恐惧"]
 description: "权力凌驾一切之上"
 published: true
