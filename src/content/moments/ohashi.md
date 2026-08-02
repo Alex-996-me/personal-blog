@@ -2,6 +2,11 @@
 title: "お箸"
 date: "2026-07-25"
 updated: "2026-07-25"
+location:
+  city: "上海"
+  country: "中国"
+  latitude: 31.2304
+  longitude: 121.4737
 images:
   - "/images/moments/ohashi/image-01.webp"
   - "/images/moments/ohashi/image-02.webp"

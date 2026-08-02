@@ -41,6 +41,12 @@ const momentSchema = z.object({
   title: z.string().default(""),
   date: z.coerce.date(),
   updated: z.coerce.date().optional(),
+  location: z.object({
+    city: z.string(),
+    country: z.string(),
+    latitude: z.number(),
+    longitude: z.number(),
+  }).optional(),
   images: z.array(z.string()).default([]),
   items: z.array(z.object({
     image: z.string(),

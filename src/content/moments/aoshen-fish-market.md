@@ -2,6 +2,11 @@
 title: "澳深鱼市"
 date: "2026-07-25"
 updated: "2026-07-25"
+location:
+  city: "大连"
+  country: "中国"
+  latitude: 38.914
+  longitude: 121.6147
 images: []
 items:
   - image: "/images/moments/aoshen-fish-market/image-01.webp"

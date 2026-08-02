@@ -2,6 +2,11 @@
 title: "吴记羊汤"
 date: "2026-07-28"
 updated: "2026-07-28"
+location:
+  city: "营口"
+  country: "中国"
+  latitude: 40.668
+  longitude: 122.2351
 images: []
 items:
   - image: "/images/moments/wuji-lamb-soup/image-01.png"

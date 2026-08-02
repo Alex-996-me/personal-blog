@@ -2,6 +2,11 @@
 title: "一幸"
 date: "2026-07-28"
 updated: "2026-07-28"
+location:
+  city: "上海"
+  country: "中国"
+  latitude: 31.2304
+  longitude: 121.4737
 images: []
 items:
   - image: "/images/moments/yixing/image-01.jpeg"

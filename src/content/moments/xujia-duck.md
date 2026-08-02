@@ -2,6 +2,11 @@
 title: "徐家鸭子"
 date: "2026-07-28"
 updated: "2026-07-28"
+location:
+  city: "南京"
+  country: "中国"
+  latitude: 32.0603
+  longitude: 118.7969
 images: []
 items:
   - image: "/images/moments/xujia-duck/image-01.png"

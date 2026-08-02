@@ -2812,3 +2812,366 @@ body.reveal-ready [data-reveal].is-visible {
     grid-row: auto;
   }
 }
+
+/* Life records use a map only after leaving the homepage; homepage cards stay unchanged. */
+.body--moments {
+  background: #06080b;
+}
+
+.body--moments .page-shell--moments,
+.body--moments .content-panel--moments {
+  width: min(100%, 1500px);
+  max-width: none;
+}
+
+.body--moments .content-panel--moments {
+  padding: clamp(1.1rem, 3vw, 2.75rem);
+  background: transparent;
+  border: 0;
+}
+
+.moments-map-page {
+  color: #edf0f4;
+}
+
+.moments-map-page__header {
+  display: flex;
+  align-items: end;
+  gap: 1rem;
+  margin: 0 auto 1rem;
+  padding: 0 0 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.moments-map-page__header .post-backlink {
+  margin: 0 auto 0 0;
+  color: #aeb7c5;
+}
+
+.moments-map-page__header h1 {
+  margin: 0;
+  color: #ffffff;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Songti SC", serif;
+  font-size: clamp(2.1rem, 5vw, 4.6rem);
+  font-weight: 500;
+  letter-spacing: -0.07em;
+  line-height: 0.9;
+}
+
+.moments-map-page__header span {
+  color: #8893a3;
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+}
+
+.moments-map {
+  position: relative;
+  min-height: min(76vh, 49rem);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 1.15rem;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(93, 117, 144, 0.15), transparent 32%),
+    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+    #0b1016;
+  background-size: auto, 28px 28px, 28px 28px, auto;
+}
+
+.moments-map__toolbar {
+  position: absolute;
+  z-index: 5;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(7, 10, 14, 0.9);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.24);
+}
+
+.moments-map__toolbar button {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: #f3f5f7;
+  font: inherit;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.moments-map__toolbar button:last-child {
+  border-right: 0;
+  font-size: 1rem;
+}
+
+.moments-map__toolbar button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.moments-map__viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+}
+
+.moments-map__viewport.is-dragging {
+  cursor: grabbing;
+}
+
+.moments-map__canvas {
+  position: absolute;
+  inset: 0;
+  min-width: 100%;
+  min-height: 100%;
+  transform-origin: center;
+  transition: transform 220ms cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+
+.moments-map__viewport.is-dragging .moments-map__canvas {
+  transition: none;
+}
+
+.moments-map__land {
+  position: absolute;
+  inset: 8% 2% 8%;
+  width: 96%;
+  height: 84%;
+  overflow: visible;
+}
+
+.moments-map__land path {
+  fill: rgba(197, 210, 225, 0.1);
+  stroke: rgba(226, 235, 243, 0.25);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.moments-map__pin {
+  position: absolute;
+  z-index: 2;
+  left: var(--pin-left);
+  top: var(--pin-top);
+  width: 1.1rem;
+  height: 1.1rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.moments-map__pin-dot {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border: 3px solid #0b1016;
+  border-radius: 50%;
+  background: #f0ad59;
+  box-shadow: 0 0 0 5px rgba(240, 173, 89, 0.2), 0 0 25px rgba(240, 173, 89, 0.55);
+}
+
+.moments-map__pin-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  grid-template-columns: 3.1rem minmax(7.7rem, 1fr);
+  align-items: center;
+  width: max-content;
+  max-width: 15.7rem;
+  min-height: 3.7rem;
+  padding: 0.3rem 0.6rem 0.3rem 0.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.55rem;
+  background: rgba(8, 12, 17, 0.9);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+  transform: translate(var(--pin-offset-x), var(--pin-offset-y));
+  text-align: left;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.moments-map__pin:hover .moments-map__pin-card,
+.moments-map__pin[aria-expanded="true"] .moments-map__pin-card {
+  border-color: rgba(240, 173, 89, 0.85);
+  background: rgba(18, 21, 25, 0.97);
+  transform: translate(var(--pin-offset-x), calc(var(--pin-offset-y) - 5px));
+}
+
+.moments-map__pin-card img,
+.moments-map__pin-empty {
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 0.35rem;
+  object-fit: cover;
+}
+
+.moments-map__pin-empty {
+  display: grid;
+  place-items: center;
+  background: #28313c;
+  color: #f0ad59;
+  font-size: 1rem;
+}
+
+.moments-map__pin-card span:last-child {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.moments-map__pin-card strong {
+  color: #ffffff;
+  font-size: 0.86rem;
+  letter-spacing: 0.06em;
+}
+
+.moments-map__pin-card small {
+  overflow: hidden;
+  color: #aeb8c5;
+  font-size: 0.74rem;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.moments-map__city-panel {
+  position: absolute;
+  z-index: 6;
+  right: 1.1rem;
+  bottom: 1.1rem;
+  width: min(30rem, calc(100% - 2.2rem));
+  max-height: min(66vh, 35rem);
+  overflow: auto;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.85rem;
+  background: rgba(7, 10, 14, 0.94);
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(16px);
+}
+
+.moments-map__city-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.moments-map__city-header p {
+  margin: 0 0 0.14rem;
+  color: #8792a2;
+  font-size: 0.73rem;
+  letter-spacing: 0.16em;
+}
+
+.moments-map__city-header h2 {
+  margin: 0;
+  color: #ffffff;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Songti SC", serif;
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.moments-map__city-header button {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 50%;
+  background: transparent;
+  color: #f1f4f8;
+  font: inherit;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.moments-map__city-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.moments-map__food-card {
+  min-width: 0;
+}
+
+.moments-map__food-card img,
+.moments-map__food-placeholder {
+  width: 100%;
+  aspect-ratio: 1.28;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 0.42rem;
+  object-fit: cover;
+}
+
+.moments-map__food-placeholder {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: #171c22;
+  color: #ced5dc;
+  font-family: "Iowan Old Style", "Songti SC", serif;
+  text-align: center;
+}
+
+.moments-map__food-card h3 {
+  margin: 0.48rem 0 0;
+  color: #e6ebf1;
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .body--moments .content-panel--moments {
+    padding: 0.8rem;
+  }
+
+  .moments-map-page__header {
+    margin-bottom: 0.7rem;
+  }
+
+  .moments-map-page__header h1 {
+    font-size: 2.25rem;
+  }
+
+  .moments-map {
+    min-height: 73svh;
+    border-radius: 0.8rem;
+  }
+
+  .moments-map__canvas {
+    min-width: 55rem;
+    width: 55rem;
+    left: calc(50% - 27.5rem);
+    right: auto;
+  }
+
+  .moments-map__pin-card {
+    grid-template-columns: 2.45rem minmax(5.2rem, 1fr);
+    max-width: 10.7rem;
+    min-height: 3rem;
+  }
+
+  .moments-map__pin-card img,
+  .moments-map__pin-empty {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .moments-map__pin-card small {
+    font-size: 0.64rem;
+  }
+
+  .moments-map__city-panel {
+    right: 0.7rem;
+    bottom: 0.7rem;
+    width: calc(100% - 1.4rem);
+  }
+}
