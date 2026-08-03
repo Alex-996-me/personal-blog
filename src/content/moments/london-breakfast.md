@@ -1,10 +1,10 @@
 ---
-title: "??????"
+title: "伦敦英式早餐"
 date: "2026-08-02"
 updated: "2026-08-02"
 location:
-  city: "??"
-  country: "??"
+  city: "伦敦"
+  country: "英国"
   latitude: 51.5072
   longitude: -0.1276
 images: []

@@ -2940,16 +2940,16 @@ body.reveal-ready [data-reveal].is-visible {
 
 .moments-map__land {
   position: absolute;
-  inset: 8% 2% 8%;
-  width: 96%;
-  height: 84%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   overflow: visible;
 }
 
-.moments-map__land path {
-  fill: rgba(197, 210, 225, 0.1);
-  stroke: rgba(226, 235, 243, 0.25);
-  stroke-width: 1.5;
+.moments-map__country {
+  fill: rgba(160, 177, 197, 0.08);
+  stroke: rgba(221, 231, 241, 0.32);
+  stroke-width: 0.7;
   vector-effect: non-scaling-stroke;
 }
 
@@ -2975,6 +2975,27 @@ body.reveal-ready [data-reveal].is-visible {
   border-radius: 50%;
   background: #f0ad59;
   box-shadow: 0 0 0 5px rgba(240, 173, 89, 0.2), 0 0 25px rgba(240, 173, 89, 0.55);
+}
+
+.moments-map__pin-card {
+  display: none;
+}
+
+.moments-map__pin::after {
+  position: absolute;
+  left: 0.72rem;
+  top: 50%;
+  padding: 0.2rem 0.38rem;
+  border: 1px solid rgba(240, 173, 89, 0.28);
+  border-radius: 0.25rem;
+  background: rgba(8, 12, 17, 0.72);
+  color: #eff4fa;
+  content: attr(data-city-name);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  transform: translate(var(--pin-offset-x), calc(-50% + var(--pin-offset-y)));
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+  white-space: nowrap;
 }
 
 .moments-map__pin-card {
@@ -3055,6 +3076,13 @@ body.reveal-ready [data-reveal].is-visible {
   background: rgba(7, 10, 14, 0.94);
   box-shadow: 0 20px 55px rgba(0, 0, 0, 0.42);
   backdrop-filter: blur(16px);
+}
+
+.moments-map__pin:hover::after,
+.moments-map__pin[aria-expanded="true"]::after {
+  border-color: rgba(240, 173, 89, 0.88);
+  background: rgba(18, 21, 25, 0.97);
+  transform: translate(var(--pin-offset-x), calc(-50% + var(--pin-offset-y) - 3px));
 }
 
 .moments-map__city-panel[hidden] {
@@ -3165,6 +3193,11 @@ body.reveal-ready [data-reveal].is-visible {
     grid-template-columns: 2.45rem minmax(5.2rem, 1fr);
     max-width: 10.7rem;
     min-height: 3rem;
+  }
+
+  .moments-map__pin::after {
+    font-size: 0.66rem;
+    letter-spacing: 0.05em;
   }
 
   .moments-map__pin-card img,
