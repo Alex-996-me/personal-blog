@@ -25,8 +25,20 @@ const [posts, inspirations, resources, moments] = await Promise.all([
 ]);
 
 const latestPosts = posts.slice(0, 3);
-const latestMoment = moments[0];
-const latestMomentImage = latestMoment?.data.items[0]?.image ?? latestMoment?.data.images[0] ?? "";
+const homeMomentSlides = moments.flatMap((moment) => {
+  const items = moment.data.items.length > 0
+    ? moment.data.items
+    : moment.data.images.map((image) => ({ image, title: "", description: "" }));
+
+  return items
+    .filter((item) => item.image)
+    .map((item) => ({
+      image: item.image,
+      title: item.title || moment.data.title,
+      description: item.description || moment.data.description,
+      href: getMomentHref(moment),
+    }));
+});
 const renderedInspirations = await Promise.all(
   inspirations.map(async (inspiration) => {
     const { Content } = await render(inspiration);
@@ -98,7 +110,7 @@ const topicTiles = topicMatrix.map((topic) => ({
       </section>
     )}
 
-    {latestMoment && (
+    {homeMomentSlides.length > 0 && (
       <section class="home-life" aria-labelledby="home-life-title">
         <div class="home-section-heading" data-reveal>
           <div>
@@ -107,21 +119,26 @@ const topicTiles = topicMatrix.map((topic) => ({
           </div>
         </div>
 
-        <a class="home-life__record" href={withBasePath(getMomentHref(latestMoment))} data-reveal data-reveal-delay="1">
-          <div class="home-life__media">
-            {latestMomentImage ? (
-              <img src={withBasePath(latestMomentImage)} alt={latestMoment.data.title || "生活记录"} loading="lazy" decoding="async" />
-            ) : (
-              <span>生活记录</span>
-            )}
-          </div>
-          <div class="home-life__copy">
-            <span class="home-life__label">LATEST / LIFE</span>
-            <h3>{latestMoment.data.title || "生活记录"}</h3>
-            {latestMoment.data.description && <p>{latestMoment.data.description}</p>}
-            <span class="home-life__link">查看这条记录 <span aria-hidden="true">→</span></span>
-          </div>
-        </a>
+        <div class="home-life__carousel" data-home-moment-carousel>
+          {homeMomentSlides.map((moment, index) => (
+            <a
+              class:list={["home-life__record", index === 0 && "is-active"]}
+              href={withBasePath(moment.href)}
+              data-home-moment-slide
+              aria-hidden={index === 0 ? "false" : "true"}
+            >
+              <div class="home-life__media">
+                <img src={withBasePath(moment.image)} alt={moment.title || "生活记录"} loading={index === 0 ? "eager" : "lazy"} decoding="async" />
+              </div>
+              <div class="home-life__copy">
+                <span class="home-life__label">LATEST / LIFE</span>
+                <h3>{moment.title || "生活记录"}</h3>
+                {moment.description && <p>{moment.description}</p>}
+                <span class="home-life__link">查看这条记录 <span aria-hidden="true">→</span></span>
+              </div>
+            </a>
+          ))}
+        </div>
       </section>
     )}
 
@@ -342,6 +359,46 @@ const topicTiles = topicMatrix.map((topic) => ({
         isInspirationPaused = false;
         scheduleInspiration();
       });
+    }
+
+    const momentCarousel = document.querySelector("[data-home-moment-carousel]");
+    const momentSlides = Array.from(document.querySelectorAll("[data-home-moment-slide]"));
+    let activeMomentIndex = 0;
+    let momentTimer = 0;
+
+    const showMoment = (nextIndex) => {
+      const nextSlide = momentSlides[nextIndex];
+      if (!nextSlide) return;
+      momentSlides.forEach((slide, index) => {
+        const isActive = index === nextIndex;
+        slide.classList.toggle("is-active", isActive);
+        slide.setAttribute("aria-hidden", isActive ? "false" : "true");
+      });
+      activeMomentIndex = nextIndex;
+    };
+
+    const stopMomentCarousel = () => {
+      if (momentTimer) window.clearTimeout(momentTimer);
+      momentTimer = 0;
+    };
+
+    const scheduleMomentCarousel = () => {
+      stopMomentCarousel();
+      if (!momentCarousel || momentSlides.length < 2 || document.visibilityState !== "visible") return;
+      momentTimer = window.setTimeout(() => {
+        showMoment((activeMomentIndex + 1) % momentSlides.length);
+        scheduleMomentCarousel();
+      }, 3000);
+    };
+
+    if (momentCarousel && momentSlides.length > 1) {
+      scheduleMomentCarousel();
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") scheduleMomentCarousel();
+        else stopMomentCarousel();
+      });
+      window.addEventListener("pagehide", stopMomentCarousel);
+      window.addEventListener("pageshow", scheduleMomentCarousel);
     }
 
     const revealItems = Array.from(document.querySelectorAll("[data-reveal]"));

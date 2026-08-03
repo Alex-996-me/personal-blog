@@ -1901,6 +1901,8 @@
 }
 
 .home-life__record {
+  position: absolute;
+  inset: 0;
   display: grid;
   grid-template-columns: minmax(0, 1.18fr) minmax(18rem, 0.82fr);
   min-height: clamp(14rem, 21vw, 21rem);
@@ -1908,13 +1910,31 @@
   border: 1px solid var(--home-line);
   background: rgba(255, 255, 255, 0.018);
   color: inherit;
-  transition: border-color 0.3s ease, background 0.3s ease, transform 0.45s var(--home-ease-expo);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.8rem) scale(0.992);
+  transition: opacity 0.58s ease, border-color 0.3s ease, background 0.3s ease, transform 0.58s var(--home-ease-expo);
+}
+
+.home-life__carousel {
+  position: relative;
+  min-height: clamp(14rem, 21vw, 21rem);
+}
+
+.home-life__record.is-active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
 }
 
 .home-life__record:hover {
   border-color: rgba(230, 170, 96, 0.45);
   background: rgba(255, 255, 255, 0.035);
   transform: translateY(-3px);
+}
+
+.home-life__record.is-active:hover {
+  transform: translateY(-3px) scale(1);
 }
 
 .home-life__media {
@@ -1931,7 +1951,14 @@
   height: 100%;
   object-fit: cover;
   object-position: center 46%;
-  transition: transform 0.8s var(--home-ease-expo);
+  opacity: 0;
+  transform: scale(1.045);
+  transition: opacity 0.65s ease, transform 0.9s var(--home-ease-expo);
+}
+
+.home-life__record.is-active .home-life__media img {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .home-life__record:hover .home-life__media img {
@@ -3214,5 +3241,132 @@ body.reveal-ready [data-reveal].is-visible {
     right: 0.7rem;
     bottom: 0.7rem;
     width: calc(100% - 1.4rem);
+  }
+}
+
+/* Moment map stays quiet until a location is deliberately opened. */
+.moments-map__pin::after,
+.moments-map__pin > .moments-map__pin-card {
+  display: none !important;
+}
+
+.moments-map__food-trigger {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.moments-map__food-trigger:focus-visible,
+.moments-map__detail-close:focus-visible {
+  outline: 2px solid #f0ad59;
+  outline-offset: 3px;
+}
+
+.moments-map__food-card p {
+  margin: 0.25rem 0 0;
+  color: #aeb8c5;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.moments-map__detail-panel {
+  position: absolute;
+  z-index: 12;
+  inset: 1rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(16rem, 0.8fr);
+  gap: 1rem;
+  align-items: stretch;
+  overflow: auto;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.85rem;
+  background: rgba(7, 10, 14, 0.97);
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(18px);
+}
+
+.moments-map__detail-panel[hidden] {
+  display: none !important;
+}
+
+.moments-map__detail-panel img {
+  width: 100%;
+  min-height: 0;
+  max-height: min(68vh, 40rem);
+  border-radius: 0.55rem;
+  object-fit: contain;
+  background: #05070a;
+}
+
+.moments-map__detail-copy {
+  align-self: center;
+  padding: clamp(0.5rem, 2vw, 2rem);
+}
+
+.moments-map__detail-copy p:first-child {
+  margin: 0 0 0.6rem;
+  color: #8aa5d2;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+}
+
+.moments-map__detail-copy h2 {
+  margin: 0;
+  color: #ffffff;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Songti SC", serif;
+  font-size: clamp(2rem, 4vw, 4rem);
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.moments-map__detail-copy p:last-child {
+  margin: 1.25rem 0 0;
+  color: #d3dae2;
+  font-size: 1rem;
+  line-height: 1.85;
+  white-space: pre-line;
+}
+
+.moments-map__detail-close {
+  position: absolute;
+  z-index: 1;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  background: rgba(7, 10, 14, 0.76);
+  color: #ffffff;
+  font: inherit;
+  font-size: 1.45rem;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .home-life__carousel {
+    min-height: 30rem;
+  }
+
+  .home-life__record {
+    grid-template-rows: minmax(13rem, 56vw) auto;
+  }
+
+  .moments-map__detail-panel {
+    inset: 0.7rem;
+    grid-template-columns: 1fr;
+    align-content: start;
+  }
+
+  .moments-map__detail-panel img {
+    max-height: 48svh;
+  }
+
+  .moments-map__detail-copy {
+    padding: 0.5rem 0.15rem;
   }
 }

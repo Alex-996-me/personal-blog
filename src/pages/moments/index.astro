@@ -58,6 +58,16 @@ function mapPosition(latitude: number, longitude: number) {
 function primaryImage(moment: (typeof moments)[number]) {
   return moment.data.items[0]?.image ?? moment.data.images[0] ?? "";
 }
+
+function getMomentItems(moment: (typeof moments)[number]) {
+  if (moment.data.items.length > 0) return moment.data.items;
+
+  return moment.data.images.map((image) => ({
+    image,
+    title: "",
+    description: "",
+  }));
+}
 ---
 
 <BaseLayout
@@ -132,12 +142,27 @@ function primaryImage(moment: (typeof moments)[number]) {
               <button type="button" data-city-close aria-label={`关闭 ${group.city} 的记录`}>×</button>
             </div>
             <div class="moments-map__city-grid">
-              {group.moments.map((moment) => {
-                const image = primaryImage(moment);
+              {group.moments.flatMap((moment) =>
+                getMomentItems(moment).map((item, index) => ({ moment, item, index })),
+              ).map(({ moment, item, index }) => {
+                const title = item.title || moment.data.title;
+                const description = item.description || moment.data.description;
                 return (
                   <article class="moments-map__food-card">
-                    {image ? <img src={withBasePath(image)} alt={moment.data.title} loading="lazy" decoding="async" /> : <div class="moments-map__food-placeholder">{moment.data.title}</div>}
-                    <h3>{moment.data.title}</h3>
+                    <button
+                      type="button"
+                      class="moments-map__food-trigger"
+                      data-moment-detail-trigger
+                      data-moment-title={title}
+                      data-moment-parent={moment.data.title}
+                      data-moment-description={description}
+                      data-moment-image={withBasePath(item.image)}
+                      aria-label={`View ${title || `image ${index + 1}`} details`}
+                    >
+                      {item.image ? <img src={withBasePath(item.image)} alt={title} loading="lazy" decoding="async" /> : <div class="moments-map__food-placeholder">{title}</div>}
+                    </button>
+                    {title && <h3>{title}</h3>}
+                    {description && <p>{description}</p>}
                   </article>
                 );
               })}
@@ -145,6 +170,16 @@ function primaryImage(moment: (typeof moments)[number]) {
           </section>
         );
       })}
+
+      <section class="moments-map__detail-panel" data-moment-detail hidden role="dialog" aria-modal="true" aria-label="Moment details">
+        <button type="button" class="moments-map__detail-close" data-moment-detail-close aria-label="Close details">×</button>
+        <img data-moment-detail-image alt="" hidden />
+        <div class="moments-map__detail-copy">
+          <p data-moment-detail-parent></p>
+          <h2 data-moment-detail-title></h2>
+          <p data-moment-detail-description></p>
+        </div>
+      </section>
     </div>
   </section>
 </BaseLayout>
@@ -156,6 +191,11 @@ function primaryImage(moment: (typeof moments)[number]) {
   const worldMap = map?.querySelector<SVGSVGElement>(".moments-map__land");
   const triggers = [...(map?.querySelectorAll<HTMLButtonElement>("[data-city-trigger]") ?? [])];
   const panels = [...(map?.querySelectorAll<HTMLElement>("[data-city-panel]") ?? [])];
+  const detailPanel = map?.querySelector<HTMLElement>("[data-moment-detail]");
+  const detailImage = map?.querySelector<HTMLImageElement>("[data-moment-detail-image]");
+  const detailTitle = map?.querySelector<HTMLElement>("[data-moment-detail-title]");
+  const detailParent = map?.querySelector<HTMLElement>("[data-moment-detail-parent]");
+  const detailDescription = map?.querySelector<HTMLElement>("[data-moment-detail-description]");
 
   const renderWorldMap = async () => {
     const source = map?.dataset.worldMapSource;
@@ -232,7 +272,14 @@ function primaryImage(moment: (typeof moments)[number]) {
       canvas.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
     };
 
+    const closeMomentDetail = () => {
+      if (!detailPanel) return;
+      detailPanel.hidden = true;
+      detailPanel.setAttribute("aria-hidden", "true");
+    };
+
     const closePanels = () => {
+      closeMomentDetail();
       panels.forEach((panel) => {
         panel.hidden = true;
         panel.setAttribute("aria-hidden", "true");
@@ -311,6 +358,43 @@ function primaryImage(moment: (typeof moments)[number]) {
       button.addEventListener("click", (event) => {
         event.stopPropagation();
         closePanels();
+      });
+    });
+
+    map.querySelectorAll<HTMLButtonElement>("[data-moment-detail-trigger]").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        if (!detailPanel) return;
+
+        const image = button.dataset.momentImage ?? "";
+        const title = button.dataset.momentTitle ?? "";
+        const parent = button.dataset.momentParent ?? "";
+        const description = button.dataset.momentDescription ?? "";
+
+        if (detailImage) {
+          detailImage.hidden = !image;
+          detailImage.src = image;
+          detailImage.alt = title;
+        }
+        if (detailTitle) detailTitle.textContent = title;
+        if (detailParent) {
+          detailParent.textContent = parent && parent !== title ? parent : "";
+          detailParent.hidden = !detailParent.textContent;
+        }
+        if (detailDescription) {
+          detailDescription.textContent = description;
+          detailDescription.hidden = !description;
+        }
+
+        detailPanel.hidden = false;
+        detailPanel.setAttribute("aria-hidden", "false");
+      });
+    });
+
+    map.querySelectorAll<HTMLButtonElement>("[data-moment-detail-close]").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        closeMomentDetail();
       });
     });
 
