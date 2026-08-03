@@ -1,0 +1,65 @@
+---
+import { render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getAllMoments, getMomentSlug, type Moment } from "../../lib/blog";
+import { withBasePath } from "../../lib/paths";
+
+export async function getStaticPaths() {
+  const moments = await getAllMoments();
+  return moments.map((moment) => ({
+    params: { slug: getMomentSlug(moment) },
+    props: { moment },
+  }));
+}
+
+const { moment } = Astro.props as { moment: Moment };
+const { Content } = await render(moment);
+const items = moment.data.items.length > 0
+  ? moment.data.items
+  : moment.data.images.map((image) => ({ image, title: "", description: "" }));
+---
+
+<BaseLayout
+  title={moment.data.title}
+  description={moment.data.description}
+  showSidebar={false}
+  wideContent={true}
+  bodyClass="body--moments"
+  shellClass="page-shell--moments"
+  panelClass="content-panel--moments"
+>
+  <article class="moment-detail">
+    <header class="moment-detail__header">
+      <a class="post-backlink" href={withBasePath("/moments/")}>← 返回生活记录</a>
+      {moment.data.location && <p>{moment.data.location.city} · {moment.data.location.country}</p>}
+      <h1>{moment.data.title}</h1>
+      {moment.data.description && <div class="moment-detail__intro">{moment.data.description}</div>}
+    </header>
+
+    {items.length > 0 && (
+      <div class="moment-detail__gallery">
+        {items.map((item, index) => {
+          const title = item.title || (index === 0 ? moment.data.title : "");
+          const description = item.description || "";
+          return (
+            <figure class="moment-detail__item">
+              {item.image && <img src={withBasePath(item.image)} alt={title || moment.data.title} loading={index === 0 ? "eager" : "lazy"} decoding="async" />}
+              {(title || description) && (
+                <figcaption>
+                  {title && <h2>{title}</h2>}
+                  {description && <p>{description}</p>}
+                </figcaption>
+              )}
+            </figure>
+          );
+        })}
+      </div>
+    )}
+
+    {moment.body?.trim() && (
+      <div class="moment-detail__body prose">
+        <Content />
+      </div>
+    )}
+  </article>
+</BaseLayout>

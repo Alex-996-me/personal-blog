@@ -69,6 +69,10 @@ export function getInspirationSlug(inspiration: Inspiration) {
   return getEntrySlug(inspiration);
 }
 
+export function getMomentSlug(moment: Moment) {
+  return getEntrySlug(moment);
+}
+
 export function getInspirationAnchorId(inspiration: Inspiration) {
   return getInspirationSlug(inspiration);
 }
@@ -159,7 +163,7 @@ export function getInspirationHref(inspiration: Inspiration) {
 }
 
 export function getMomentHref(moment: Moment) {
-  return `/moments/#${getEntrySlug(moment)}`;
+  return `/moments/${getMomentSlug(moment)}/`;
 }
 
 export function getResourceHref(resource: ResourceDocument) {

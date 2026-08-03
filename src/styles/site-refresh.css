@@ -3370,3 +3370,222 @@ body.reveal-ready [data-reveal].is-visible {
     padding: 0.5rem 0.15rem;
   }
 }
+
+/* Map overview: a fixed geographic canvas keeps pins aligned with the coastlines. */
+.moments-map {
+  min-height: 0;
+  aspect-ratio: 2 / 1;
+}
+
+.moments-map__city-panel {
+  right: clamp(1rem, 3vw, 2.5rem);
+  bottom: clamp(1rem, 3vw, 2.5rem);
+  width: min(38rem, calc(100% - 2rem));
+  max-height: min(70vh, 42rem);
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+.moments-map__city-grid {
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.9rem;
+}
+
+.moments-map__restaurant-card {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+  min-width: 0;
+  padding: 0.45rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.55rem;
+  background: rgba(255, 255, 255, 0.025);
+  color: inherit;
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.moments-map__restaurant-card:hover {
+  border-color: rgba(240, 173, 89, 0.65);
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-2px);
+}
+
+.moments-map__restaurant-card img,
+.moments-map__restaurant-card .moments-map__food-placeholder {
+  width: 5.5rem;
+  height: 4.3rem;
+  border-radius: 0.32rem;
+  object-fit: cover;
+}
+
+.moments-map__restaurant-card > span {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.moments-map__restaurant-card strong {
+  overflow: hidden;
+  color: #f3f5f7;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.moments-map__restaurant-card small {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #aeb8c5;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.moment-detail {
+  width: min(100%, 70rem);
+  margin: 0 auto;
+  color: #edf0f4;
+}
+
+.moment-detail__header {
+  padding: clamp(1rem, 3vw, 3rem) 0 clamp(2.5rem, 6vw, 5rem);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.moment-detail__header .post-backlink {
+  display: inline-flex;
+  margin-bottom: clamp(2rem, 6vw, 5rem);
+  color: #aeb8c5;
+}
+
+.moment-detail__header > p {
+  margin: 0 0 0.55rem;
+  color: #8aa5d2;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+}
+
+.moment-detail__header h1 {
+  max-width: 15ch;
+  margin: 0;
+  color: #fff;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Songti SC", serif;
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 500;
+  letter-spacing: -0.075em;
+  line-height: 0.95;
+}
+
+.moment-detail__intro {
+  max-width: 42rem;
+  margin-top: 1.5rem;
+  color: #c3ccd6;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  line-height: 1.85;
+}
+
+.moment-detail__gallery {
+  display: grid;
+  gap: clamp(2.5rem, 8vw, 7rem);
+  padding: clamp(2.5rem, 7vw, 6rem) 0;
+}
+
+.moment-detail__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(15rem, 0.6fr);
+  gap: clamp(1rem, 4vw, 4rem);
+  align-items: center;
+  margin: 0;
+}
+
+.moment-detail__item:nth-child(even) {
+  grid-template-columns: minmax(15rem, 0.6fr) minmax(0, 1.4fr);
+}
+
+.moment-detail__item:nth-child(even) img {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.moment-detail__item:nth-child(even) figcaption {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.moment-detail__item img {
+  width: 100%;
+  max-height: min(72vh, 43rem);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 0.65rem;
+  background: #05070a;
+  object-fit: contain;
+}
+
+.moment-detail__item figcaption {
+  min-width: 0;
+}
+
+.moment-detail__item h2 {
+  margin: 0;
+  color: #fff;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Songti SC", serif;
+  font-size: clamp(1.6rem, 3vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  line-height: 1.08;
+}
+
+.moment-detail__item p {
+  margin: 1rem 0 0;
+  color: #c7d0da;
+  font-size: clamp(0.98rem, 1.35vw, 1.1rem);
+  line-height: 1.85;
+  white-space: pre-line;
+}
+
+.moment-detail__body {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 0 0 5rem;
+}
+
+@media (max-width: 760px) {
+  .moments-map {
+    min-height: 72svh;
+    aspect-ratio: auto;
+  }
+
+  .moments-map__city-panel {
+    right: 0.65rem;
+    bottom: 0.65rem;
+    width: calc(100% - 1.3rem);
+  }
+
+  .moments-map__city-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .moment-detail__header h1 {
+    max-width: none;
+    font-size: clamp(2.7rem, 13vw, 4.5rem);
+  }
+
+  .moment-detail__item,
+  .moment-detail__item:nth-child(even) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .moment-detail__item:nth-child(even) img,
+  .moment-detail__item:nth-child(even) figcaption {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .moment-detail__item img {
+    max-height: 62svh;
+  }
+}

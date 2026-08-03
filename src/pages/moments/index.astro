@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getAllMoments } from "../../lib/blog";
+import { getAllMoments, getMomentHref } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
 
 const moments = (await getAllMoments()).filter((moment) => moment.data.location);
@@ -48,10 +48,15 @@ function cityId(city: string) {
   return `city-${encodeURIComponent(city).replace(/%/g, "")}`;
 }
 
+const worldBounds = {
+  minLatitude: -85.60903777459771,
+  maxLatitude: 83.64513000000001,
+};
+
 function mapPosition(latitude: number, longitude: number) {
   return {
     left: ((longitude + 180) / 360) * 100,
-    top: ((90 - latitude) / 180) * 100,
+    top: ((worldBounds.maxLatitude - latitude) / (worldBounds.maxLatitude - worldBounds.minLatitude)) * 100,
   };
 }
 
@@ -59,15 +64,6 @@ function primaryImage(moment: (typeof moments)[number]) {
   return moment.data.items[0]?.image ?? moment.data.images[0] ?? "";
 }
 
-function getMomentItems(moment: (typeof moments)[number]) {
-  if (moment.data.items.length > 0) return moment.data.items;
-
-  return moment.data.images.map((image) => ({
-    image,
-    title: "",
-    description: "",
-  }));
-}
 ---
 
 <BaseLayout
@@ -142,28 +138,16 @@ function getMomentItems(moment: (typeof moments)[number]) {
               <button type="button" data-city-close aria-label={`关闭 ${group.city} 的记录`}>×</button>
             </div>
             <div class="moments-map__city-grid">
-              {group.moments.flatMap((moment) =>
-                getMomentItems(moment).map((item, index) => ({ moment, item, index })),
-              ).map(({ moment, item, index }) => {
-                const title = item.title || moment.data.title;
-                const description = item.description || moment.data.description;
+              {group.moments.map((moment) => {
+                const image = primaryImage(moment);
                 return (
-                  <article class="moments-map__food-card">
-                    <button
-                      type="button"
-                      class="moments-map__food-trigger"
-                      data-moment-detail-trigger
-                      data-moment-title={title}
-                      data-moment-parent={moment.data.title}
-                      data-moment-description={description}
-                      data-moment-image={withBasePath(item.image)}
-                      aria-label={`View ${title || `image ${index + 1}`} details`}
-                    >
-                      {item.image ? <img src={withBasePath(item.image)} alt={title} loading="lazy" decoding="async" /> : <div class="moments-map__food-placeholder">{title}</div>}
-                    </button>
-                    {title && <h3>{title}</h3>}
-                    {description && <p>{description}</p>}
-                  </article>
+                  <a class="moments-map__restaurant-card" href={withBasePath(getMomentHref(moment))}>
+                    {image ? <img src={withBasePath(image)} alt={moment.data.title} loading="lazy" decoding="async" /> : <div class="moments-map__food-placeholder">{moment.data.title}</div>}
+                    <span>
+                      <strong>{moment.data.title}</strong>
+                      {moment.data.description && <small>{moment.data.description}</small>}
+                    </span>
+                  </a>
                 );
               })}
             </div>
@@ -171,15 +155,6 @@ function getMomentItems(moment: (typeof moments)[number]) {
         );
       })}
 
-      <section class="moments-map__detail-panel" data-moment-detail hidden role="dialog" aria-modal="true" aria-label="Moment details">
-        <button type="button" class="moments-map__detail-close" data-moment-detail-close aria-label="Close details">×</button>
-        <img data-moment-detail-image alt="" hidden />
-        <div class="moments-map__detail-copy">
-          <p data-moment-detail-parent></p>
-          <h2 data-moment-detail-title></h2>
-          <p data-moment-detail-description></p>
-        </div>
-      </section>
     </div>
   </section>
 </BaseLayout>
