@@ -82,7 +82,7 @@ function primaryImage(moment: (typeof moments)[number]) {
       <span>{cityGroups.length} 个地点</span>
     </header>
 
-    <div class="moments-map" data-moments-map data-world-map-source={withBasePath("/data-countries-110m.json")}>
+    <div class="moments-map" data-moments-map data-world-map-source={withBasePath("/data-countries-110m.json")} data-china-provinces-source={withBasePath("/data-china-provinces.json")}>
       <div class="moments-map__toolbar" aria-label="地图控制">
         <button type="button" data-map-action="zoom-in" aria-label="放大地图">+</button>
         <button type="button" data-map-action="zoom-out" aria-label="缩小地图">−</button>
@@ -166,11 +166,12 @@ function primaryImage(moment: (typeof moments)[number]) {
   const worldMap = map?.querySelector<SVGSVGElement>(".moments-map__land");
   const triggers = [...(map?.querySelectorAll<HTMLButtonElement>("[data-city-trigger]") ?? [])];
   const panels = [...(map?.querySelectorAll<HTMLElement>("[data-city-panel]") ?? [])];
-  const detailPanel = map?.querySelector<HTMLElement>("[data-moment-detail]");
-  const detailImage = map?.querySelector<HTMLImageElement>("[data-moment-detail-image]");
-  const detailTitle = map?.querySelector<HTMLElement>("[data-moment-detail-title]");
-  const detailParent = map?.querySelector<HTMLElement>("[data-moment-detail-parent]");
-  const detailDescription = map?.querySelector<HTMLElement>("[data-moment-detail-description]");
+  const mapLatitudeBounds = { min: -85.60903777459771, max: 83.64513000000001 };
+
+  const projectPoint = (longitude: number, latitude: number) => [
+    ((longitude + 180) / 360) * 1000,
+    ((mapLatitudeBounds.max - latitude) / (mapLatitudeBounds.max - mapLatitudeBounds.min)) * 500,
+  ] as [number, number];
 
   const renderWorldMap = async () => {
     const source = map?.dataset.worldMapSource;
@@ -196,10 +197,7 @@ function primaryImage(moment: (typeof moments)[number]) {
             y += dy;
             const longitude = x * transform.scale[0] + transform.translate[0];
             const latitude = y * transform.scale[1] + transform.translate[1];
-            return [
-              ((longitude + 180) / 360) * 1000,
-              ((90 - latitude) / 180) * 500,
-            ] as [number, number];
+            return projectPoint(longitude, latitude);
           });
           arcCache.set(normalizedIndex, points);
         }
@@ -226,6 +224,34 @@ function primaryImage(moment: (typeof moments)[number]) {
         path.setAttribute("d", d);
         worldMap.append(path);
       });
+
+      const chinaSource = map?.dataset.chinaProvincesSource;
+      if (!chinaSource) return;
+      const chinaResponse = await fetch(chinaSource);
+      if (!chinaResponse.ok) return;
+      const chinaData = await chinaResponse.json();
+      const ringFromCoordinates = (ring: Array<[number, number]>) => {
+        const points = ring.map(([longitude, latitude]) => projectPoint(longitude, latitude));
+        return points.length
+          ? `M${points.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join("L")}Z`
+          : "";
+      };
+      const geometryPath = (geometry: { type: string; coordinates: unknown }) => {
+        const polygons = geometry.type === "Polygon"
+          ? [geometry.coordinates as Array<Array<[number, number]>>]
+          : geometry.coordinates as Array<Array<Array<[number, number]>>>;
+        return polygons.flatMap((polygon) => polygon.map(ringFromCoordinates)).join("");
+      };
+
+      chinaData.features.forEach((feature: { geometry?: { type: string; coordinates: unknown } }) => {
+        if (!feature.geometry) return;
+        const d = geometryPath(feature.geometry);
+        if (!d) return;
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("class", "moments-map__province");
+        path.setAttribute("d", d);
+        worldMap.append(path);
+      });
     } catch {
       map?.classList.add("moments-map--fallback");
     }
@@ -242,19 +268,24 @@ function primaryImage(moment: (typeof moments)[number]) {
     let startY = 0;
     let startOffsetX = 0;
     let startOffsetY = 0;
+    let animationFrame: number | undefined;
 
-    const render = () => {
-      canvas.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+    const clampOffset = () => {
+      const maxX = Math.max(0, (viewport.clientWidth * (scale - 1)) / 2);
+      const maxY = Math.max(0, (viewport.clientHeight * (scale - 1)) / 2);
+      offsetX = Math.min(maxX, Math.max(-maxX, offsetX));
+      offsetY = Math.min(maxY, Math.max(-maxY, offsetY));
     };
 
-    const closeMomentDetail = () => {
-      if (!detailPanel) return;
-      detailPanel.hidden = true;
-      detailPanel.setAttribute("aria-hidden", "true");
+    const render = () => {
+      if (animationFrame) return;
+      animationFrame = requestAnimationFrame(() => {
+        canvas.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0) scale(${scale})`;
+        animationFrame = undefined;
+      });
     };
 
     const closePanels = () => {
-      closeMomentDetail();
       panels.forEach((panel) => {
         panel.hidden = true;
         panel.setAttribute("aria-hidden", "true");
@@ -262,8 +293,12 @@ function primaryImage(moment: (typeof moments)[number]) {
       triggers.forEach((trigger) => { trigger.setAttribute("aria-expanded", "false"); });
     };
 
-    const setScale = (nextScale: number) => {
-      scale = Math.min(1.85, Math.max(0.8, nextScale));
+    const setScale = (nextScale: number, focusX = viewport.clientWidth / 2, focusY = viewport.clientHeight / 2) => {
+      const clampedScale = Math.min(3.25, Math.max(1, nextScale));
+      offsetX += (focusX - viewport.clientWidth / 2) * (scale - clampedScale);
+      offsetY += (focusY - viewport.clientHeight / 2) * (scale - clampedScale);
+      scale = clampedScale;
+      clampOffset();
       render();
     };
 
@@ -282,6 +317,7 @@ function primaryImage(moment: (typeof moments)[number]) {
       if (pointerId !== event.pointerId) return;
       offsetX = startOffsetX + event.clientX - startX;
       offsetY = startOffsetY + event.clientY - startY;
+      clampOffset();
       render();
     });
 
@@ -289,13 +325,16 @@ function primaryImage(moment: (typeof moments)[number]) {
       if (pointerId !== event.pointerId) return;
       pointerId = null;
       viewport.classList.remove("is-dragging");
+      const moved = Math.hypot(event.clientX - startX, event.clientY - startY) > 5;
+      if (!moved && !(event.target as HTMLElement).closest("button")) closePanels();
     };
 
     viewport.addEventListener("pointerup", stopDragging);
     viewport.addEventListener("pointercancel", stopDragging);
     viewport.addEventListener("wheel", (event) => {
       event.preventDefault();
-      setScale(scale + (event.deltaY < 0 ? 0.12 : -0.12));
+      const bounds = viewport.getBoundingClientRect();
+      setScale(scale + (event.deltaY < 0 ? 0.16 : -0.16), event.clientX - bounds.left, event.clientY - bounds.top);
     }, { passive: false });
 
     map.querySelectorAll<HTMLButtonElement>("[data-map-action]").forEach((button) => {
@@ -324,6 +363,13 @@ function primaryImage(moment: (typeof moments)[number]) {
           panel.hidden = false;
           panel.setAttribute("aria-hidden", "false");
           trigger.setAttribute("aria-expanded", "true");
+          const viewportBounds = viewport.getBoundingClientRect();
+          const triggerBounds = trigger.getBoundingClientRect();
+          setScale(
+            Math.max(scale, 1.8),
+            triggerBounds.left - viewportBounds.left + triggerBounds.width / 2,
+            triggerBounds.top - viewportBounds.top + triggerBounds.height / 2,
+          );
         }
       });
     });
@@ -333,43 +379,6 @@ function primaryImage(moment: (typeof moments)[number]) {
       button.addEventListener("click", (event) => {
         event.stopPropagation();
         closePanels();
-      });
-    });
-
-    map.querySelectorAll<HTMLButtonElement>("[data-moment-detail-trigger]").forEach((button) => {
-      button.addEventListener("click", (event) => {
-        event.stopPropagation();
-        if (!detailPanel) return;
-
-        const image = button.dataset.momentImage ?? "";
-        const title = button.dataset.momentTitle ?? "";
-        const parent = button.dataset.momentParent ?? "";
-        const description = button.dataset.momentDescription ?? "";
-
-        if (detailImage) {
-          detailImage.hidden = !image;
-          detailImage.src = image;
-          detailImage.alt = title;
-        }
-        if (detailTitle) detailTitle.textContent = title;
-        if (detailParent) {
-          detailParent.textContent = parent && parent !== title ? parent : "";
-          detailParent.hidden = !detailParent.textContent;
-        }
-        if (detailDescription) {
-          detailDescription.textContent = description;
-          detailDescription.hidden = !description;
-        }
-
-        detailPanel.hidden = false;
-        detailPanel.setAttribute("aria-hidden", "false");
-      });
-    });
-
-    map.querySelectorAll<HTMLButtonElement>("[data-moment-detail-close]").forEach((button) => {
-      button.addEventListener("click", (event) => {
-        event.stopPropagation();
-        closeMomentDetail();
       });
     });
 

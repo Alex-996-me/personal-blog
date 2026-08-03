@@ -3589,3 +3589,217 @@ body.reveal-ready [data-reveal].is-visible {
     max-height: 62svh;
   }
 }
+
+/* Large, quiet atlas view. Pins are displaced only enough to remain selectable. */
+.moments-map {
+  width: 100%;
+  min-height: 0;
+  aspect-ratio: 2 / 1;
+  border-radius: 1.35rem;
+}
+
+.moments-map__canvas {
+  will-change: transform;
+  transition: transform 140ms cubic-bezier(0.2, 0.72, 0.18, 1);
+}
+
+.moments-map__viewport.is-dragging .moments-map__canvas {
+  transition: none;
+}
+
+.moments-map__province {
+  fill: rgba(240, 173, 89, 0.025);
+  stroke: rgba(235, 240, 245, 0.34);
+  stroke-width: 0.52;
+  vector-effect: non-scaling-stroke;
+}
+
+.moments-map__pin {
+  width: 1.25rem;
+  height: 1.25rem;
+  transform: translate(
+    calc(-50% + var(--pin-offset-x)),
+    calc(-50% + var(--pin-offset-y))
+  );
+}
+
+.moments-map__pin-dot {
+  border-width: 3px;
+  box-shadow: 0 0 0 4px rgba(240, 173, 89, 0.18), 0 0 18px rgba(240, 173, 89, 0.38);
+}
+
+.moments-map__pin::after {
+  display: block !important;
+  left: 50%;
+  top: calc(100% + 0.45rem);
+  opacity: 0;
+  transform: translate(-50%, 0);
+  pointer-events: none;
+}
+
+.moments-map__pin:hover::after,
+.moments-map__pin:focus-visible::after,
+.moments-map__pin[aria-expanded="true"]::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.moments-map__city-panel {
+  top: 1.15rem;
+  right: auto;
+  bottom: auto;
+  left: 1.15rem;
+  width: min(32rem, calc(100% - 6.5rem));
+  max-height: calc(100% - 2.3rem);
+  padding: 1.15rem;
+  border-radius: 1rem;
+  background: rgba(8, 11, 15, 0.96);
+}
+
+.moments-map__city-header {
+  position: sticky;
+  top: -1.15rem;
+  z-index: 1;
+  margin: -1.15rem -1.15rem 1rem;
+  padding: 1.15rem 1.15rem 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+  background: rgba(8, 11, 15, 0.98);
+}
+
+.moments-map__city-header h2 {
+  font-size: clamp(1.8rem, 3.3vw, 2.8rem);
+  letter-spacing: -0.05em;
+}
+
+.moments-map__city-grid {
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+}
+
+.moments-map__restaurant-card {
+  grid-template-columns: 5rem minmax(0, 1fr);
+  padding: 0.38rem;
+}
+
+.moments-map__restaurant-card img,
+.moments-map__restaurant-card .moments-map__food-placeholder {
+  width: 5rem;
+  height: 3.85rem;
+}
+
+/* Restaurant detail is an editorial gallery instead of one long stack of images. */
+.moment-detail {
+  width: min(100%, 78rem);
+}
+
+.moment-detail__header {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding-bottom: clamp(2rem, 5vw, 4rem);
+}
+
+.moment-detail__header h1 {
+  max-width: 18ch;
+  font-size: clamp(2.8rem, 6vw, 5.8rem);
+  letter-spacing: -0.06em;
+}
+
+.moment-detail__gallery {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(0.85rem, 1.8vw, 1.5rem);
+  padding: clamp(2rem, 5vw, 4.5rem) 0;
+}
+
+.moment-detail__item,
+.moment-detail__item:nth-child(even) {
+  display: block;
+  grid-column: span 6;
+  margin: 0;
+}
+
+.moment-detail__item:first-child {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1.35fr) minmax(16rem, 0.65fr);
+  gap: clamp(1rem, 4vw, 3rem);
+  align-items: end;
+  padding-bottom: clamp(1rem, 3vw, 2.5rem);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.moment-detail__item:nth-child(even) img,
+.moment-detail__item:nth-child(even) figcaption {
+  grid-column: auto;
+  grid-row: auto;
+}
+
+.moment-detail__item img {
+  aspect-ratio: 4 / 3;
+  max-height: none;
+  border-radius: 0.5rem;
+  object-fit: cover;
+}
+
+.moment-detail__item:first-child img {
+  aspect-ratio: 16 / 9;
+}
+
+.moment-detail__item figcaption {
+  padding: 0.8rem 0.1rem 0;
+}
+
+.moment-detail__item:first-child figcaption {
+  padding: 0 0 0.45rem;
+}
+
+.moment-detail__item h2 {
+  font-size: clamp(1.3rem, 2.2vw, 2.1rem);
+}
+
+.moment-detail__item p {
+  margin-top: 0.55rem;
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 760px) {
+  .moments-map {
+    min-height: 72svh;
+    aspect-ratio: auto;
+  }
+
+  .moments-map__city-panel {
+    top: auto;
+    right: 0.65rem;
+    bottom: 0.65rem;
+    left: 0.65rem;
+    width: auto;
+    max-height: min(67svh, 34rem);
+  }
+
+  .moments-map__pin::after {
+    display: none !important;
+  }
+
+  .moment-detail__gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .moment-detail__item,
+  .moment-detail__item:nth-child(even),
+  .moment-detail__item:first-child {
+    display: block;
+    grid-column: auto;
+    padding: 0;
+    border: 0;
+  }
+
+  .moment-detail__item:first-child figcaption {
+    padding: 0.8rem 0.1rem 0;
+  }
+
+  .moment-detail__item:first-child img,
+  .moment-detail__item img {
+    aspect-ratio: 4 / 3;
+  }
+}
