@@ -1902,8 +1902,8 @@
 
 .home-life__record {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(16rem, 0.72fr);
-  min-height: clamp(20rem, 36vw, 32rem);
+  grid-template-columns: minmax(0, 1.18fr) minmax(18rem, 0.82fr);
+  min-height: clamp(14rem, 21vw, 21rem);
   overflow: hidden;
   border: 1px solid var(--home-line);
   background: rgba(255, 255, 255, 0.018);
@@ -1930,6 +1930,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 46%;
   transition: transform 0.8s var(--home-ease-expo);
 }
 
@@ -3056,6 +3057,10 @@ body.reveal-ready [data-reveal].is-visible {
   backdrop-filter: blur(16px);
 }
 
+.moments-map__city-panel[hidden] {
+  display: none !important;
+}
+
 .moments-map__city-header {
   display: flex;
   align-items: start;
@@ -3080,6 +3085,9 @@ body.reveal-ready [data-reveal].is-visible {
 }
 
 .moments-map__city-header button {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
   width: 2rem;
   height: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.13);

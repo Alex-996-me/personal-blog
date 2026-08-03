@@ -129,7 +129,7 @@ function primaryImage(moment: (typeof moments)[number]) {
       {cityGroups.map((group) => {
         const panelId = cityId(group.city);
         return (
-          <section class="moments-map__city-panel" id={panelId} data-city-panel={panelId} hidden>
+          <section class="moments-map__city-panel" id={panelId} data-city-panel={panelId} hidden role="dialog" aria-modal="false">
             <div class="moments-map__city-header">
               <div>
                 <p>{group.country}</p>
@@ -177,7 +177,10 @@ function primaryImage(moment: (typeof moments)[number]) {
     };
 
     const closePanels = () => {
-      panels.forEach((panel) => { panel.hidden = true; });
+      panels.forEach((panel) => {
+        panel.hidden = true;
+        panel.setAttribute("aria-hidden", "true");
+      });
       triggers.forEach((trigger) => { trigger.setAttribute("aria-expanded", "false"); });
     };
 
@@ -233,20 +236,30 @@ function primaryImage(moment: (typeof moments)[number]) {
     });
 
     triggers.forEach((trigger) => {
-      trigger.addEventListener("click", () => {
+      trigger.addEventListener("click", (event) => {
+        event.stopPropagation();
         const id = trigger.dataset.cityTrigger;
         const panel = panels.find((item) => item.dataset.cityPanel === id);
         const shouldOpen = panel?.hidden;
         closePanels();
         if (panel && shouldOpen) {
           panel.hidden = false;
+          panel.setAttribute("aria-hidden", "false");
           trigger.setAttribute("aria-expanded", "true");
         }
       });
     });
 
     map.querySelectorAll<HTMLButtonElement>("[data-city-close]").forEach((button) => {
-      button.addEventListener("click", closePanels);
+      button.addEventListener("pointerdown", (event) => event.stopPropagation());
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        closePanels();
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closePanels();
     });
   }
 </script>
