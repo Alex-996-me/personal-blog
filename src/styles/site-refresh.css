@@ -3615,8 +3615,8 @@ body.reveal-ready [data-reveal].is-visible {
 }
 
 .moments-map__pin {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 0.72rem;
+  height: 0.72rem;
   transform: translate(
     calc(-50% + var(--pin-offset-x)),
     calc(-50% + var(--pin-offset-y))
@@ -3624,8 +3624,8 @@ body.reveal-ready [data-reveal].is-visible {
 }
 
 .moments-map__pin-dot {
-  border-width: 3px;
-  box-shadow: 0 0 0 4px rgba(240, 173, 89, 0.18), 0 0 18px rgba(240, 173, 89, 0.38);
+  border-width: 2px;
+  box-shadow: 0 0 0 3px rgba(240, 173, 89, 0.18), 0 0 14px rgba(240, 173, 89, 0.35);
 }
 
 .moments-map__pin::after {

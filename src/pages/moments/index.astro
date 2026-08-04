@@ -97,7 +97,7 @@ function primaryImage(moment: (typeof moments)[number]) {
 
           {cityGroups.map((group) => {
             const position = mapPosition(group.latitude, group.longitude);
-            const offset = cityOffsets[group.city] ?? { x: 20, y: 20 };
+            const offset = { x: 0, y: 0 };
             const featured = group.moments.find((moment) => primaryImage(moment)) ?? group.moments[0];
             const image = primaryImage(featured);
             const panelId = cityId(group.city);
