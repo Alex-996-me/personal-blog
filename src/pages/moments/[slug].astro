@@ -2,7 +2,17 @@
 import { render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import RelatedContent from "../../components/RelatedContent.astro";
-import { getAllMoments, getMomentHref, getMomentSlug, resolveRelatedMoments, type Moment } from "../../lib/blog";
+import {
+  formatDate,
+  getAllMoments,
+  getMomentCategory,
+  getMomentDate,
+  getMomentHref,
+  getMomentLocation,
+  getMomentSlug,
+  resolveRelatedMoments,
+  type Moment,
+} from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
 
 export async function getStaticPaths() {
@@ -15,10 +25,21 @@ export async function getStaticPaths() {
 
 const { moment } = Astro.props as { moment: Moment };
 const { Content } = await render(moment);
+const allMoments = await getAllMoments();
+const currentIndex = allMoments.findIndex((entry) => getMomentSlug(entry) === getMomentSlug(moment));
+const newerMoment = currentIndex > 0 ? allMoments[currentIndex - 1] : undefined;
+const olderMoment = currentIndex >= 0 && currentIndex < allMoments.length - 1 ? allMoments[currentIndex + 1] : undefined;
+const location = getMomentLocation(moment);
+const date = getMomentDate(moment);
+const category = getMomentCategory(moment);
+const categoryNames = { food: "FOOD", travel: "TRAVEL", life: "LIFE", other: "OTHER" };
 const items = moment.data.items.length > 0
   ? moment.data.items
   : moment.data.images.map((image) => ({ image, title: "", description: "" }));
-const relatedMoments = resolveRelatedMoments(moment.data.relatedMoments, await getAllMoments()).filter((entry) => getMomentSlug(entry) !== getMomentSlug(moment));
+const hero = items[0];
+const galleryItems = items.slice(1);
+const relatedMoments = resolveRelatedMoments(moment.data.relatedMoments, allMoments)
+  .filter((entry) => getMomentSlug(entry) !== getMomentSlug(moment));
 ---
 
 <BaseLayout
@@ -26,50 +47,170 @@ const relatedMoments = resolveRelatedMoments(moment.data.relatedMoments, await g
   description={moment.data.description}
   showSidebar={false}
   wideContent={true}
-  bodyClass="body--moments"
+  bodyClass="body--moments body--moment-detail"
   shellClass="page-shell--moments"
   panelClass="content-panel--moments"
   searchType="MOMENT"
   searchSection="Moments"
 >
-  <article class="moment-detail">
-    <header class="moment-detail__header">
-      <a class="post-backlink" href={withBasePath("/moments/")}>← 返回生活记录</a>
-      {moment.data.location && <p>{moment.data.location.city} · {moment.data.location.country}</p>}
+  <article class="moment-story">
+    <a class="moment-story__back" href={withBasePath("/moments/")}>← MY LIFE ATLAS</a>
+
+    <header class="moment-story__header">
+      <div class="moment-story__kicker">
+        {location && <span>{location.city} · {location.country}</span>}
+        <time datetime={date.toISOString()}>{formatDate(date)}</time>
+      </div>
       <h1>{moment.data.title}</h1>
-      {moment.data.description && <div class="moment-detail__intro">{moment.data.description}</div>}
     </header>
 
-    {items.length > 0 && (
-      <div class="moment-detail__gallery">
-        {items.map((item, index) => {
-          const title = item.title || (index === 0 ? moment.data.title : "");
-          const description = item.description || "";
-          return (
-            <figure class="moment-detail__item">
-              {item.image && <img src={withBasePath(item.image)} alt={title || moment.data.title} loading={index === 0 ? "eager" : "lazy"} decoding="async" />}
-              {(title || description) && (
-                <figcaption>
-                  {title && <h2>{title}</h2>}
-                  {description && <p>{description}</p>}
-                </figcaption>
-              )}
-            </figure>
-          );
-        })}
-      </div>
+    {hero?.image && (
+      <figure class="moment-story__hero">
+        <button
+          type="button"
+          class="moment-story__image-button"
+          data-lightbox-src={withBasePath(hero.image)}
+          data-lightbox-alt={hero.title || moment.data.title}
+          aria-label={`查看大图：${hero.title || moment.data.title}`}
+        >
+          <img
+            src={withBasePath(hero.image)}
+            alt={hero.title || moment.data.title}
+            width="1600"
+            height="1100"
+            loading="eager"
+            decoding="async"
+          />
+        </button>
+        {(hero.title || hero.description) && (
+          <figcaption>
+            {hero.title && <strong>{hero.title}</strong>}
+            {hero.description && <span>{hero.description}</span>}
+          </figcaption>
+        )}
+      </figure>
+    )}
+
+    {(moment.data.description || moment.data.tags.length > 0) && (
+      <section class="moment-story__note" aria-label="Moment note">
+        {moment.data.description && <p>{moment.data.description}</p>}
+        {moment.data.tags.length > 0 && (
+          <ul aria-label="标签">
+            {moment.data.tags.map((tag) => <li>{tag}</li>)}
+          </ul>
+        )}
+      </section>
     )}
 
     {moment.body?.trim() && (
-      <div class="moment-detail__body prose">
+      <div class="moment-story__body prose">
         <Content />
       </div>
     )}
 
-    <RelatedContent
-      title="Related Moments"
-      eyebrow="MOMENTS"
-      items={relatedMoments.map((entry) => ({ href: withBasePath(getMomentHref(entry)), title: entry.data.title, description: entry.data.description, meta: entry.data.location?.city ?? "MOMENT" }))}
-    />
+    {galleryItems.length > 0 && (
+      <section class="moment-story__gallery" aria-labelledby="moment-gallery-title">
+        <h2 id="moment-gallery-title">Photo Notes</h2>
+        <div class="moment-story__gallery-grid">
+          {galleryItems.map((item) => (
+            <figure>
+              <button
+                type="button"
+                class="moment-story__image-button"
+                data-lightbox-src={withBasePath(item.image)}
+                data-lightbox-alt={item.title || moment.data.title}
+                aria-label={`查看大图：${item.title || moment.data.title}`}
+              >
+                <img
+                  src={withBasePath(item.image)}
+                  alt={item.title || moment.data.title}
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </button>
+              {(item.title || item.description) && (
+                <figcaption>
+                  {item.title && <strong>{item.title}</strong>}
+                  {item.description && <span>{item.description}</span>}
+                </figcaption>
+              )}
+            </figure>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {location && (
+      <dl class="moment-story__location" aria-label="地点信息">
+        <div><dt>CITY</dt><dd>{location.city}</dd></div>
+        <div><dt>COUNTRY</dt><dd>{location.country}</dd></div>
+        {location.place && <div><dt>PLACE</dt><dd>{location.place}</dd></div>}
+        <div><dt>TYPE</dt><dd>{categoryNames[category]}</dd></div>
+        <div><dt>COORDINATES</dt><dd>{location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}</dd></div>
+      </dl>
+    )}
+
+    {relatedMoments.length > 0 && (
+      <RelatedContent
+        title="Related Moments"
+        eyebrow="MOMENTS"
+        items={relatedMoments.map((entry) => ({
+          href: withBasePath(getMomentHref(entry)),
+          title: entry.data.title,
+          description: entry.data.description,
+          meta: getMomentLocation(entry)?.city ?? "MOMENT",
+        }))}
+      />
+    )}
+
+    {(olderMoment || newerMoment) && (
+      <nav class="moment-story__pagination" aria-label="前后生活记录">
+        {olderMoment
+          ? <a href={withBasePath(getMomentHref(olderMoment))}><span>← PREVIOUS</span><strong>{olderMoment.data.title}</strong></a>
+          : <span></span>}
+        {newerMoment && <a href={withBasePath(getMomentHref(newerMoment))}><span>NEXT →</span><strong>{newerMoment.data.title}</strong></a>}
+      </nav>
+    )}
   </article>
+
+  <dialog class="moment-lightbox" data-moment-lightbox aria-label="图片预览">
+    <button type="button" data-lightbox-close aria-label="关闭图片预览">×</button>
+    <img src="" alt="" width="1800" height="1200" />
+  </dialog>
 </BaseLayout>
+
+<script>
+  let momentLightboxCleanup: (() => void) | undefined;
+
+  const initializeMomentLightbox = () => {
+    momentLightboxCleanup?.();
+    const dialog = document.querySelector<HTMLDialogElement>("[data-moment-lightbox]");
+    if (!dialog) return;
+
+    const image = dialog.querySelector<HTMLImageElement>("img");
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    document.querySelectorAll<HTMLButtonElement>("[data-lightbox-src]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!image) return;
+        image.src = button.dataset.lightboxSrc ?? "";
+        image.alt = button.dataset.lightboxAlt ?? "";
+        dialog.showModal();
+      }, { signal });
+    });
+
+    dialog.querySelector<HTMLButtonElement>("[data-lightbox-close]")?.addEventListener("click", () => dialog.close(), { signal });
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) dialog.close();
+    }, { signal });
+
+    momentLightboxCleanup = () => controller.abort();
+  };
+
+  initializeMomentLightbox();
+  document.addEventListener("astro:page-load", initializeMomentLightbox);
+  document.addEventListener("astro:before-swap", () => momentLightboxCleanup?.());
+</script>

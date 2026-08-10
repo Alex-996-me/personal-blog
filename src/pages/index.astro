@@ -12,6 +12,7 @@ import {
   getCategoryCounts,
   getInspirationDetailHref,
   getMomentHref,
+  getMomentLocation,
   getPostHref,
   getUpdatedDate,
 } from "../lib/blog";
@@ -33,6 +34,7 @@ const selectedInspirations = await Promise.all(
 );
 const recentMoments = moments.slice(0, 3).map((moment) => ({
   moment,
+  location: getMomentLocation(moment),
   image: moment.data.items[0]?.image ?? moment.data.images[0] ?? "",
 }));
 const categoryCounts = getCategoryCounts(posts, { includeHidden: false });
@@ -87,11 +89,11 @@ const topicTiles = topicMatrix.map((topic) => ({
         </div>
 
         <div class="home-moments__grid">
-          {recentMoments.map(({ moment, image }, index) => (
+          {recentMoments.map(({ moment, image, location }, index) => (
             <a class="home-moment" href={withBasePath(getMomentHref(moment))} data-reveal data-reveal-delay={index + 1}>
               {image ? <img src={withBasePath(image)} alt={moment.data.title} loading={index === 0 ? "eager" : "lazy"} decoding="async" /> : <div class="home-moment__fallback" aria-hidden="true"></div>}
               <div>
-                <span>{moment.data.location?.city ?? "MOMENT"}</span>
+                <span>{location?.city ?? "MOMENT"}</span>
                 <h3>{moment.data.title}</h3>
                 {moment.data.description && <p>{moment.data.description}</p>}
               </div>

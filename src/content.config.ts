@@ -49,8 +49,16 @@ const inspirationSchema = z.object({
 
 const momentSchema = z.object({
   title: z.string().default(""),
+  slug: z.string().optional(),
   date: z.coerce.date(),
+  visitedAt: z.coerce.date().optional(),
   updated: z.coerce.date().optional(),
+  country: z.string().optional(),
+  city: z.string().optional(),
+  place: z.string().optional(),
+  lat: z.number().min(-90).max(90).optional(),
+  lon: z.number().min(-180).max(180).optional(),
+  category: z.enum(["food", "travel", "life", "other"]).optional(),
   location: z.object({
     city: z.string(),
     country: z.string(),

@@ -21,12 +21,15 @@
     "csv-parse": "^6.1.0",
     "extract-zip": "^2.0.1",
     "gray-matter": "^4.0.3",
+    "maplibre-gl": "^5.24.0",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
+    "topojson-client": "^3.1.0",
     "turndown": "^7.2.1",
     "turndown-plugin-gfm": "^1.0.2"
   },
   "devDependencies": {
+    "@types/topojson-client": "^3.1.5",
     "pagefind": "^1.5.2"
   }
 }

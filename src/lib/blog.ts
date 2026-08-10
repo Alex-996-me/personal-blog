@@ -6,6 +6,14 @@ export type Post = CollectionEntry<"posts">;
 export type Inspiration = CollectionEntry<"inspirations">;
 export type InspirationTheme = Inspiration["data"]["theme"];
 export type Moment = CollectionEntry<"moments">;
+export type MomentCategory = "food" | "travel" | "life" | "other";
+export type MomentLocation = {
+  city: string;
+  country: string;
+  place?: string;
+  latitude: number;
+  longitude: number;
+};
 export type ResourceDocument = CollectionEntry<"resources">;
 export type ResourceGroup = ResourceDocument["data"]["groups"][number];
 export type ResourceItem = ResourceGroup["items"][number];
@@ -104,7 +112,42 @@ export function getInspirationSlug(inspiration: Inspiration) {
 }
 
 export function getMomentSlug(moment: Moment) {
-  return getEntrySlug(moment);
+  return moment.data.slug?.trim() || getEntrySlug(moment);
+}
+
+export function getMomentDate(moment: Moment) {
+  return moment.data.visitedAt ?? moment.data.date;
+}
+
+export function getMomentLocation(moment: Moment): MomentLocation | undefined {
+  if (moment.data.location) {
+    return {
+      ...moment.data.location,
+      place: moment.data.place,
+    };
+  }
+
+  if (
+    moment.data.city &&
+    moment.data.country &&
+    typeof moment.data.lat === "number" &&
+    typeof moment.data.lon === "number"
+  ) {
+    return {
+      city: moment.data.city,
+      country: moment.data.country,
+      place: moment.data.place,
+      latitude: moment.data.lat,
+      longitude: moment.data.lon,
+    };
+  }
+
+  return undefined;
+}
+
+export function getMomentCategory(moment: Moment): MomentCategory {
+  // Existing Moments are restaurant and food records; new entries can opt into another category.
+  return moment.data.category ?? "food";
 }
 
 export function getInspirationAnchorId(inspiration: Inspiration) {
@@ -264,12 +307,13 @@ function buildInspirationSearchText(inspiration: Inspiration) {
 }
 
 function buildMomentSearchText(moment: Moment) {
+  const location = getMomentLocation(moment);
   const itemText = (moment.data.items ?? [])
     .flatMap((item) => [item.title, item.description])
     .join(" ");
 
   return stripMarkdownToText(
-    [moment.data.title, moment.data.description, itemText, moment.body].join("\n\n"),
+    [moment.data.title, moment.data.description, location?.city, location?.country, location?.place, itemText, moment.body].join("\n\n"),
   ).toLowerCase();
 }
 
