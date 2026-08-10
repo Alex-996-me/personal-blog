@@ -1,0 +1,34 @@
+---
+type RelatedItem = {
+  href: string;
+  title: string;
+  description?: string;
+  meta?: string;
+};
+
+interface Props {
+  title: string;
+  eyebrow: string;
+  items: RelatedItem[];
+}
+
+const { title, eyebrow, items } = Astro.props;
+---
+
+{items.length > 0 && (
+  <section class="related-content" aria-labelledby={`related-${eyebrow.toLowerCase().replace(/\s+/g, "-")}`}>
+    <header class="related-content__header">
+      <span>{eyebrow}</span>
+      <h2 id={`related-${eyebrow.toLowerCase().replace(/\s+/g, "-")}`}>{title}</h2>
+    </header>
+    <div class="related-content__list">
+      {items.map((item) => (
+        <a href={item.href}>
+          {item.meta && <span>{item.meta}</span>}
+          <strong>{item.title}</strong>
+          {item.description && <p>{item.description}</p>}
+        </a>
+      ))}
+    </div>
+  </section>
+)}

@@ -169,11 +169,9 @@ export const modules: ModuleDefinition[] = [
 
 export const navigation = [
   { label: "首页", href: "/" },
-  { label: "体悟", href: "/categories/insights/" },
-  { label: "健康", href: "/categories/health/" },
-  { label: "训练", href: "/categories/training/" },
-  { label: "工具", href: "/categories/tools/" },
-  { label: "世界", href: "/categories/world/" },
-  { label: "生活记录", href: "/moments/" },
+  { label: "文章", href: "/articles/" },
+  { label: "灵感", href: "/daily/" },
+  { label: "Moments", href: "/moments/" },
   { label: "资料", href: "/resources/" },
+  { label: "关于", href: "/about/" },
 ];

@@ -15,6 +15,7 @@ type DatedEntry = {
   data: {
     date: Date;
     updated?: Date;
+    updatedAt?: Date;
   };
 };
 
@@ -24,7 +25,7 @@ export type SearchEntry = {
   date: string;
   updated: string;
   section: string;
-  kind: "文章" | "explained" | "生活记录" | "资料";
+  kind: "ARTICLE" | "IDEA" | "MOMENT" | "RESOURCE";
   tags: string[];
   cover: string;
   text: string;
@@ -50,7 +51,40 @@ function getEntrySlug<T extends { id: string }>(entry: T) {
 }
 
 function getEntryUpdatedDate<T extends DatedEntry>(entry: T) {
-  return entry.data.updated ?? entry.data.date;
+  return entry.data.updatedAt ?? entry.data.updated ?? entry.data.date;
+}
+
+function normalizeRelationSlug(value: string) {
+  return value
+    .trim()
+    .replace(/^\/+|\/+$/g, "")
+    .replace(/^(posts|daily|moments)\//, "")
+    .replace(/\.(md|mdx)$/i, "");
+}
+
+function resolveRelations<T extends { id: string }>(values: string[] | undefined, entries: T[]) {
+  if (!values?.length) {
+    return [];
+  }
+
+  const wanted = new Set(values.map(normalizeRelationSlug));
+  return entries.filter((entry) => wanted.has(normalizeRelationSlug(getEntrySlug(entry))));
+}
+
+export function resolveRelatedPosts(values: string[] | undefined, posts: Post[]) {
+  return resolveRelations(values, posts);
+}
+
+export function resolveRelatedInspirations(values: string[] | undefined, inspirations: Inspiration[]) {
+  return resolveRelations(values, inspirations);
+}
+
+export function resolveRelatedMoments(values: string[] | undefined, moments: Moment[]) {
+  return resolveRelations(values, moments);
+}
+
+export function getSources(source: string | string[] | undefined) {
+  return source ? (Array.isArray(source) ? source : [source]) : [];
 }
 
 function sortDatedEntries<T extends DatedEntry>(entries: T[]) {
@@ -160,6 +194,10 @@ export function getPostHref(post: Post) {
 
 export function getInspirationHref(inspiration: Inspiration) {
   return `/daily/#${getInspirationAnchorId(inspiration)}`;
+}
+
+export function getInspirationDetailHref(inspiration: Inspiration) {
+  return `/daily/${getInspirationSlug(inspiration)}/`;
 }
 
 export function getMomentHref(moment: Moment) {
@@ -324,7 +362,7 @@ export async function getSearchEntries() {
     date: post.data.date.toISOString().slice(0, 10),
     updated: getUpdatedDate(post).toISOString().slice(0, 10),
     section: post.data.category,
-    kind: "文章",
+    kind: "ARTICLE",
     tags: post.data.tags,
     cover: resolveSearchCover(post.data.cover),
     text: buildPostSearchText(post),
@@ -340,12 +378,12 @@ export async function getSearchEntries() {
       date: inspiration.data.date.toISOString().slice(0, 10),
       updated: getInspirationUpdatedDate(inspiration).toISOString().slice(0, 10),
       section: `explained / ${inspiration.data.theme}`,
-      kind: "explained",
+      kind: "IDEA",
       tags: inspiration.data.tags,
       cover: "",
       text: buildInspirationSearchText(inspiration),
       snippet: buildSearchSnippet(inspiration.body),
-      url: withBasePath(getInspirationHref(inspiration)),
+      url: withBasePath(getInspirationDetailHref(inspiration)),
       sortTime: getInspirationUpdatedDate(inspiration).valueOf(),
     }),
   );
@@ -356,8 +394,8 @@ export async function getSearchEntries() {
     date: moment.data.date.toISOString().slice(0, 10),
     updated: getEntryUpdatedDate(moment).toISOString().slice(0, 10),
     section: "生活记录",
-    kind: "生活记录",
-    tags: [],
+    kind: "MOMENT",
+    tags: moment.data.tags,
     cover: resolveSearchCover(moment.data.items[0]?.image ?? moment.data.images[0]),
     text: buildMomentSearchText(moment),
     snippet: buildSearchSnippet(moment.body || moment.data.description),
@@ -377,7 +415,7 @@ export async function getSearchEntries() {
       date: resource.data.date.toISOString().slice(0, 10),
       updated: getResourceUpdatedDate(resource).toISOString().slice(0, 10),
       section: "资料",
-      kind: "资料",
+      kind: "RESOURCE",
       tags: resource.data.tags,
       cover: resolveSearchCover(resource.data.cover ?? fallbackCover),
       text: buildResourceSearchText(resource),

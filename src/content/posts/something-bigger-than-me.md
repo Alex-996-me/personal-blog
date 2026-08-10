@@ -1,7 +1,7 @@
 ---
 title: 寻找 something bigger than me
-date: Sun Apr 05
-updated: Sun Apr 05
+date: "2026-04-05"
+updated: "2026-04-05"
 category: 体悟
 tags:
   - 阅读

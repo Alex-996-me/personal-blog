@@ -1,7 +1,7 @@
 ---
 title: 为什么我想建一个个人博客
-date: Tue May 05
-updated: Tue May 05
+date: "2026-05-05"
+updated: "2026-05-05"
 category: 日志
 tags:
   - 写作

@@ -1,0 +1,22 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteConfig } from "../data/site";
+import { withBasePath } from "../lib/paths";
+---
+
+<BaseLayout title="关于" description={siteConfig.author.shortBio} wideContent={true} bodyClass="body--about" shellClass="page-shell--archive" panelClass="content-panel--archive">
+  <article class="about-page">
+    <a class="post-backlink" href={withBasePath("/")}>← 返回首页</a>
+    <div class="about-page__layout">
+      <div class="about-page__copy">
+        <p class="page-header__eyebrow">ABOUT / N=1 LAB</p>
+        <h1>{siteConfig.author.name}</h1>
+        <p class="about-page__lead">{siteConfig.author.shortBio}</p>
+        <p>{siteConfig.author.bio}</p>
+      </div>
+      <figure class="about-page__portrait">
+        <img src={withBasePath(siteConfig.author.portrait)} alt={`${siteConfig.author.name} 的照片`} />
+      </figure>
+    </div>
+  </article>
+</BaseLayout>

@@ -10,7 +10,7 @@ import {
   getAllPosts,
   getAllResources,
   getCategoryCounts,
-  getInspirationSlug,
+  getInspirationDetailHref,
   getMomentHref,
   getPostHref,
   getUpdatedDate,
@@ -25,116 +25,75 @@ const [posts, inspirations, resources, moments] = await Promise.all([
 ]);
 
 const latestPosts = posts.slice(0, 3);
-const homeMomentSlides = moments.flatMap((moment) => {
-  const items = moment.data.items.length > 0
-    ? moment.data.items
-    : moment.data.images.map((image) => ({ image, title: "", description: "" }));
-
-  return items
-    .filter((item) => item.image)
-    .map((item) => ({
-      image: item.image,
-      title: item.title || moment.data.title,
-      description: item.description || moment.data.description,
-      href: getMomentHref(moment),
-    }));
-});
-const renderedInspirations = await Promise.all(
-  inspirations.map(async (inspiration) => {
+const selectedInspirations = await Promise.all(
+  inspirations.slice(0, 4).map(async (inspiration) => {
     const { Content } = await render(inspiration);
     return { inspiration, Content };
   }),
 );
+const recentMoments = moments.slice(0, 3).map((moment) => ({
+  moment,
+  image: moment.data.items[0]?.image ?? moment.data.images[0] ?? "",
+}));
 const categoryCounts = getCategoryCounts(posts, { includeHidden: false });
 const topicTiles = topicMatrix.map((topic) => ({
   ...topic,
-  count:
-    topic.slug === "resources"
-      ? resources.length
-      : (categoryCounts.find((category) => category.slug === topic.slug)?.count ?? 0),
+  count: topic.slug === "resources"
+    ? resources.length
+    : (categoryCounts.find((category) => category.slug === topic.slug)?.count ?? 0),
 }));
 ---
 
-<BaseLayout
-  showSidebar={false}
-  wideContent={true}
-  bodyClass="body--hub-home"
-  shellClass="page-shell--hub-home"
-  panelClass="content-panel--hub-home"
->
+<BaseLayout showSidebar={false} wideContent={true} bodyClass="body--hub-home" shellClass="page-shell--hub-home" panelClass="content-panel--hub-home">
   <div class="home-story">
-    {renderedInspirations.length > 0 && (
-      <section
-        class="home-thought"
-        data-home-inspiration-carousel
-        aria-label="explained"
-        aria-live="polite"
-      >
-        <div class="home-thought__texture" aria-hidden="true"></div>
-        <div class="home-thought__topline">
-          <span>EXPLAINED</span>
-          <span class="home-thought__rule" aria-hidden="true"></span>
-          <span>N=1 LAB</span>
+    <section class="home-identity" aria-labelledby="home-identity-title">
+      <div class="home-identity__mark" aria-hidden="true">N=1</div>
+      <div class="home-identity__copy">
+        <p class="home-section-heading__eyebrow">PERSONAL KNOWLEDGE BASE / EST. 2026</p>
+        <h1 id="home-identity-title">{siteConfig.title}</h1>
+        <p>{siteConfig.tagline}</p>
+      </div>
+      <p class="home-identity__note">文章、短思想、生活记录与长期实验，在这里慢慢连接。</p>
+    </section>
+
+    <section class="home-notes" aria-labelledby="home-notes-title">
+      <div class="home-section-heading" data-reveal>
+        <div>
+          <p class="home-section-heading__eyebrow">01 / IDEAS</p>
+          <h2 id="home-notes-title">精选灵感</h2>
         </div>
+        <a href={withBasePath("/daily/")}>Explore Notes →</a>
+      </div>
 
-        <div class="home-thought__viewport">
-          {renderedInspirations.map(({ inspiration, Content }, index) => (
-            <article
-              class:list={["home-thought__slide", index === 0 && "is-active"]}
-              data-home-inspiration-slide
-              data-inspiration-slug={getInspirationSlug(inspiration)}
-              aria-hidden={index === 0 ? "false" : "true"}
-            >
-              <div class="home-thought__copy">
-                <div class="home-thought__title-mask">
-                  <h1 data-reveal>{inspiration.data.title}</h1>
-                </div>
-                <div class="home-thought__body prose prose--inspiration" data-reveal data-reveal-delay="1">
-                  <Content />
-                </div>
-              </div>
+      <div class="home-notes__grid">
+        {selectedInspirations.map(({ inspiration, Content }, index) => (
+          <a class="home-note" href={withBasePath(getInspirationDetailHref(inspiration))} data-reveal data-reveal-delay={index + 1}>
+            <span class="home-note__index">{String(index + 1).padStart(2, "0")}</span>
+            <h3>{inspiration.data.title}</h3>
+            <div class="home-note__body prose prose--inspiration"><Content /></div>
+          </a>
+        ))}
+      </div>
+    </section>
 
-              <div class="home-thought__actions" data-reveal data-reveal-delay="2">
-                <button class="home-thought__next" type="button" data-home-inspiration-next>
-                  下一条 <span aria-hidden="true">↓</span>
-                </button>
-                <a class="home-thought__all" href={withBasePath("/daily/")}>查看更多 explained <span aria-hidden="true">↗</span></a>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        <div class="home-thought__footer">
-          <span class="home-thought__progress" aria-hidden="true"><span data-home-inspiration-progress></span></span>
-        </div>
-      </section>
-    )}
-
-    {homeMomentSlides.length > 0 && (
-      <section class="home-life" aria-labelledby="home-life-title">
+    {recentMoments.length > 0 && (
+      <section class="home-moments" aria-labelledby="home-moments-title">
         <div class="home-section-heading" data-reveal>
           <div>
-            <p class="home-section-heading__eyebrow">02 / LIFE RECORD</p>
-            <h2 id="home-life-title">生活记录</h2>
+            <p class="home-section-heading__eyebrow">02 / MOMENTS</p>
+            <h2 id="home-moments-title">Recent Moments</h2>
           </div>
+          <a href={withBasePath("/moments/")}>Explore Moments →</a>
         </div>
 
-        <div class="home-life__carousel" data-home-moment-carousel>
-          {homeMomentSlides.map((moment, index) => (
-            <a
-              class:list={["home-life__record", index === 0 && "is-active"]}
-              href={withBasePath(moment.href)}
-              data-home-moment-slide
-              aria-hidden={index === 0 ? "false" : "true"}
-            >
-              <div class="home-life__media">
-                <img src={withBasePath(moment.image)} alt={moment.title || "生活记录"} loading={index === 0 ? "eager" : "lazy"} decoding="async" />
-              </div>
-              <div class="home-life__copy">
-                <span class="home-life__label">LATEST / LIFE</span>
-                <h3>{moment.title || "生活记录"}</h3>
-                {moment.description && <p>{moment.description}</p>}
-                <span class="home-life__link">查看这条记录 <span aria-hidden="true">→</span></span>
+        <div class="home-moments__grid">
+          {recentMoments.map(({ moment, image }, index) => (
+            <a class="home-moment" href={withBasePath(getMomentHref(moment))} data-reveal data-reveal-delay={index + 1}>
+              {image ? <img src={withBasePath(image)} alt={moment.data.title} loading={index === 0 ? "eager" : "lazy"} decoding="async" /> : <div class="home-moment__fallback" aria-hidden="true"></div>}
+              <div>
+                <span>{moment.data.location?.city ?? "MOMENT"}</span>
+                <h3>{moment.data.title}</h3>
+                {moment.data.description && <p>{moment.data.description}</p>}
               </div>
             </a>
           ))}
@@ -145,42 +104,24 @@ const topicTiles = topicMatrix.map((topic) => ({
     <section class="home-journal" aria-labelledby="home-journal-title">
       <div class="home-section-heading" data-reveal>
         <div>
-          <p class="home-section-heading__eyebrow">03 / JOURNAL</p>
-          <h2 id="home-journal-title">最近文章</h2>
+          <p class="home-section-heading__eyebrow">03 / WRITING</p>
+          <h2 id="home-journal-title">Recent Writing</h2>
         </div>
+        <a href={withBasePath("/articles/")}>All Writing →</a>
       </div>
 
       <div class="home-journal__grid">
         {latestPosts.map((post, index) => (
-          <a
-            class:list={[
-              "home-journal__story",
-              index === 0 && "home-journal__story--lead",
-            ]}
-            href={withBasePath(getPostHref(post))}
-            data-reveal
-            data-reveal-delay={index + 1}
-          >
+          <a class:list={["home-journal__story", index === 0 && "home-journal__story--lead"]} href={withBasePath(getPostHref(post))} data-reveal data-reveal-delay={index + 1}>
             <div class="home-journal__media">
               {post.data.cover ? (
-                <img
-                  src={withBasePath(post.data.cover)}
-                  alt={post.data.title}
-                  loading={index === 0 ? "eager" : "lazy"}
-                  decoding="async"
-                />
+                <img src={withBasePath(post.data.cover)} alt={post.data.title} loading={index === 0 ? "eager" : "lazy"} decoding="async" />
               ) : (
-                <div class="home-journal__fallback" aria-hidden="true">
-                  <span>{post.data.category}</span>
-                  <strong>{post.data.title}</strong>
-                </div>
+                <div class="home-journal__fallback" aria-hidden="true"><span>{post.data.category}</span><strong>{post.data.title}</strong></div>
               )}
               <span class="home-journal__index">0{index + 1}</span>
             </div>
-            <div class="home-journal__meta">
-              <span>{post.data.category}</span>
-              <span>更新于 {formatDate(getUpdatedDate(post))}</span>
-            </div>
+            <div class="home-journal__meta"><span>{post.data.category}</span><span>更新于 {formatDate(getUpdatedDate(post))}</span></div>
             <h3>{post.data.title}</h3>
             <p>{post.data.description}</p>
           </a>
@@ -190,30 +131,19 @@ const topicTiles = topicMatrix.map((topic) => ({
 
     <section class="home-topics" aria-labelledby="home-topics-title">
       <div class="home-section-heading" data-reveal>
-        <div>
-          <p class="home-section-heading__eyebrow">04 / TOPIC MATRIX</p>
-          <h2 id="home-topics-title">主题索引</h2>
-        </div>
+        <div><p class="home-section-heading__eyebrow">04 / TOPIC MATRIX</p><h2 id="home-topics-title">主题索引</h2></div>
       </div>
       <CategoryGrid topics={topicTiles} />
     </section>
 
-    <section class="home-about" aria-labelledby="home-about-title">
+    <section class="home-about" id="about" aria-labelledby="home-about-title">
       <div class="home-section-heading" data-reveal>
-        <div>
-          <p class="home-section-heading__eyebrow">05 / ABOUT</p>
-          <h2 id="home-about-title">海粟</h2>
-        </div>
+        <div><p class="home-section-heading__eyebrow">05 / ABOUT</p><h2 id="home-about-title">海粟</h2></div>
+        <a href={withBasePath("/about/")}>About →</a>
       </div>
-
       <div class="home-about__layout">
         <div class="home-about__portrait" data-reveal>
-          <img
-            src={withBasePath(siteConfig.author.portrait)}
-            alt={`${siteConfig.author.name} 的照片`}
-            loading="lazy"
-            decoding="async"
-          />
+          <img src={withBasePath(siteConfig.author.portrait)} alt={`${siteConfig.author.name} 的照片`} loading="lazy" decoding="async" />
           <span>N=1 / 个人研究档案</span>
         </div>
         <div class="home-about__copy" data-reveal data-reveal-delay="1">
@@ -225,201 +155,21 @@ const topicTiles = topicMatrix.map((topic) => ({
   </div>
 
   <script is:inline>
-    const carousel = document.querySelector("[data-home-inspiration-carousel]");
-    const inspirationSlides = Array.from(document.querySelectorAll("[data-home-inspiration-slide]"));
-    const progressBar = document.querySelector("[data-home-inspiration-progress]");
-    const nextInspirationButton = document.querySelector("[data-home-inspiration-next]");
-    const inspirationDuration = 2000;
-    let activeInspirationIndex = 0;
-    let inspirationTimer = 0;
-    let inspirationFrame = 0;
-    let inspirationDeadline = 0;
-    let inspirationRemaining = inspirationDuration;
-    let isInspirationPaused = false;
-    const inspirationStorageKey = "n1lab-home-explained-carousel-v2";
-    const inspirationFingerprint = inspirationSlides.map((slide) => slide.dataset.inspirationSlug).join("|");
-
-    const persistInspirationState = () => {
-      const activeSlide = inspirationSlides[activeInspirationIndex];
-      if (!activeSlide) return;
-      try {
-        sessionStorage.setItem(
-          inspirationStorageKey,
-          JSON.stringify({
-            fingerprint: inspirationFingerprint,
-            slug: activeSlide.dataset.inspirationSlug,
-            remaining: Math.max(0, Math.round(inspirationRemaining)),
-          }),
-        );
-      } catch {
-        // Storage can be unavailable in privacy-restricted browser contexts.
-      }
-    };
-
-    const restoreInspirationState = () => {
-      try {
-        const stored = JSON.parse(sessionStorage.getItem(inspirationStorageKey) || "null");
-        if (!stored || stored.fingerprint !== inspirationFingerprint) return;
-        const storedIndex = inspirationSlides.findIndex((slide) => slide.dataset.inspirationSlug === stored.slug);
-        if (storedIndex < 0) return;
-        activeInspirationIndex = storedIndex;
-        inspirationRemaining = Math.min(inspirationDuration, Math.max(250, Number(stored.remaining) || inspirationDuration));
-        inspirationSlides.forEach((slide, index) => {
-          const isActive = index === activeInspirationIndex;
-          slide.classList.toggle("is-active", isActive);
-          slide.classList.remove("is-entering", "is-leaving");
-          slide.setAttribute("aria-hidden", isActive ? "false" : "true");
-        });
-      } catch {
-        // A stale value should never block the carousel.
-      }
-    };
-
-    const stopInspirationFrame = () => {
-      if (inspirationFrame) {
-        cancelAnimationFrame(inspirationFrame);
-        inspirationFrame = 0;
-      }
-    };
-
-    const updateInspirationProgress = () => {
-      if (!progressBar || !carousel || document.visibilityState !== "visible" || isInspirationPaused) return;
-      const progress = Math.min(1, Math.max(0, 1 - inspirationRemaining / inspirationDuration));
-      progressBar.style.transform = `scaleX(${progress})`;
-      inspirationRemaining = Math.max(0, inspirationDeadline - performance.now());
-      inspirationFrame = requestAnimationFrame(updateInspirationProgress);
-    };
-
-    const showInspiration = (nextIndex) => {
-      if (nextIndex === activeInspirationIndex || !inspirationSlides[nextIndex]) return;
-      const currentSlide = inspirationSlides[activeInspirationIndex];
-      const nextSlide = inspirationSlides[nextIndex];
-      currentSlide.classList.remove("is-active");
-      currentSlide.classList.add("is-leaving");
-      currentSlide.setAttribute("aria-hidden", "true");
-      nextSlide.classList.remove("is-leaving");
-      nextSlide.classList.add("is-entering");
-      nextSlide.setAttribute("aria-hidden", "false");
-      requestAnimationFrame(() => {
-        nextSlide.classList.add("is-active");
-        nextSlide.classList.remove("is-entering");
-      });
-      window.setTimeout(() => currentSlide.classList.remove("is-leaving"), 760);
-      activeInspirationIndex = nextIndex;
-      inspirationRemaining = inspirationDuration;
-      persistInspirationState();
-    };
-
-    const pauseInspirationTimer = () => {
-      if (inspirationTimer) {
-        inspirationRemaining = Math.max(0, inspirationDeadline - performance.now());
-        clearTimeout(inspirationTimer);
-        inspirationTimer = 0;
-      }
-      isInspirationPaused = true;
-      stopInspirationFrame();
-      persistInspirationState();
-    };
-
-    const scheduleInspiration = () => {
-      if (!carousel || inspirationSlides.length < 2 || document.visibilityState !== "visible" || isInspirationPaused) return;
-      clearTimeout(inspirationTimer);
-      inspirationRemaining = Math.max(250, inspirationRemaining || inspirationDuration);
-      inspirationDeadline = performance.now() + inspirationRemaining;
-      inspirationTimer = window.setTimeout(() => {
-        inspirationTimer = 0;
-        showInspiration((activeInspirationIndex + 1) % inspirationSlides.length);
-        scheduleInspiration();
-      }, inspirationRemaining);
-      stopInspirationFrame();
-      inspirationFrame = requestAnimationFrame(updateInspirationProgress);
-    };
-
-    if (carousel && inspirationSlides.length > 1) {
-      restoreInspirationState();
-      isInspirationPaused = false;
-      scheduleInspiration();
-      nextInspirationButton?.addEventListener("click", () => {
-        isInspirationPaused = false;
-        clearTimeout(inspirationTimer);
-        stopInspirationFrame();
-        showInspiration((activeInspirationIndex + 1) % inspirationSlides.length);
-        scheduleInspiration();
-      });
-      document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible") {
-          isInspirationPaused = false;
-          scheduleInspiration();
-        } else {
-          pauseInspirationTimer();
-        }
-      });
-      window.addEventListener("pagehide", pauseInspirationTimer);
-      window.addEventListener("pageshow", () => {
-        isInspirationPaused = false;
-        scheduleInspiration();
-      });
-    }
-
-    const momentCarousel = document.querySelector("[data-home-moment-carousel]");
-    const momentSlides = Array.from(document.querySelectorAll("[data-home-moment-slide]"));
-    let activeMomentIndex = 0;
-    let momentTimer = 0;
-
-    const showMoment = (nextIndex) => {
-      const nextSlide = momentSlides[nextIndex];
-      if (!nextSlide) return;
-      momentSlides.forEach((slide, index) => {
-        const isActive = index === nextIndex;
-        slide.classList.toggle("is-active", isActive);
-        slide.setAttribute("aria-hidden", isActive ? "false" : "true");
-      });
-      activeMomentIndex = nextIndex;
-    };
-
-    const stopMomentCarousel = () => {
-      if (momentTimer) window.clearTimeout(momentTimer);
-      momentTimer = 0;
-    };
-
-    const scheduleMomentCarousel = () => {
-      stopMomentCarousel();
-      if (!momentCarousel || momentSlides.length < 2 || document.visibilityState !== "visible") return;
-      momentTimer = window.setTimeout(() => {
-        showMoment((activeMomentIndex + 1) % momentSlides.length);
-        scheduleMomentCarousel();
-      }, 3000);
-    };
-
-    if (momentCarousel && momentSlides.length > 1) {
-      scheduleMomentCarousel();
-      document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible") scheduleMomentCarousel();
-        else stopMomentCarousel();
-      });
-      window.addEventListener("pagehide", stopMomentCarousel);
-      window.addEventListener("pageshow", scheduleMomentCarousel);
-    }
-
     const revealItems = Array.from(document.querySelectorAll("[data-reveal]"));
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     document.body.classList.add("reveal-ready");
-
     if (reducedMotion || !("IntersectionObserver" in window)) {
       revealItems.forEach((item) => item.classList.add("is-visible"));
     } else {
-      const revealObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("is-visible");
-              revealObserver.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.14, rootMargin: "0px 0px -8% 0px" },
-      );
-      revealItems.forEach((item) => revealObserver.observe(item));
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: "0px 0px -5% 0px" });
+      revealItems.forEach((item) => observer.observe(item));
     }
   </script>
 </BaseLayout>

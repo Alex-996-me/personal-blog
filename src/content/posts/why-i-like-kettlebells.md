@@ -1,7 +1,7 @@
 ---
 title: 我为什么喜欢壶铃训练
-date: Mon Apr 13
-updated: Mon Apr 13
+date: "2026-04-13"
+updated: "2026-04-13"
 category: 训练
 tags:
   - 壶铃

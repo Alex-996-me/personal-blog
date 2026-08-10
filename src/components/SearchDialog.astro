@@ -1,0 +1,211 @@
+---
+import { withBasePath } from "../lib/paths";
+
+const pagefindUrl = withBasePath("/pagefind/pagefind.js");
+const fallbackIndexUrl = withBasePath("/search-index.json");
+const fullSearchUrl = withBasePath("/search/");
+const basePath = import.meta.env.BASE_URL;
+---
+
+<div
+  class="global-search"
+  data-global-search
+  data-pagefind-url={pagefindUrl}
+  data-fallback-index={fallbackIndexUrl}
+  data-base-path={basePath}
+  hidden
+>
+  <button class="global-search__backdrop" type="button" data-search-close aria-label="关闭搜索"></button>
+  <section class="global-search__dialog" role="dialog" aria-modal="true" aria-labelledby="global-search-title">
+    <header class="global-search__header">
+      <div>
+        <span>SEARCH / N=1 LAB</span>
+        <h2 id="global-search-title">搜索知识库</h2>
+      </div>
+      <button class="global-search__close" type="button" data-search-close aria-label="关闭搜索">×</button>
+    </header>
+
+    <label class="global-search__input-wrap" for="global-search-input">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="6.5"></circle>
+        <path d="M16 16l4.5 4.5"></path>
+      </svg>
+      <input id="global-search-input" type="search" placeholder="搜索文章、灵感、Moments、资料" autocomplete="off" spellcheck="false" />
+      <kbd>Esc</kbd>
+    </label>
+
+    <p class="global-search__status" data-search-status>输入关键词开始搜索。</p>
+    <div class="global-search__results" data-search-results></div>
+
+    <footer class="global-search__footer">
+      <span><kbd>↑</kbd><kbd>↓</kbd> 选择　<kbd>Enter</kbd> 打开</span>
+      <a href={fullSearchUrl}>完整搜索页 →</a>
+    </footer>
+  </section>
+</div>
+
+<script>
+  type FallbackEntry = {
+    title: string;
+    description: string;
+    kind: string;
+    section: string;
+    text: string;
+    url: string;
+  };
+
+  const root = document.querySelector<HTMLElement>("[data-global-search]");
+  const input = root?.querySelector<HTMLInputElement>("#global-search-input");
+  const results = root?.querySelector<HTMLElement>("[data-search-results]");
+  const status = root?.querySelector<HTMLElement>("[data-search-status]");
+  const openers = [...document.querySelectorAll<HTMLElement>("[data-search-open]")];
+  let lastFocused: HTMLElement | null = null;
+  let pagefind: any = null;
+  let fallbackEntries: FallbackEntry[] | null = null;
+  let activeResult = -1;
+  let requestNumber = 0;
+
+  const escapeHtml = (value = "") => value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+
+  const withSearchBase = (url: string) => {
+    const base = root?.dataset.basePath ?? "/";
+    const normalizedBase = base === "/" ? "" : base.replace(/\/$/, "");
+    if (!url.startsWith("/") || !normalizedBase || url === normalizedBase || url.startsWith(`${normalizedBase}/`)) {
+      return url;
+    }
+    return `${normalizedBase}${url}`;
+  };
+
+  const setActiveResult = (next: number) => {
+    const links = [...(results?.querySelectorAll<HTMLAnchorElement>("a") ?? [])];
+    links.forEach((link) => link.classList.remove("is-active"));
+    if (!links.length) {
+      activeResult = -1;
+      return;
+    }
+    activeResult = (next + links.length) % links.length;
+    links[activeResult].classList.add("is-active");
+    links[activeResult].scrollIntoView({ block: "nearest" });
+  };
+
+  const renderResults = (items: Array<{ title: string; excerpt: string; type: string; section?: string; url: string }>) => {
+    if (!results || !status) return;
+    status.textContent = items.length ? `找到 ${items.length} 条相关内容。` : "没有找到相关内容。";
+    results.innerHTML = items.map((item) => `
+      <a href="${escapeHtml(withSearchBase(item.url))}" class="global-search-result">
+        <span class="global-search-result__type">${escapeHtml(item.type)}</span>
+        <span class="global-search-result__copy">
+          <strong>${escapeHtml(item.title)}</strong>
+          <small>${item.excerpt}</small>
+        </span>
+        <span aria-hidden="true">↗</span>
+      </a>
+    `).join("");
+    activeResult = -1;
+  };
+
+  const searchFallback = async (query: string) => {
+    if (!fallbackEntries) {
+      const response = await fetch(root?.dataset.fallbackIndex ?? "");
+      fallbackEntries = response.ok ? await response.json() : [];
+    }
+    const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+    return fallbackEntries
+      .filter((entry) => words.every((word) => `${entry.title} ${entry.description} ${entry.text}`.toLowerCase().includes(word)))
+      .slice(0, 10)
+      .map((entry) => ({
+        title: entry.title,
+        excerpt: escapeHtml(entry.description),
+        type: entry.kind,
+        section: entry.section,
+        url: entry.url,
+      }));
+  };
+
+  const runSearch = async (query: string) => {
+    const currentRequest = ++requestNumber;
+    const cleaned = query.trim();
+    if (!cleaned) {
+      if (results) results.innerHTML = "";
+      if (status) status.textContent = "输入关键词开始搜索。";
+      return;
+    }
+    if (status) status.textContent = "正在搜索…";
+
+    try {
+      if (!pagefind) {
+        pagefind = await import(/* @vite-ignore */ root?.dataset.pagefindUrl ?? "");
+        await pagefind.init?.();
+      }
+      const response = await pagefind.search(cleaned);
+      const data = await Promise.all(response.results.slice(0, 10).map((item: any) => item.data()));
+      if (currentRequest !== requestNumber) return;
+      renderResults(data.map((item: any) => ({
+        title: item.meta?.title ?? item.url,
+        excerpt: item.excerpt ?? item.meta?.description ?? "",
+        type: item.meta?.type ?? "CONTENT",
+        section: item.meta?.section ?? "",
+        url: item.url,
+      })));
+    } catch {
+      const data = await searchFallback(cleaned);
+      if (currentRequest === requestNumber) renderResults(data);
+    }
+  };
+
+  const openSearch = () => {
+    if (!root) return;
+    lastFocused = document.activeElement as HTMLElement;
+    root.hidden = false;
+    document.body.classList.add("search-is-open");
+    window.setTimeout(() => input?.focus(), 0);
+  };
+
+  const closeSearch = () => {
+    if (!root) return;
+    root.hidden = true;
+    document.body.classList.remove("search-is-open");
+    lastFocused?.focus();
+  };
+
+  openers.forEach((opener) => opener.addEventListener("click", (event) => {
+    event.preventDefault();
+    openSearch();
+  }));
+  root?.querySelectorAll<HTMLElement>("[data-search-close]").forEach((closer) => closer.addEventListener("click", closeSearch));
+  input?.addEventListener("input", () => void runSearch(input.value));
+  input?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") { event.preventDefault(); setActiveResult(activeResult + 1); }
+    if (event.key === "ArrowUp") { event.preventDefault(); setActiveResult(activeResult - 1); }
+    if (event.key === "Enter" && activeResult >= 0) {
+      event.preventDefault();
+      results?.querySelectorAll<HTMLAnchorElement>("a")[activeResult]?.click();
+    }
+  });
+  document.addEventListener("keydown", (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      root?.hidden ? openSearch() : closeSearch();
+    } else if (event.key === "Escape" && root && !root.hidden) {
+      closeSearch();
+    } else if (event.key === "Tab" && root && !root.hidden) {
+      const focusable = [...root.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+      )].filter((element) => element.offsetParent !== null);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+  });
+</script>

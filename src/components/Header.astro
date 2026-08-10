@@ -33,6 +33,7 @@ const isSearchActive = pathname.startsWith(searchHref);
         <a
           class:list={["site-search-link", isSearchActive && "is-active"]}
           href={searchHref}
+          data-search-open
           aria-label="打开站内搜索"
           title="搜索"
         >
@@ -40,6 +41,7 @@ const isSearchActive = pathname.startsWith(searchHref);
             <circle cx="11" cy="11" r="6.5"></circle>
             <path d="M16 16l4.5 4.5"></path>
           </svg>
+          <span>搜索</span>
         </a>
       </div>
     </div>

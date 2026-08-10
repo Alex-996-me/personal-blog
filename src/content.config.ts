@@ -13,6 +13,14 @@ const notionImportSchema = z.object({
   originalFile: z.string().optional(),
 });
 
+const relationshipFields = {
+  relatedPosts: z.array(z.string()).optional(),
+  relatedNotes: z.array(z.string()).optional(),
+  relatedMoments: z.array(z.string()).optional(),
+  source: z.union([z.string(), z.array(z.string())]).optional(),
+  updatedAt: z.coerce.date().optional(),
+};
+
 const postSchema = z.object({
   title: z.string(),
   date: z.coerce.date(),
@@ -25,6 +33,7 @@ const postSchema = z.object({
   fullSummary: z.array(z.string()).default([]),
   sectionSummaries: z.array(sectionSummarySchema).default([]),
   notionImport: notionImportSchema.optional(),
+  ...relationshipFields,
 });
 
 const inspirationSchema = z.object({
@@ -35,6 +44,7 @@ const inspirationSchema = z.object({
   tags: z.array(z.string()).default([]),
   description: z.string(),
   published: z.boolean().default(true),
+  ...relationshipFields,
 });
 
 const momentSchema = z.object({
@@ -44,9 +54,10 @@ const momentSchema = z.object({
   location: z.object({
     city: z.string(),
     country: z.string(),
-    latitude: z.number(),
-    longitude: z.number(),
+    latitude: z.number().min(-90).max(90),
+    longitude: z.number().min(-180).max(180),
   }).optional(),
+  tags: z.array(z.string()).default([]),
   images: z.array(z.string()).default([]),
   items: z.array(z.object({
     image: z.string(),
@@ -56,6 +67,7 @@ const momentSchema = z.object({
   hideToc: z.boolean().default(false),
   description: z.string().default(""),
   published: z.boolean().default(true),
+  ...relationshipFields,
 });
 
 const resourceItemSchema = z.object({
@@ -82,6 +94,7 @@ const resourceSchema = z.object({
   cover: z.string().optional(),
   groups: z.array(resourceGroupSchema).default([]),
   published: z.boolean().default(true),
+  ...relationshipFields,
 });
 
 const posts = defineCollection({

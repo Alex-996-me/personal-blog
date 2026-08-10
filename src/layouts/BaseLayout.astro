@@ -2,6 +2,7 @@
 import Header from "../components/Header.astro";
 import Sidebar from "../components/Sidebar.astro";
 import Footer from "../components/Footer.astro";
+import SearchDialog from "../components/SearchDialog.astro";
 import { siteConfig } from "../data/site";
 import { withBasePath } from "../lib/paths";
 import "../styles/global.css";
@@ -19,6 +20,8 @@ interface Props {
   headerSearch?: boolean;
   headerSearchQuery?: string;
   headerSearchPlaceholder?: string;
+  searchType?: "ARTICLE" | "IDEA" | "MOMENT" | "RESOURCE";
+  searchSection?: string;
 }
 
 const {
@@ -30,6 +33,8 @@ const {
   bodyClass = "",
   shellClass = "",
   panelClass = "",
+  searchType,
+  searchSection = "",
 } = Astro.props;
 
 const pageTitle = title === siteConfig.title ? title : `${title} | ${siteConfig.title}`;
@@ -56,17 +61,24 @@ const ogImageUrl = new URL(withBasePath(ogImage), site).toString();
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={ogImageUrl} />
+    {searchType && <meta data-pagefind-meta="type" content={searchType} />}
+    {searchSection && <meta data-pagefind-meta="section" content={searchSection} />}
+    {searchType && <meta data-pagefind-meta="title" content={title} />}
+    {searchType && <meta data-pagefind-meta="description" content={description} />}
   </head>
   <body class={bodyClass}>
     <Header />
     <div class:list={["page-shell", !showSidebar && "page-shell--single", shellClass]}>
-      <main class="content-column">
+      <main class="content-column" data-pagefind-body={searchType ? true : undefined} data-pagefind-ignore={!searchType ? true : undefined}>
+        {searchType && <span class="pagefind-meta" data-pagefind-meta="type">{searchType}</span>}
+        {searchSection && <span class="pagefind-meta" data-pagefind-meta="section">{searchSection}</span>}
         <div class:list={["content-panel", wideContent && "content-panel--wide", panelClass]}>
           <slot />
         </div>
       </main>
       {showSidebar && <Sidebar />}
     </div>
+    <SearchDialog />
     <Footer />
   </body>
 </html>

@@ -1,7 +1,8 @@
 ---
 import { render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getAllMoments, getMomentSlug, type Moment } from "../../lib/blog";
+import RelatedContent from "../../components/RelatedContent.astro";
+import { getAllMoments, getMomentHref, getMomentSlug, resolveRelatedMoments, type Moment } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
 
 export async function getStaticPaths() {
@@ -17,6 +18,7 @@ const { Content } = await render(moment);
 const items = moment.data.items.length > 0
   ? moment.data.items
   : moment.data.images.map((image) => ({ image, title: "", description: "" }));
+const relatedMoments = resolveRelatedMoments(moment.data.relatedMoments, await getAllMoments()).filter((entry) => getMomentSlug(entry) !== getMomentSlug(moment));
 ---
 
 <BaseLayout
@@ -27,6 +29,8 @@ const items = moment.data.items.length > 0
   bodyClass="body--moments"
   shellClass="page-shell--moments"
   panelClass="content-panel--moments"
+  searchType="MOMENT"
+  searchSection="Moments"
 >
   <article class="moment-detail">
     <header class="moment-detail__header">
@@ -61,5 +65,11 @@ const items = moment.data.items.length > 0
         <Content />
       </div>
     )}
+
+    <RelatedContent
+      title="Related Moments"
+      eyebrow="MOMENTS"
+      items={relatedMoments.map((entry) => ({ href: withBasePath(getMomentHref(entry)), title: entry.data.title, description: entry.data.description, meta: entry.data.location?.city ?? "MOMENT" }))}
+    />
   </article>
 </BaseLayout>

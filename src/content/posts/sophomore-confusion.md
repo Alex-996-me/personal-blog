@@ -1,7 +1,7 @@
 ---
 title: 大二阶段的迷茫
-date: Tue Apr 28
-updated: Tue Apr 28
+date: "2026-04-28"
+updated: "2026-04-28"
 category: 日志
 tags:
   - 大学生活
