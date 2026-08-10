@@ -252,7 +252,7 @@ const atlasData = locatedMoments.map((entry) => ({
       minZoom: 1,
       maxZoom: 11,
       cooperativeGestures: true,
-      dragPan: { linearity: 0.22, maxSpeed: 900, deceleration: 2600 },
+      dragPan: true,
       pitchWithRotate: false,
       dragRotate: false,
       touchPitch: false,
@@ -311,7 +311,7 @@ const atlasData = locatedMoments.map((entry) => ({
         padding: window.innerWidth < 720 ? 46 : 84,
         maxZoom: 5.8,
         duration,
-        easing: (time) => 1 - Math.pow(1 - time, 3),
+        easing: (time) => 1 - Math.pow(1 - time, 4),
       });
     };
 
@@ -335,7 +335,7 @@ const atlasData = locatedMoments.map((entry) => ({
           center: [cityMoments[0].longitude, cityMoments[0].latitude],
           zoom: Math.max(map.getZoom(), 5.25),
           duration: reduceMotion.matches ? 0 : 450,
-          easing: (time) => 1 - Math.pow(1 - time, 3),
+          easing: (time) => 1 - Math.pow(1 - time, 4),
         });
       }
     };
@@ -508,8 +508,10 @@ const atlasData = locatedMoments.map((entry) => ({
       closePanels();
       selectedCity = null;
       const source = map.getSource("atlas-moments") as GeoJSONSource | undefined;
-      source?.setData(getCityFeatures());
-      window.setTimeout(() => fitVisibleLocations(), 30);
+      if (source) {
+        map.once("idle", () => fitVisibleLocations());
+        source.setData(getCityFeatures());
+      }
     }, { signal }));
 
     atlasCleanup = () => {

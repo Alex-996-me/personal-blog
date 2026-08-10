@@ -47,3 +47,21 @@ const isSearchActive = pathname.startsWith(searchHref);
     </div>
   </div>
 </header>
+
+<script is:inline>
+  (() => {
+    const header = document.querySelector(".site-header");
+    if (!header || header.dataset.scrollReady === "true") return;
+    header.dataset.scrollReady = "true";
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      header.classList.toggle("is-scrolled", window.scrollY > 24);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+  })();
+</script>
