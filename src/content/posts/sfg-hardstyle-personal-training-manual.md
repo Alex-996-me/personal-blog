@@ -48,7 +48,7 @@ cover: "/images/posts/sfg-hardstyle/practice-feat-lift.png"
 
 > 壶铃和杠铃大多数时间都应停留在 Practice：为拳击积累力量、爆发、躯干刚性和动作质量，而不是天天验证 PR。
 
-### 刺激—恢复—适应：训练不是“越狠越有效”
+### 2. 刺激—恢复—适应：训练不是“越狠越有效”
 
 ![图 1-2｜训练的闭环：刺激只有经过恢复，才变成适应。](/images/posts/sfg-hardstyle/stimulus-recovery-adaptation.png)
 
@@ -116,7 +116,7 @@ Hardstyle 与拳击发力本质上是一脉相承的：用很短的时间制造�
 
 > 出拳瞬间需要结构和张力，但肩颈、手臂如果全程僵着，速度、节奏和耐力都会下降。
 
-### 呼吸与腹内压：先建立压力圆柱，再输出力量
+### 7. 呼吸与腹内压：先建立压力圆柱，再输出力量
 
 ![图 2-3｜360°腹内压示意。](/images/posts/sfg-hardstyle/iap-360-pressure-cylinder.png)
 
@@ -395,7 +395,7 @@ S&S 通过少动作、频繁暴露、低疲劳来强化动作自动化和基础�
 
 > 力量训练通常不需要 Peak。除非你特意安排一次 SFG 标准测试或力量测试，否则常年停在 Base / Strength 的可恢复区间，反而更适合拳击主线。
 
-### 29. Variable practice 与 Interleaving：变化不是随机乱练
+### 27. Variable practice 与 Interleaving：变化不是随机乱练
 
 训练系统应该学习如何根据任务调节输出，而不是只适应一个固定负荷。
 
@@ -403,7 +403,7 @@ S&S 通过少动作、频繁暴露、低疲劳来强化动作自动化和基础�
 
 比如：Military Press 组间穿插 Swing、Bench 组间做单腿硬拉、Squat 组间做 Pistol。本质目的是让神经系统不断重新提取动作技能。
 
-### 30. 训练系统：谁是主项，谁就拿最多恢复预算
+### 28. 训练系统：谁是主项，谁就拿最多恢复预算
 
 ![图 7-2｜拳击优先的示意周。具体训练日可随私教安排移动。](/images/posts/sfg-hardstyle/boxing-priority-week.png)
 
