@@ -9,7 +9,6 @@ import { withBasePath } from "../../lib/paths";
 const posts = await getAllPosts();
 const categoryCounts = getCategoryCounts(posts);
 const topics = topicMatrix
-  .filter((topic) => topic.slug !== "resources")
   .map((topic) => ({
     ...topic,
     count: categoryCounts.find((category) => category.slug === topic.slug)?.count ?? 0,

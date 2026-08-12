@@ -78,33 +78,6 @@ const momentSchema = z.object({
   ...relationshipFields,
 });
 
-const resourceItemSchema = z.object({
-  title: z.string(),
-  file: z.string(),
-  kind: z.enum(["document", "audio", "archive", "image", "other"]).default("other"),
-  description: z.string().optional(),
-  preview: z.enum(["auto", "pdf", "image", "audio", "office", "none"]).default("auto"),
-});
-
-const resourceGroupSchema = z.object({
-  title: z.string(),
-  description: z.string().optional(),
-  items: z.array(resourceItemSchema).default([]),
-});
-
-const resourceSchema = z.object({
-  title: z.string(),
-  date: z.coerce.date(),
-  updated: z.coerce.date().optional(),
-  tags: z.array(z.string()).default([]),
-  description: z.string(),
-  file: z.string().optional(),
-  cover: z.string().optional(),
-  groups: z.array(resourceGroupSchema).default([]),
-  published: z.boolean().default(true),
-  ...relationshipFields,
-});
-
 const posts = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/posts" }),
   schema: postSchema,
@@ -120,14 +93,8 @@ const moments = defineCollection({
   schema: momentSchema,
 });
 
-const resources = defineCollection({
-  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/resources" }),
-  schema: resourceSchema,
-});
-
 export const collections = {
   posts,
   inspirations,
   moments,
-  resources,
 };

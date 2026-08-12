@@ -104,7 +104,8 @@ const atlasData = locatedMoments.map((entry) => ({
       <div class="atlas-map" data-atlas-map aria-label="标记生活记录地点的世界地图"></div>
       <div class="atlas-map__loading" data-atlas-loading>Loading atlas…</div>
       <button class="atlas-map__reset" type="button" data-atlas-reset aria-label="显示所有生活地点">RESET</button>
-      <p class="atlas-map__gesture">Ctrl / Cmd + scroll to zoom</p>
+      <button class="atlas-map__explore" type="button" data-atlas-explore>EXPLORE MAP</button>
+      <p class="atlas-map__gesture">Drag to explore · use + / − to zoom</p>
 
       {cityGroups.map((group) => (
         <aside class="atlas-preview" data-city-panel={group.key} hidden aria-live="polite">
@@ -231,6 +232,32 @@ const atlasData = locatedMoments.map((entry) => ({
     let activeFilter = "all";
     let selectedCity: string | null = null;
     let hoveredCity: string | null = null;
+    const coarsePointer = window.matchMedia("(pointer: coarse)");
+    const cameraDuration = () => reduceMotion.matches ? 0 : 420;
+    const cameraEasing = (time: number) => 1 - Math.pow(1 - time, 4);
+
+    const buildCityFeatures = () => {
+      const groups = new Map<string, AtlasMoment[]>();
+      moments
+        .filter((moment) => activeFilter === "all" || moment.category === activeFilter)
+        .forEach((moment) => groups.set(moment.cityKey, [...(groups.get(moment.cityKey) ?? []), moment]));
+
+      return {
+        type: "FeatureCollection" as const,
+        features: [...groups.entries()].map(([cityKey, entries]) => ({
+          type: "Feature" as const,
+          id: cityKey,
+          properties: {
+            cityKey,
+            city: entries[0].city,
+            country: entries[0].country,
+            momentCount: entries.length,
+          },
+          geometry: { type: "Point" as const, coordinates: [entries[0].longitude, entries[0].latitude] },
+        })),
+      };
+    };
+    let currentFeatures = buildCityFeatures();
 
     // MapLibre needs a measurable container before its projection matrices are created.
     await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
@@ -251,8 +278,11 @@ const atlasData = locatedMoments.map((entry) => ({
       zoom: 1.2,
       minZoom: 1,
       maxZoom: 11,
-      cooperativeGestures: true,
+      pixelRatio: Math.min(window.devicePixelRatio || 1, 1.25),
+      cooperativeGestures: false,
       dragPan: true,
+      scrollZoom: false,
+      touchZoomRotate: false,
       pitchWithRotate: false,
       dragRotate: false,
       touchPitch: false,
@@ -267,58 +297,49 @@ const atlasData = locatedMoments.map((entry) => ({
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: false, visualizePitch: false }), "top-left");
     map.addControl(new maplibregl.FullscreenControl(), "top-left");
+    if (coarsePointer.matches) map.dragPan.disable();
 
     const getVisibleMoments = () => moments.filter((moment) => activeFilter === "all" || moment.category === activeFilter);
-    const getCityFeatures = () => {
-      const groups = new Map<string, AtlasMoment[]>();
-      getVisibleMoments().forEach((moment) => groups.set(moment.cityKey, [...(groups.get(moment.cityKey) ?? []), moment]));
-      return {
-        type: "FeatureCollection" as const,
-        features: [...groups.entries()].map(([cityKey, entries]) => ({
-          type: "Feature" as const,
-          id: cityKey,
-          properties: {
-            cityKey,
-            city: entries[0].city,
-            country: entries[0].country,
-            momentCount: entries.length,
-          },
-          geometry: { type: "Point" as const, coordinates: [entries[0].longitude, entries[0].latitude] },
-        })),
-      };
-    };
 
     const closePanels = () => {
       panels.forEach((panel) => { panel.hidden = true; });
     };
 
-    const updateFeatureStates = () => {
-      if (!map.getSource("atlas-moments")) return;
-      getCityFeatures().features.forEach((feature) => {
-        map.setFeatureState({ source: "atlas-moments", id: feature.id }, {
-          selected: feature.id === selectedCity,
-          hover: feature.id === hoveredCity,
-        });
-      });
+    const setCityState = (cityKey: string | null, state: { selected?: boolean; hover?: boolean }) => {
+      if (!cityKey || !map.getSource("atlas-moments")) return;
+      map.setFeatureState({ source: "atlas-moments", id: cityKey }, state);
     };
 
-    const fitVisibleLocations = (duration = reduceMotion.matches ? 0 : 480) => {
-      const visible = getVisibleMoments();
-      if (!visible.length) return;
+    const setHoveredCity = (next: string | null) => {
+      if (next === hoveredCity) return;
+      setCityState(hoveredCity, { hover: false });
+      hoveredCity = next;
+      setCityState(hoveredCity, { hover: true });
+    };
+
+    const setSelectedCity = (next: string | null) => {
+      if (next === selectedCity) return;
+      setCityState(selectedCity, { selected: false });
+      selectedCity = next;
+      setCityState(selectedCity, { selected: true });
+    };
+
+    const fitVisibleLocations = (duration = cameraDuration()) => {
+      if (!currentFeatures.features.length) return;
       const bounds = new maplibregl.LngLatBounds();
-      visible.forEach((moment) => bounds.extend([moment.longitude, moment.latitude]));
+      currentFeatures.features.forEach((feature) => bounds.extend(feature.geometry.coordinates as [number, number]));
       map.fitBounds(bounds, {
         padding: window.innerWidth < 720 ? 46 : 84,
         maxZoom: 5.8,
         duration,
-        easing: (time) => 1 - Math.pow(1 - time, 4),
+        easing: cameraEasing,
       });
     };
 
     const openCity = (cityKey: string, moveCamera = true) => {
       const cityMoments = getVisibleMoments().filter((moment) => moment.cityKey === cityKey);
       if (!cityMoments.length) return;
-      selectedCity = cityKey;
+      setSelectedCity(cityKey);
       closePanels();
       const panel = panels.find((item) => item.dataset.cityPanel === cityKey);
       if (panel) {
@@ -328,27 +349,44 @@ const atlasData = locatedMoments.map((entry) => ({
         panel.hidden = false;
       }
       cards.forEach((card) => card.classList.toggle("is-selected", card.dataset.cityKey === cityKey));
-      updateFeatureStates();
       if (moveCamera) {
         map.stop();
         map.easeTo({
           center: [cityMoments[0].longitude, cityMoments[0].latitude],
           zoom: Math.max(map.getZoom(), 5.25),
-          duration: reduceMotion.matches ? 0 : 450,
-          easing: (time) => 1 - Math.pow(1 - time, 4),
+          duration: cameraDuration(),
+          easing: cameraEasing,
         });
       }
     };
 
     try {
-      const [worldResponse, provincesResponse] = await Promise.all([
-        fetch(root.dataset.worldSource ?? "", { signal }),
-        fetch(root.dataset.provincesSource ?? "", { signal }),
-      ]);
-      if (!worldResponse.ok || !provincesResponse.ok) throw new Error("Atlas boundary data failed to load");
+      const worldResponse = await fetch(root.dataset.worldSource ?? "", { signal });
+      if (!worldResponse.ok) throw new Error("Atlas boundary data failed to load");
       const topology = await worldResponse.json();
-      const provinces = await provincesResponse.json();
       const countries = topologyFeature(topology, topology.objects.countries) as GeoJSON.FeatureCollection;
+      let provincesLoading = false;
+
+      const loadProvinceLayer = async () => {
+        if (provincesLoading || map.getSource("atlas-provinces") || map.getZoom() < 3.75) return;
+        provincesLoading = true;
+        try {
+          const response = await fetch(root.dataset.provincesSource ?? "", { signal });
+          if (!response.ok) return;
+          const provinces = await response.json();
+          if (signal.aborted || map.getSource("atlas-provinces")) return;
+          map.addSource("atlas-provinces", { type: "geojson", data: provinces });
+          map.addLayer({
+            id: "atlas-province-lines",
+            type: "line",
+            source: "atlas-provinces",
+            minzoom: 3.75,
+            paint: { "line-color": "#77828f", "line-width": 0.65, "line-opacity": ["interpolate", ["linear"], ["zoom"], 3.75, 0.2, 5, 0.72] },
+          }, "atlas-clusters");
+        } finally {
+          provincesLoading = false;
+        }
+      };
 
       const addAtlasLayers = () => {
         map.addSource("atlas-countries", { type: "geojson", data: countries });
@@ -364,17 +402,9 @@ const atlasData = locatedMoments.map((entry) => ({
           source: "atlas-countries",
           paint: { "line-color": "#65707d", "line-width": ["interpolate", ["linear"], ["zoom"], 1, 0.45, 6, 1.15], "line-opacity": 0.72 },
         });
-        map.addSource("atlas-provinces", { type: "geojson", data: provinces });
-        map.addLayer({
-          id: "atlas-province-lines",
-          type: "line",
-          source: "atlas-provinces",
-          minzoom: 2.5,
-          paint: { "line-color": "#77828f", "line-width": 0.65, "line-opacity": ["interpolate", ["linear"], ["zoom"], 2.5, 0.2, 5, 0.78] },
-        });
         map.addSource("atlas-moments", {
           type: "geojson",
-          data: getCityFeatures(),
+          data: currentFeatures,
           cluster: true,
           clusterRadius: 54,
           clusterMaxZoom: 6,
@@ -412,27 +442,6 @@ const atlasData = locatedMoments.map((entry) => ({
             "circle-stroke-width": 3,
           },
         });
-        map.addLayer({
-          id: "atlas-city-labels",
-          type: "symbol",
-          source: "atlas-moments",
-          filter: ["!", ["has", "point_count"]],
-          layout: {
-            "text-field": ["get", "city"],
-            "text-font": ["Arial", "Microsoft YaHei"],
-            "text-size": 12,
-            "text-offset": [0, 1.35],
-            "text-anchor": "top",
-            "text-allow-overlap": false,
-          },
-          paint: {
-            "text-color": "#f3f4f6",
-            "text-halo-color": "#080b0f",
-            "text-halo-width": 2,
-            "text-opacity": ["case", ["any", ["boolean", ["feature-state", "hover"], false], ["boolean", ["feature-state", "selected"], false]], 1, 0.62],
-          },
-        });
-
         map.on("click", "atlas-clusters", async (event) => {
           closePanels();
           const feature = map.queryRenderedFeatures(event.point, { layers: ["atlas-clusters"] })[0];
@@ -441,7 +450,7 @@ const atlasData = locatedMoments.map((entry) => ({
           const source = map.getSource("atlas-moments") as GeoJSONSource;
           const zoom = await source.getClusterExpansionZoom(clusterId);
           map.stop();
-          map.easeTo({ center: (feature.geometry as GeoJSON.Point).coordinates as [number, number], zoom, duration: reduceMotion.matches ? 0 : 450 });
+          map.easeTo({ center: (feature.geometry as GeoJSON.Point).coordinates as [number, number], zoom, duration: cameraDuration(), easing: cameraEasing });
         });
         map.on("click", "atlas-points", (event) => {
           const feature = event.features?.[0] as MapGeoJSONFeature | undefined;
@@ -450,13 +459,11 @@ const atlasData = locatedMoments.map((entry) => ({
         });
         map.on("mouseenter", "atlas-points", (event) => {
           map.getCanvas().style.cursor = "pointer";
-          hoveredCity = event.features?.[0]?.properties?.cityKey ?? null;
-          updateFeatureStates();
+          setHoveredCity(event.features?.[0]?.properties?.cityKey ?? null);
         });
         map.on("mouseleave", "atlas-points", () => {
           map.getCanvas().style.cursor = "";
-          hoveredCity = null;
-          updateFeatureStates();
+          setHoveredCity(null);
         });
         map.on("mouseenter", "atlas-clusters", () => { map.getCanvas().style.cursor = "pointer"; });
         map.on("mouseleave", "atlas-clusters", () => { map.getCanvas().style.cursor = ""; });
@@ -465,9 +472,11 @@ const atlasData = locatedMoments.map((entry) => ({
           if (!hits.length) closePanels();
         });
         map.on("dragstart", () => map.stop());
+        map.on("zoomend", () => void loadProvinceLayer());
         fitVisibleLocations(0);
         root.dataset.mapReady = "true";
-        root.dataset.cityCount = String(getCityFeatures().features.length);
+        root.dataset.cityCount = String(currentFeatures.features.length);
+        root.dataset.pixelRatio = String(map.getPixelRatio());
         if (loading) loading.hidden = true;
       };
 
@@ -482,7 +491,24 @@ const atlasData = locatedMoments.map((entry) => ({
 
     root.querySelector<HTMLElement>("[data-atlas-reset]")?.addEventListener("click", () => {
       closePanels();
+      setSelectedCity(null);
+      cards.forEach((card) => card.classList.remove("is-selected"));
       fitVisibleLocations();
+    }, { signal });
+    root.querySelector<HTMLButtonElement>("[data-atlas-explore]")?.addEventListener("click", () => {
+      const fullscreenButton = root.querySelector<HTMLButtonElement>(".maplibregl-ctrl-fullscreen");
+      fullscreenButton?.click();
+    }, { signal });
+    document.addEventListener("fullscreenchange", () => {
+      const fullscreen = document.fullscreenElement === mapElement;
+      if (fullscreen) {
+        map.dragPan.enable();
+        map.touchZoomRotate.enable();
+      } else {
+        map.touchZoomRotate.disable();
+        if (coarsePointer.matches) map.dragPan.disable();
+      }
+      map.resize();
     }, { signal });
     root.querySelectorAll<HTMLElement>("[data-city-close]").forEach((button) => button.addEventListener("click", closePanels, { signal }));
     document.addEventListener("pointerdown", (event) => {
@@ -494,8 +520,10 @@ const atlasData = locatedMoments.map((entry) => ({
       card.querySelector<HTMLButtonElement>("[data-moment-focus]")?.addEventListener("click", () => {
         const cityKey = card.dataset.cityKey;
         if (!cityKey) return;
-        openCity(cityKey, true);
-        root.scrollIntoView({ behavior: reduceMotion.matches ? "auto" : "smooth", block: "center" });
+        const bounds = root.getBoundingClientRect();
+        const mapIsVisible = bounds.top < window.innerHeight * 0.8 && bounds.bottom > window.innerHeight * 0.2;
+        if (!mapIsVisible) root.scrollIntoView({ behavior: "auto", block: "center" });
+        requestAnimationFrame(() => openCity(cityKey, true));
       }, { signal });
     });
 
@@ -506,11 +534,13 @@ const atlasData = locatedMoments.map((entry) => ({
       const emptyState = document.querySelector<HTMLElement>("[data-filter-empty]");
       if (emptyState) emptyState.hidden = cards.some((card) => !card.hidden);
       closePanels();
-      selectedCity = null;
+      setSelectedCity(null);
+      setHoveredCity(null);
+      currentFeatures = buildCityFeatures();
       const source = map.getSource("atlas-moments") as GeoJSONSource | undefined;
       if (source) {
         map.once("idle", () => fitVisibleLocations());
-        source.setData(getCityFeatures());
+        source.setData(currentFeatures);
       }
     }, { signal }));
 

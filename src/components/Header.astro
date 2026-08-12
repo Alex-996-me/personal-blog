@@ -50,9 +50,11 @@ const isSearchActive = pathname.startsWith(searchHref);
 
 <script is:inline>
   (() => {
+    window.__n1HeaderController?.abort();
+    const controller = new AbortController();
+    window.__n1HeaderController = controller;
     const header = document.querySelector(".site-header");
-    if (!header || header.dataset.scrollReady === "true") return;
-    header.dataset.scrollReady = "true";
+    if (!header) return;
     let frame = 0;
     const update = () => {
       frame = 0;
@@ -62,6 +64,10 @@ const isSearchActive = pathname.startsWith(searchHref);
       if (!frame) frame = requestAnimationFrame(update);
     };
     update();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true, signal: controller.signal });
+    document.addEventListener("astro:before-swap", () => {
+      controller.abort();
+      if (frame) cancelAnimationFrame(frame);
+    }, { once: true, signal: controller.signal });
   })();
 </script>

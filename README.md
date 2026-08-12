@@ -1,10 +1,10 @@
 # N=1 Lab
 
-一个基于 Astro 的中文个人博客，偏长期写作和资料沉淀。现在分成三类内容：
+一个基于 Astro 的中文个人博客，偏长期写作、生活记录与知识沉淀。现在分成三类内容：
 
 - `文章`：完整长文，按读书、健康、训练、脑科学、工具等分类归档
 - `每日灵感`：短想法、随手记、片段文字
-- `资料`：PDF、讲义、课程资料、可在线阅读和下载的文件
+- `Moments`：地点、饮食和生活经历的图文记录
 
 ## 1. 安装依赖
 
@@ -41,10 +41,9 @@ npm run build
 ```text
 src/content/posts/          长文文章
 src/content/inspirations/   每日灵感
-src/content/resources/      资料说明页
-public/images/covers/       文章或资料封面
+src/content/moments/        Moments 图文记录
+public/images/covers/       文章封面
 public/images/posts/        正文插图
-public/resources/           PDF / 讲义 / 资料文件
 imports/notion/             Notion 导入源文件
 ```
 
@@ -133,7 +132,7 @@ frontmatter 里写：
 cover: "/images/covers/my-new-post-cover.jpg"
 ```
 
-封面只会出现在首页、搜索结果、列表页和资料卡片里。打开文章正文后，不再显示封面图。
+封面只会出现在首页、搜索结果和列表页里。打开文章正文后，不再显示封面图。
 
 ## 8. 插入链接、YouTube、Bilibili
 
@@ -184,53 +183,7 @@ published: true
 - 会参与搜索
 - 样式是短文本流，不会做成大文章卡片
 
-## 10. 新增一份“资料”
-
-第一步，把 PDF 或资料文件放进：
-
-```text
-public/resources/
-```
-
-例如：
-
-```text
-public/resources/my-notes.pdf
-```
-
-第二步，去这里新建资料说明页：
-
-```text
-src/content/resources/my-notes.md
-```
-
-模板：
-
-```md
----
-title: "我的一份资料"
-date: "2026-06-15"
-updated: "2026-06-15"
-tags:
-  - "PDF"
-  - "课程"
-description: "这份资料的大致内容。"
-file: "/resources/my-notes.pdf"
-cover: "/images/covers/my-notes-cover.jpg"
-published: true
----
-
-这里可以补一段说明，比如适合谁看、重点是什么、为什么值得存。
-```
-
-效果：
-
-- 会出现在 `/resources/`
-- 详情页会提供 `在线阅读` 和 `下载资料`
-- 如果文件是 PDF，会直接站内预览
-- 如果是图片文件，会直接显示图片预览
-
-## 11. 搜索怎么用
+## 10. 搜索怎么用
 
 站点搜索现在会一起检索：
 
@@ -239,14 +192,14 @@ published: true
 - 标签
 - 摘要
 - 每日灵感内容
-- 资料说明
+- Moments 标题、地点与说明
 
 入口：
 
 - 右侧栏搜索框
 - `/search/`
 
-## 12. 目录是自动生成的
+## 11. 目录是自动生成的
 
 每篇 Markdown 文章开头都会自动生成一个可折叠目录。
 
@@ -264,7 +217,7 @@ published: true
 ## 第二部分
 ```
 
-## 13. 如果你从 Notion 导入
+## 12. 如果你从 Notion 导入
 
 把 Notion 导出的 `zip` 或文件夹放进：
 
@@ -293,7 +246,7 @@ npm run publish:notion -- 你的-slug
 - 自动补 frontmatter
 - 自动跑构建
 
-## 14. 常用命令
+## 13. 常用命令
 
 ```bash
 npm install
@@ -305,7 +258,7 @@ npm run summarize -- slug
 npm run check:post -- slug
 ```
 
-## 15. 最简单的本地发文流程
+## 14. 最简单的本地发文流程
 
 如果你只是想自己发一篇文章、加图片、然后推上 GitHub，可以按这个顺序来：
 
@@ -339,7 +292,7 @@ git commit -m "add new content"
 git push origin main
 ```
 
-## 16. 部署地址
+## 15. 部署地址
 
 推到 `main` 后，GitHub Actions 会自动部署到 GitHub Pages。
 

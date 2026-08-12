@@ -1,0 +1,20 @@
+---
+import { withBasePath } from "../lib/paths";
+
+const target = withBasePath("/articles/");
+---
+
+<!doctype html>
+<html lang="zh-CN" data-pagefind-ignore>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="noindex,follow" />
+    <meta http-equiv="refresh" content={`0;url=${target}`} />
+    <link rel="canonical" href={target} />
+    <title>正在前往文章归档 | N=1 Lab</title>
+  </head>
+  <body>
+    <p>资料模块已归入文章来源，正在前往<a href={target}>文章归档</a>。</p>
+    <script define:vars={{ target }}>window.location.replace(target);</script>
+  </body>
+</html>

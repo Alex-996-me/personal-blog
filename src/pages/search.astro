@@ -15,7 +15,7 @@ const currentQuery = Astro.url.searchParams.get("q") ?? "";
 
 <BaseLayout
   title="搜索"
-  description="搜索文章、explained 与资料。"
+  description="搜索文章、灵感与生活记录。"
   wideContent={true}
   bodyClass="body--hub-search"
   shellClass="page-shell--hub-search"
@@ -37,7 +37,7 @@ const currentQuery = Astro.url.searchParams.get("q") ?? "";
           id="lab-search-input"
           type="search"
           value={currentQuery}
-          placeholder="搜索文章、正文、标签、灵感、资料"
+          placeholder="搜索文章、正文、标签、灵感与生活记录"
           autocomplete="off"
           spellcheck="false"
         />
@@ -248,7 +248,7 @@ const currentQuery = Astro.url.searchParams.get("q") ?? "";
             <a class="lab-search-result" href="${entry.url}">
               ${
                 entry.cover
-                  ? `<div class="lab-search-result__media"><img src="${entry.cover}" alt="" /></div>`
+                  ? `<div class="lab-search-result__media"><img src="${entry.cover}" alt="" width="360" height="240" loading="lazy" decoding="async" /></div>`
                   : `<div class="lab-search-result__media lab-search-result__media--fallback"><span>${escapeHtml(entry.kind)}</span></div>`
               }
               <div class="lab-search-result__body">

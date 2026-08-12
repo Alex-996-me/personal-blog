@@ -16,7 +16,7 @@ export type TopicTileDefinition = {
   slug: string;
   href: string;
   description: string;
-  icon: "reading" | "health" | "training" | "neuroscience" | "tools" | "world" | "resources";
+  icon: "reading" | "health" | "training" | "neuroscience" | "tools" | "world";
 };
 
 export const inspirationThemeNames = ["思考", "生活", "科学"] as const;
@@ -116,13 +116,6 @@ export const topicMatrix: TopicTileDefinition[] = [
     description: "关系、行业、选择与现实观察。",
     icon: "world",
   },
-  {
-    name: "资料",
-    slug: "resources",
-    href: "/resources/",
-    description: "集中存放 PDF、课程资料、音频与可下载文档。",
-    icon: "resources",
-  },
 ];
 
 export const inspirationThemes: InspirationThemeDefinition[] = [
@@ -160,11 +153,6 @@ export const modules: ModuleDefinition[] = [
     href: "/moments/",
     description: "日常生活的图文记录。",
   },
-  {
-    name: "资料",
-    href: "/resources/",
-    description: "集中存放 PDF、课程资料、讲义和可下载的参考材料。",
-  },
 ];
 
 export const navigation = [
@@ -172,6 +160,5 @@ export const navigation = [
   { label: "文章", href: "/articles/" },
   { label: "灵感", href: "/daily/" },
   { label: "Moments", href: "/moments/" },
-  { label: "资料", href: "/resources/" },
   { label: "关于", href: "/about/" },
 ];

@@ -8,7 +8,6 @@ import {
   getAllInspirations,
   getAllMoments,
   getAllPosts,
-  getAllResources,
   getCategoryCounts,
   getInspirationDetailHref,
   getMomentHref,
@@ -18,10 +17,9 @@ import {
 } from "../lib/blog";
 import { withBasePath } from "../lib/paths";
 
-const [posts, inspirations, resources, moments] = await Promise.all([
+const [posts, inspirations, moments] = await Promise.all([
   getAllPosts(),
   getAllInspirations(),
-  getAllResources(),
   getAllMoments(),
 ]);
 
@@ -42,9 +40,7 @@ const recentMoments = moments.slice(0, 3).map((moment) => ({
 const categoryCounts = getCategoryCounts(posts, { includeHidden: false });
 const topicTiles = topicMatrix.map((topic) => ({
   ...topic,
-  count: topic.slug === "resources"
-    ? resources.length
-    : (categoryCounts.find((category) => category.slug === topic.slug)?.count ?? 0),
+  count: categoryCounts.find((category) => category.slug === topic.slug)?.count ?? 0,
 }));
 ---
 
@@ -120,7 +116,7 @@ const topicTiles = topicMatrix.map((topic) => ({
           {recentMoments.map(({ moment, image, location }, index) => (
             <a class="home-moment" href={withBasePath(getMomentHref(moment))}>
               <div class="home-moment__media">
-                {image ? <img src={withBasePath(image)} alt={moment.data.title} loading={index === 0 ? "eager" : "lazy"} decoding="async" /> : <div class="home-moment__fallback" aria-hidden="true"></div>}
+                {image ? <img src={withBasePath(image)} alt={moment.data.title} width="1200" height="800" loading={index === 0 ? "eager" : "lazy"} decoding="async" /> : <div class="home-moment__fallback" aria-hidden="true"></div>}
               </div>
               <div>
                 <span>{location?.city ?? "MOMENT"}</span>
@@ -147,7 +143,7 @@ const topicTiles = topicMatrix.map((topic) => ({
           <a class:list={["home-journal__story", index === 0 && "home-journal__story--lead"]} href={withBasePath(getPostHref(post))}>
             <div class="home-journal__media">
               {post.data.cover ? (
-                <img src={withBasePath(post.data.cover)} alt={post.data.title} loading={index === 0 ? "eager" : "lazy"} decoding="async" />
+                <img src={withBasePath(post.data.cover)} alt={post.data.title} width="1200" height="800" loading={index === 0 ? "eager" : "lazy"} decoding="async" />
               ) : (
                 <div class="home-journal__fallback" aria-hidden="true"><span>{post.data.category}</span><strong>{post.data.title}</strong></div>
               )}
@@ -175,7 +171,7 @@ const topicTiles = topicMatrix.map((topic) => ({
       </div>
       <div class="home-about__layout">
         <div class="home-about__portrait">
-          <img src={withBasePath(siteConfig.author.portrait)} alt={`${siteConfig.author.name} 的照片`} loading="lazy" decoding="async" />
+          <img src={withBasePath(siteConfig.author.portrait)} alt={`${siteConfig.author.name} 的照片`} width="900" height="1200" loading="lazy" decoding="async" />
           <span>N=1 / 个人研究档案</span>
         </div>
         <div class="home-about__copy">
@@ -191,10 +187,11 @@ const topicTiles = topicMatrix.map((topic) => ({
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
       const hero = document.querySelector("[data-home-hero]");
       let heroFrame = 0;
+      let heroHeight = Math.max(360, hero?.offsetHeight || 0);
       const updateHero = () => {
         heroFrame = 0;
         if (!hero || reduceMotion.matches) return;
-        const progress = Math.min(1, Math.max(0, window.scrollY / Math.max(360, hero.offsetHeight)));
+        const progress = Math.min(1, Math.max(0, window.scrollY / heroHeight));
         hero.style.setProperty("--hero-ghost-y", `${progress * 16}px`);
         hero.style.setProperty("--hero-title-y", `${progress * -8}px`);
         hero.style.setProperty("--hero-copy-y", `${progress * -4}px`);
@@ -203,8 +200,13 @@ const topicTiles = topicMatrix.map((topic) => ({
       const onScroll = () => {
         if (!heroFrame) heroFrame = requestAnimationFrame(updateHero);
       };
+      const onResize = () => {
+        heroHeight = Math.max(360, hero?.offsetHeight || 0);
+        onScroll();
+      };
       updateHero();
       window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onResize, { passive: true });
 
       const sections = [...document.querySelectorAll("[data-motion-section]")];
       if (reduceMotion.matches || !("IntersectionObserver" in window)) {
