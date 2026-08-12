@@ -1,19 +1,17 @@
 ---
-import { render } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import CategoryGrid from "../components/CategoryGrid.astro";
 import { siteConfig, topicMatrix } from "../data/site";
 import {
   formatDate,
   getAllInspirations,
   getAllMoments,
   getAllPosts,
-  getCategoryCounts,
   getInspirationDetailHref,
   getMomentHref,
   getMomentLocation,
   getPostHref,
   getUpdatedDate,
+  stripMarkdownToText,
 } from "../lib/blog";
 import { withBasePath } from "../lib/paths";
 
@@ -24,23 +22,22 @@ const [posts, inspirations, moments] = await Promise.all([
 ]);
 
 const latestPosts = posts.slice(0, 3);
-const renderedInspirations = await Promise.all(
-  inspirations.map(async (inspiration) => {
-    const { Content } = await render(inspiration);
-    const length = inspiration.body.replace(/[#>*_`\[\]()-]/g, "").trim().length;
-    return { inspiration, Content, length };
-  }),
-);
-const initialIdea = renderedInspirations[0];
+const ideaItems = inspirations.map((inspiration) => ({
+  title: inspiration.data.title,
+  excerpt: inspiration.data.description.trim() || stripMarkdownToText(inspiration.body),
+  date: formatDate(inspiration.data.date),
+  datetime: inspiration.data.date.toISOString(),
+  href: withBasePath(getInspirationDetailHref(inspiration)),
+}));
+const wrapIdeaIndex = (index: number) => ((index % ideaItems.length) + ideaItems.length) % ideaItems.length;
+const initialIdeaSlots = ideaItems.length > 0
+  ? [ideaItems[wrapIdeaIndex(-1)], ideaItems[0], ideaItems[wrapIdeaIndex(1)], ideaItems[wrapIdeaIndex(2)]]
+  : [];
+const initialIdeaRoles = ["previous", "current", "next", "incoming"];
 const recentMoments = moments.slice(0, 3).map((moment) => ({
   moment,
   location: getMomentLocation(moment),
   image: moment.data.items[0]?.image ?? moment.data.images[0] ?? "",
-}));
-const categoryCounts = getCategoryCounts(posts, { includeHidden: false });
-const topicTiles = topicMatrix.map((topic) => ({
-  ...topic,
-  count: categoryCounts.find((category) => category.slug === topic.slug)?.count ?? 0,
 }));
 ---
 
@@ -56,49 +53,44 @@ const topicTiles = topicMatrix.map((topic) => ({
       <p class="home-identity__note" data-hero-description>文章、短思想、生活记录与长期实验，在这里慢慢连接。</p>
     </section>
 
-    {initialIdea && (
-      <section class="living-ideas" aria-labelledby="home-notes-title" data-motion-section="ideas">
+    {ideaItems.length > 0 && (
+      <section class="home-ideas" aria-labelledby="home-ideas-title" data-motion-section="ideas">
         <div class="home-section-heading">
           <div>
-            <p class="home-section-heading__eyebrow">01 / LIVING IDEA STREAM</p>
-            <h2 id="home-notes-title">精选灵感</h2>
+            <p class="home-section-heading__eyebrow">01 / IDEAS</p>
+            <h2 id="home-ideas-title">Ideas Flow</h2>
           </div>
           <a href={withBasePath("/daily/")}>Explore Notes <span aria-hidden="true">→</span></a>
         </div>
 
-        <article class="living-idea" data-living-idea tabindex="0" aria-label="灵感轮播，使用左右方向键切换">
-          <div class="living-idea__topline">
-            <span>IDEA</span>
-            <time data-idea-date datetime={initialIdea.inspiration.data.date.toISOString()}>{formatDate(initialIdea.inspiration.data.date)}</time>
-            <span data-idea-count>01 / {String(renderedInspirations.length).padStart(2, "0")}</span>
+        <div class="idea-flow" data-idea-flow tabindex="0" aria-label="灵感流，使用左右方向键切换">
+          <div class="idea-flow__viewport">
+            <div class="idea-flow__track" data-idea-track>
+              {initialIdeaSlots.map((idea, index) => (
+                <article class="idea-flow__item" data-idea-slot data-role={initialIdeaRoles[index]} aria-hidden={initialIdeaRoles[index] !== "current" ? "true" : undefined}>
+                  <p class="idea-flow__direction" data-idea-direction>{initialIdeaRoles[index] === "previous" ? "PREVIOUS" : initialIdeaRoles[index] === "next" ? "NEXT" : "IDEA"}</p>
+                  <h3><a data-idea-title href={idea.href} tabindex={initialIdeaRoles[index] === "current" ? "0" : "-1"}>{idea.title}</a></h3>
+                  <p class="idea-flow__excerpt" data-idea-excerpt>{idea.excerpt}</p>
+                  <div class="idea-flow__meta">
+                    <time data-idea-date datetime={idea.datetime}>{idea.date}</time>
+                    <a data-idea-read href={idea.href} tabindex={initialIdeaRoles[index] === "current" ? "0" : "-1"}>Read idea <span aria-hidden="true">→</span></a>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
-          <div class="living-idea__content" data-idea-content>
-            <h3 data-idea-title>{initialIdea.inspiration.data.title}</h3>
-            <div class="living-idea__body prose prose--inspiration" data-idea-body><initialIdea.Content /></div>
-          </div>
-          <div class="living-idea__footer">
-            <div class="living-idea__controls" aria-label="切换灵感">
+
+          <div class="idea-flow__footer">
+            <div class="idea-flow__controls" aria-label="切换灵感">
               <button type="button" data-idea-previous aria-label="上一条灵感">←</button>
+              <span data-idea-count>01 / {String(ideaItems.length).padStart(2, "0")}</span>
               <button type="button" data-idea-next aria-label="下一条灵感">→</button>
             </div>
-            <a data-idea-link href={withBasePath(getInspirationDetailHref(initialIdea.inspiration))}>Read note →</a>
-            <p class="living-idea__preview"><span>Next</span><strong data-idea-preview>{renderedInspirations[1]?.inspiration.data.title ?? initialIdea.inspiration.data.title}</strong></p>
+            <button type="button" class="idea-flow__pause" data-idea-pause aria-pressed="false" aria-label="暂停灵感自动播放">PAUSE</button>
           </div>
-          <div class="living-idea__progress" aria-hidden="true"><span data-idea-progress></span></div>
-        </article>
-
-        <div class="living-idea-data" hidden aria-hidden="true">
-          {renderedInspirations.map(({ inspiration, Content, length }) => (
-            <template
-              data-idea-template
-              data-title={inspiration.data.title}
-              data-date={formatDate(inspiration.data.date)}
-              data-datetime={inspiration.data.date.toISOString()}
-              data-href={withBasePath(getInspirationDetailHref(inspiration))}
-              data-length={length}
-            ><div><Content /></div></template>
-          ))}
+          <div class="idea-flow__progress" aria-hidden="true"><span data-idea-progress></span></div>
         </div>
+        <script type="application/json" data-idea-data set:html={JSON.stringify(ideaItems)}></script>
       </section>
     )}
 
@@ -157,28 +149,17 @@ const topicTiles = topicMatrix.map((topic) => ({
       </div>
     </section>
 
-    <section class="home-topics" aria-labelledby="home-topics-title" data-motion-section="topics">
-      <div class="home-section-heading">
-        <div><p class="home-section-heading__eyebrow">04 / TOPIC MATRIX</p><h2 id="home-topics-title">主题索引</h2></div>
-      </div>
-      <CategoryGrid topics={topicTiles} />
-    </section>
-
-    <section class="home-about" id="about" aria-labelledby="home-about-title" data-motion-section="about">
-      <div class="home-section-heading">
-        <div><p class="home-section-heading__eyebrow">05 / ABOUT</p><h2 id="home-about-title">海粟</h2></div>
-        <a href={withBasePath("/about/")}>About <span aria-hidden="true">→</span></a>
-      </div>
-      <div class="home-about__layout">
-        <div class="home-about__portrait">
-          <img src={withBasePath(siteConfig.author.portrait)} alt={`${siteConfig.author.name} 的照片`} width="900" height="1200" loading="lazy" decoding="async" />
-          <span>N=1 / 个人研究档案</span>
-        </div>
-        <div class="home-about__copy">
-          <p class="home-about__lead">{siteConfig.author.shortBio}</p>
-          <p>{siteConfig.author.bio}</p>
-        </div>
-      </div>
+    <section class="home-topic-links" aria-labelledby="home-topic-links-title" data-motion-section="topics">
+      <p class="home-section-heading__eyebrow">04 / EXPLORE BY TOPIC</p>
+      <h2 id="home-topic-links-title">Explore by Topic</h2>
+      <nav aria-label="文章主题">
+        {topicMatrix.map((topic, index) => (
+          <>
+            {index > 0 && <span aria-hidden="true">·</span>}
+            <a href={withBasePath(topic.href)}>{topic.name}</a>
+          </>
+        ))}
+      </nav>
     </section>
   </div>
 
@@ -188,14 +169,24 @@ const topicTiles = topicMatrix.map((topic) => ({
       const hero = document.querySelector("[data-home-hero]");
       let heroFrame = 0;
       let heroHeight = Math.max(360, hero?.offsetHeight || 0);
+      const resetHero = () => {
+        if (!hero) return;
+        hero.style.removeProperty("--hero-ghost-y");
+        hero.style.removeProperty("--hero-title-y");
+        hero.style.removeProperty("--hero-copy-y");
+        hero.style.removeProperty("--hero-copy-opacity");
+      };
       const updateHero = () => {
         heroFrame = 0;
-        if (!hero || reduceMotion.matches) return;
+        if (!hero || reduceMotion.matches) {
+          resetHero();
+          return;
+        }
         const progress = Math.min(1, Math.max(0, window.scrollY / heroHeight));
         hero.style.setProperty("--hero-ghost-y", `${progress * 16}px`);
         hero.style.setProperty("--hero-title-y", `${progress * -8}px`);
         hero.style.setProperty("--hero-copy-y", `${progress * -4}px`);
-        hero.style.setProperty("--hero-copy-opacity", String(1 - progress * 0.12));
+        hero.style.setProperty("--hero-copy-opacity", String(1 - progress * 0.1));
       };
       const onScroll = () => {
         if (!heroFrame) heroFrame = requestAnimationFrame(updateHero);
@@ -222,138 +213,231 @@ const topicTiles = topicMatrix.map((topic) => ({
         sections.forEach((section) => observer.observe(section));
       }
 
-      const stream = document.querySelector("[data-living-idea]");
-      const templates = [...document.querySelectorAll("[data-idea-template]")];
-      if (!stream || templates.length === 0) return;
+      const flow = document.querySelector("[data-idea-flow]");
+      const dataElement = document.querySelector("[data-idea-data]");
+      if (!flow || !dataElement) return;
 
-      const title = stream.querySelector("[data-idea-title]");
-      const body = stream.querySelector("[data-idea-body]");
-      const content = stream.querySelector("[data-idea-content]");
-      const date = stream.querySelector("[data-idea-date]");
-      const count = stream.querySelector("[data-idea-count]");
-      const link = stream.querySelector("[data-idea-link]");
-      const preview = stream.querySelector("[data-idea-preview]");
-      const progress = stream.querySelector("[data-idea-progress]");
-      const storageKey = "n1-living-idea-state-v1";
-      const daySeed = Math.floor(Date.now() / 86400000) % templates.length;
-      let index = daySeed;
-      let elapsed = 0;
-      let lastTime = performance.now();
-      let switching = false;
-      let queuedSwitch = null;
+      let ideas = [];
+      try { ideas = JSON.parse(dataElement.textContent || "[]"); } catch {}
+      if (!Array.isArray(ideas) || ideas.length === 0) return;
+
+      const track = flow.querySelector("[data-idea-track]");
+      const slots = [...flow.querySelectorAll("[data-idea-slot]")];
+      const count = flow.querySelector("[data-idea-count]");
+      const progress = flow.querySelector("[data-idea-progress]");
+      const pauseButton = flow.querySelector("[data-idea-pause]");
+      const storageKey = "n1-idea-flow-state-v2";
+      const dwell = 6000;
+      const transitionDuration = 800;
+      const normalize = (value) => ((value % ideas.length) + ideas.length) % ideas.length;
+      let index = 0;
+      let state = "idle";
+      let queuedDirection = 0;
+      let explicitPaused = false;
+      let remaining = dwell;
+      let cycleStartedAt = 0;
+      let timer = 0;
+      let progressAnimation = null;
       let touchStart = null;
-      const pauseReasons = new Set(reduceMotion.matches ? ["reduced-motion"] : []);
-      const setPaused = (reason, value) => {
-        if (value) pauseReasons.add(reason);
-        else pauseReasons.delete(reason);
-      };
+      const pauseReasons = new Set();
 
       try {
         const saved = JSON.parse(sessionStorage.getItem(storageKey) || "null");
-        if (saved && Number.isInteger(saved.index)) {
-          index = ((saved.index % templates.length) + templates.length) % templates.length;
-          elapsed = Math.max(0, Number(saved.elapsed) || 0);
-        }
+        if (saved && Number.isInteger(saved.index)) index = normalize(saved.index);
+        explicitPaused = Boolean(saved?.paused);
       } catch {}
+      if (explicitPaused) pauseReasons.add("explicit");
+      if (reduceMotion.matches) pauseReasons.add("reduced-motion");
+      if (document.hidden) pauseReasons.add("hidden");
 
-      const durationFor = (item) => Math.min(11000, Math.max(7000, 6500 + Number(item.dataset.length || 80) * 19));
       const save = () => {
-        try { sessionStorage.setItem(storageKey, JSON.stringify({ index, elapsed })); } catch {}
+        try { sessionStorage.setItem(storageKey, JSON.stringify({ index, paused: explicitPaused })); } catch {}
       };
-      const applyIdea = (nextIndex) => {
-        const item = templates[nextIndex];
-        const next = templates[(nextIndex + 1) % templates.length];
-        title.textContent = item.dataset.title || "";
-        body.innerHTML = item.content.firstElementChild?.innerHTML || "";
-        date.textContent = item.dataset.date || "";
-        date.setAttribute("datetime", item.dataset.datetime || "");
-        count.textContent = `${String(nextIndex + 1).padStart(2, "0")} / ${String(templates.length).padStart(2, "0")}`;
-        link.setAttribute("href", item.dataset.href || "#");
-        preview.textContent = next.dataset.title || "";
+      const roleDirection = (role) => role === "previous" ? "PREVIOUS" : role === "next" ? "NEXT" : "IDEA";
+      const fillSlot = (slot, itemIndex, role) => {
+        const item = ideas[normalize(itemIndex)];
+        slot.dataset.role = role;
+        slot.querySelector("[data-idea-direction]").textContent = roleDirection(role);
+        const titleLink = slot.querySelector("[data-idea-title]");
+        titleLink.textContent = item.title;
+        titleLink.setAttribute("href", item.href);
+        titleLink.tabIndex = role === "current" ? 0 : -1;
+        slot.querySelector("[data-idea-excerpt]").textContent = item.excerpt;
+        const date = slot.querySelector("[data-idea-date]");
+        date.textContent = item.date;
+        date.setAttribute("datetime", item.datetime);
+        const readLink = slot.querySelector("[data-idea-read]");
+        readLink.setAttribute("href", item.href);
+        readLink.tabIndex = role === "current" ? 0 : -1;
+        slot.setAttribute("aria-hidden", role === "current" ? "false" : "true");
       };
-      const show = async (nextIndex, direction = 1) => {
-        if (switching) {
-          queuedSwitch = { index: nextIndex, direction };
+      const renderDefaultSlots = () => {
+        fillSlot(slots[0], index - 1, "previous");
+        fillSlot(slots[1], index, "current");
+        fillSlot(slots[2], index + 1, "next");
+        fillSlot(slots[3], index + 2, "incoming");
+        track.style.transform = "translate3d(0, 0, 0)";
+        count.textContent = `${String(index + 1).padStart(2, "0")} / ${String(ideas.length).padStart(2, "0")}`;
+      };
+      const renderBackwardSlots = () => {
+        fillSlot(slots[0], index - 2, "incoming");
+        fillSlot(slots[1], index - 1, "previous");
+        fillSlot(slots[2], index, "current");
+        fillSlot(slots[3], index + 1, "next");
+        track.style.transform = "translate3d(0, calc(-1 * var(--idea-flow-step)), 0)";
+      };
+      const updatePauseButton = () => {
+        pauseButton.textContent = explicitPaused ? "PLAY" : "PAUSE";
+        pauseButton.setAttribute("aria-pressed", explicitPaused ? "true" : "false");
+        pauseButton.setAttribute("aria-label", explicitPaused ? "继续灵感自动播放" : "暂停灵感自动播放");
+      };
+      const setProgress = (ratio) => {
+        progress.style.transform = `scaleX(${Math.max(0, Math.min(1, ratio))})`;
+      };
+      const stopPlayback = () => {
+        if (timer) {
+          clearTimeout(timer);
+          timer = 0;
+          remaining = Math.max(0, remaining - (performance.now() - cycleStartedAt));
+        }
+        progressAnimation?.cancel();
+        progressAnimation = null;
+        setProgress(1 - remaining / dwell);
+      };
+      const startPlayback = () => {
+        if (state !== "idle" || pauseReasons.size > 0 || timer) return;
+        if (remaining <= 0) remaining = dwell;
+        cycleStartedAt = performance.now();
+        const startRatio = 1 - remaining / dwell;
+        progressAnimation = progress.animate(
+          [{ transform: `scaleX(${startRatio})` }, { transform: "scaleX(1)" }],
+          { duration: remaining, easing: "linear", fill: "forwards" },
+        );
+        timer = window.setTimeout(() => {
+          timer = 0;
+          remaining = 0;
+          void move(1);
+        }, remaining);
+      };
+      const syncPlayback = () => {
+        if (pauseReasons.size > 0 || state !== "idle") stopPlayback();
+        else startPlayback();
+      };
+      const setPauseReason = (reason, paused) => {
+        if (paused) pauseReasons.add(reason);
+        else pauseReasons.delete(reason);
+        syncPlayback();
+      };
+      const animateItems = (direction, duration) => {
+        const frames = direction > 0
+          ? [
+              [{ opacity: 0.22, transform: "scale(.98)" }, { opacity: 0, transform: "scale(.97)" }],
+              [{ opacity: 1, transform: "scale(1)" }, { opacity: 0.22, transform: "scale(.98)" }],
+              [{ opacity: 0.38, transform: "scale(.985)" }, { opacity: 1, transform: "scale(1)" }],
+              [{ opacity: 0, transform: "scale(.97)" }, { opacity: 0.38, transform: "scale(.985)" }],
+            ]
+          : [
+              [{ opacity: 0, transform: "scale(.97)" }, { opacity: 0.22, transform: "scale(.98)" }],
+              [{ opacity: 0.22, transform: "scale(.98)" }, { opacity: 1, transform: "scale(1)" }],
+              [{ opacity: 1, transform: "scale(1)" }, { opacity: 0.38, transform: "scale(.985)" }],
+              [{ opacity: 0.38, transform: "scale(.985)" }, { opacity: 0, transform: "scale(.97)" }],
+            ];
+        return slots.map((slot, slotIndex) => slot.animate(frames[slotIndex], {
+          duration,
+          easing: "cubic-bezier(.16,1,.3,1)",
+          fill: "both",
+        }));
+      };
+      async function move(direction) {
+        if (ideas.length < 2) return;
+        direction = direction < 0 ? -1 : 1;
+        if (state === "transitioning") {
+          queuedDirection = direction;
           return;
         }
-        if (nextIndex === index) return;
-        switching = true;
-        const oldHeight = stream.getBoundingClientRect().height;
-        if (!reduceMotion.matches) {
-          await content.animate([
-            { opacity: 1, transform: "translateY(0)" },
-            { opacity: 0, transform: `translateY(${direction > 0 ? -10 : 10}px)` },
-          ], { duration: 180, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" }).finished.catch(() => {});
-        }
-        index = ((nextIndex % templates.length) + templates.length) % templates.length;
-        elapsed = 0;
-        applyIdea(index);
-        const newHeight = stream.getBoundingClientRect().height;
-        if (!reduceMotion.matches) {
-          stream.animate([
-            { transform: `scaleY(${Math.max(0.82, oldHeight / Math.max(1, newHeight))})` },
-            { transform: "scaleY(1)" },
-          ], { duration: 420, easing: "cubic-bezier(.16,1,.3,1)" });
-          content.animate([
-            { opacity: 0, transform: `translateY(${direction > 0 ? 14 : -14}px) scale(.995)` },
-            { opacity: 1, transform: "translateY(0) scale(1)" },
-          ], { duration: 360, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" });
-        }
-        const queued = queuedSwitch;
-        queuedSwitch = null;
-        switching = false;
+        state = "transitioning";
+        stopPlayback();
+        const duration = reduceMotion.matches ? 120 : transitionDuration;
+        if (direction < 0) renderBackwardSlots();
+        const from = direction > 0 ? "translate3d(0, 0, 0)" : "translate3d(0, calc(-1 * var(--idea-flow-step)), 0)";
+        const to = direction > 0 ? "translate3d(0, calc(-1 * var(--idea-flow-step)), 0)" : "translate3d(0, 0, 0)";
+        const trackAnimation = track.animate([{ transform: from }, { transform: to }], {
+          duration,
+          easing: reduceMotion.matches ? "linear" : "cubic-bezier(.2,.8,.2,1)",
+          fill: "both",
+        });
+        const itemAnimations = animateItems(direction, duration);
+        await Promise.all([trackAnimation.finished, ...itemAnimations.map((animation) => animation.finished)].map((promise) => promise.catch(() => {})));
+        index = normalize(index + direction);
+        trackAnimation.cancel();
+        itemAnimations.forEach((animation) => animation.cancel());
+        renderDefaultSlots();
+        remaining = dwell;
+        state = "idle";
         save();
-        if (queued) void show(queued.index, queued.direction);
-      };
-      applyIdea(index);
+        const queued = queuedDirection;
+        queuedDirection = 0;
+        if (queued) {
+          void move(queued);
+          return;
+        }
+        syncPlayback();
+      }
 
-      const tick = (now) => {
-        const delta = Math.min(100, now - lastTime);
-        lastTime = now;
-        if (pauseReasons.size === 0 && !document.hidden && !switching) elapsed += delta;
-        const duration = durationFor(templates[index]);
-        progress.style.transform = `scaleX(${Math.min(1, elapsed / duration)})`;
-        if (elapsed >= duration) void show(index + 1, 1);
-        requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
+      renderDefaultSlots();
+      updatePauseButton();
+      syncPlayback();
 
-      stream.querySelector("[data-idea-next]")?.addEventListener("click", () => void show(index + 1, 1));
-      stream.querySelector("[data-idea-previous]")?.addEventListener("click", () => void show(index - 1, -1));
-      stream.addEventListener("keydown", (event) => {
-        if (event.key === "ArrowRight") { event.preventDefault(); void show(index + 1, 1); }
-        if (event.key === "ArrowLeft") { event.preventDefault(); void show(index - 1, -1); }
+      flow.querySelector("[data-idea-next]")?.addEventListener("click", () => void move(1));
+      flow.querySelector("[data-idea-previous]")?.addEventListener("click", () => void move(-1));
+      pauseButton.addEventListener("click", () => {
+        explicitPaused = !explicitPaused;
+        setPauseReason("explicit", explicitPaused);
+        updatePauseButton();
+        save();
       });
-      stream.addEventListener("pointerenter", () => setPaused("hover", true));
-      stream.addEventListener("pointerleave", () => setPaused("hover", false));
-      stream.addEventListener("focusin", () => setPaused("focus", true));
-      stream.addEventListener("focusout", () => setPaused("focus", false));
-      stream.addEventListener("touchstart", (event) => {
+      flow.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowRight") { event.preventDefault(); void move(1); }
+        if (event.key === "ArrowLeft") { event.preventDefault(); void move(-1); }
+      });
+      flow.addEventListener("focusin", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLButtonElement)) return;
+        requestAnimationFrame(() => setPauseReason("focus", target.matches(":focus-visible")));
+      });
+      flow.addEventListener("focusout", () => setPauseReason("focus", false));
+      flow.addEventListener("touchstart", (event) => {
         const touch = event.touches[0];
         touchStart = touch ? { x: touch.clientX, y: touch.clientY } : null;
-        setPaused("touch", true);
+        setPauseReason("touch", true);
       }, { passive: true });
-      stream.addEventListener("touchend", (event) => {
+      flow.addEventListener("touchend", (event) => {
         const touch = event.changedTouches[0];
         if (touch && touchStart) {
-          const x = touch.clientX - touchStart.x;
-          const y = touch.clientY - touchStart.y;
-          if (Math.abs(x) > 44 && Math.abs(x) > Math.abs(y) * 1.25) void show(index + (x < 0 ? 1 : -1), x < 0 ? 1 : -1);
+          const dx = touch.clientX - touchStart.x;
+          const dy = touch.clientY - touchStart.y;
+          if (Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy) * 1.3) void move(dx < 0 ? 1 : -1);
         }
         touchStart = null;
-        setPaused("touch", false);
+        setPauseReason("touch", false);
+      }, { passive: true });
+      flow.addEventListener("touchcancel", () => {
+        touchStart = null;
+        setPauseReason("touch", false);
       }, { passive: true });
       document.addEventListener("selectionchange", () => {
         const selection = document.getSelection();
-        setPaused("selection", Boolean(selection && !selection.isCollapsed && stream.contains(selection.anchorNode)));
+        setPauseReason("selection", Boolean(selection && !selection.isCollapsed && flow.contains(selection.anchorNode)));
       });
-      reduceMotion.addEventListener("change", (event) => setPaused("reduced-motion", event.matches));
-      document.addEventListener("visibilitychange", () => {
-        setPaused("hidden", document.hidden);
-        lastTime = performance.now();
+      document.addEventListener("visibilitychange", () => setPauseReason("hidden", document.hidden));
+      reduceMotion.addEventListener("change", (event) => {
+        setPauseReason("reduced-motion", event.matches);
+        if (event.matches) resetHero();
+      });
+      window.addEventListener("pagehide", () => {
+        stopPlayback();
         save();
       });
-      window.addEventListener("pagehide", save);
     })();
   </script>
 </BaseLayout>
