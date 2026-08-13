@@ -240,12 +240,14 @@ export function getSeriesGroups(posts: Post[]) {
 }
 
 export function getSeriesNavigation(post: Post, posts: Post[]) {
-  if (!post.data.series) return { previous: undefined, next: undefined };
+  if (!post.data.series) return { previous: undefined, next: undefined, index: -1, total: 0 };
   const seriesPosts = getSeriesPosts(post.data.series, posts);
   const index = seriesPosts.findIndex((entry) => entry.id === post.id);
   return {
     previous: index > 0 ? seriesPosts[index - 1] : undefined,
     next: index >= 0 && index < seriesPosts.length - 1 ? seriesPosts[index + 1] : undefined,
+    index,
+    total: seriesPosts.length,
   };
 }
 

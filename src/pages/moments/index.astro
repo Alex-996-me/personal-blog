@@ -9,6 +9,7 @@ import {
   getMomentSlug,
 } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
+import "../../styles/moments.css";
 
 const monthNames = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
 const allMoments = (await getAllMoments()).sort((left, right) => getMomentDate(right).valueOf() - getMomentDate(left).valueOf());
@@ -77,7 +78,6 @@ const cityGroups = [...moments.reduce((groups, entry) => {
 <BaseLayout
   title="生活"
   description="想留下来的地方、食物和日常。"
-  showSidebar={false}
   wideContent={true}
   bodyClass="body--moments"
   shellClass="page-shell--moments"

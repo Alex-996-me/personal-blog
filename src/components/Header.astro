@@ -41,33 +41,8 @@ const isSearchActive = pathname.startsWith(searchHref);
             <circle cx="11" cy="11" r="6.5"></circle>
             <path d="M16 16l4.5 4.5"></path>
           </svg>
-          <span>搜索</span>
         </a>
       </div>
     </div>
   </div>
 </header>
-
-<script is:inline>
-  (() => {
-    window.__n1HeaderController?.abort();
-    const controller = new AbortController();
-    window.__n1HeaderController = controller;
-    const header = document.querySelector(".site-header");
-    if (!header) return;
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      header.classList.toggle("is-scrolled", window.scrollY > 24);
-    };
-    const onScroll = () => {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true, signal: controller.signal });
-    document.addEventListener("astro:before-swap", () => {
-      controller.abort();
-      if (frame) cancelAnimationFrame(frame);
-    }, { once: true, signal: controller.signal });
-  })();
-</script>

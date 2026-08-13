@@ -18,10 +18,7 @@ const basePath = import.meta.env.BASE_URL;
   <button class="global-search__backdrop" type="button" data-search-close aria-label="关闭搜索"></button>
   <section class="global-search__dialog" role="dialog" aria-modal="true" aria-labelledby="global-search-title">
     <header class="global-search__header">
-      <div>
-        <span>SEARCH / N=1 LAB</span>
-        <h2 id="global-search-title">搜索知识库</h2>
-      </div>
+      <h2 id="global-search-title">搜索</h2>
       <button class="global-search__close" type="button" data-search-close aria-label="关闭搜索">×</button>
     </header>
 
@@ -30,17 +27,13 @@ const basePath = import.meta.env.BASE_URL;
         <circle cx="11" cy="11" r="6.5"></circle>
         <path d="M16 16l4.5 4.5"></path>
       </svg>
-      <input id="global-search-input" type="search" placeholder="搜索文章、灵感与 Moments" autocomplete="off" spellcheck="false" />
-      <kbd>Esc</kbd>
+      <input id="global-search-input" type="search" placeholder="搜索文章、灵感与生活记录" autocomplete="off" spellcheck="false" />
     </label>
 
     <p class="global-search__status" data-search-status>输入关键词开始搜索。</p>
     <div class="global-search__results" data-search-results></div>
 
-    <footer class="global-search__footer">
-      <span><kbd>↑</kbd><kbd>↓</kbd> 选择　<kbd>Enter</kbd> 打开</span>
-      <a href={fullSearchUrl}>完整搜索页 →</a>
-    </footer>
+    <a class="global-search__all" href={fullSearchUrl}>完整搜索页 →</a>
   </section>
 </div>
 
@@ -95,14 +88,13 @@ const basePath = import.meta.env.BASE_URL;
   const renderResults = (items: Array<{ title: string; excerpt: string; type: string; section?: string; url: string }>) => {
     if (!results || !status) return;
     status.textContent = items.length ? `找到 ${items.length} 条相关内容。` : "没有找到相关内容。";
+    const labels = { ARTICLE: "文章", IDEA: "灵感", MOMENT: "生活" };
     results.innerHTML = items.map((item) => `
       <a href="${escapeHtml(withSearchBase(item.url))}" class="global-search-result">
-        <span class="global-search-result__type">${escapeHtml(item.type)}</span>
+        <span class="global-search-result__type">${escapeHtml(labels[item.type] ?? item.type)}</span>
         <span class="global-search-result__copy">
           <strong>${escapeHtml(item.title)}</strong>
-          <small>${item.excerpt}</small>
         </span>
-        <span aria-hidden="true">↗</span>
       </a>
     `).join("");
     activeResult = -1;

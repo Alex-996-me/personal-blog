@@ -2,49 +2,13 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { formatDate, getAllPosts, getPostHref, getSeriesGroups } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
-
-export async function getStaticPaths() {
-  const groups = getSeriesGroups(await getAllPosts());
-  return groups.map((series) => ({ params: { slug: series.slug }, props: { series } }));
-}
-
+export async function getStaticPaths() { return getSeriesGroups(await getAllPosts()).map((series) => ({ params: { slug: series.slug }, props: { series } })); }
 const { series } = Astro.props;
-const chronologicalDates = series.posts.map((post) => post.data.date).sort((left, right) => left.valueOf() - right.valueOf());
-const firstDate = chronologicalDates[0];
-const latestDate = chronologicalDates.at(-1);
-const dateRange = series.posts.length > 1 && firstDate && latestDate
-  ? `${formatDate(firstDate)} — ${formatDate(latestDate)}`
-  : firstDate ? formatDate(firstDate) : "";
-const description = `N=1 Lab 的“${series.name}”系列文章，共 ${series.posts.length} 篇。`;
+const yearGroups = Object.entries(Object.groupBy(series.posts, (post) => String(post.data.date.getFullYear()))).sort(([a], [b]) => Number(b) - Number(a));
 ---
 
-<BaseLayout
-  title={`${series.name} · Series · N=1 Lab`}
-  absoluteTitle={true}
-  description={description}
-  wideContent={true}
-  bodyClass="body--archive body--series"
-  shellClass="page-shell--archive"
-  panelClass="content-panel--archive"
->
-  <article class="series-page">
-    <a class="post-backlink" href={withBasePath("/articles/")}>← 返回文章</a>
-    <header class="series-page__header">
-      <p>SERIES</p>
-      <h1>{series.name}</h1>
-      <div><span>{series.posts.length} {series.posts.length === 1 ? "ENTRY" : "ENTRIES"}</span>{dateRange && <span>{dateRange}</span>}</div>
-    </header>
-    <ol class="series-index">
-      {series.posts.map((post, index) => (
-        <li>
-          <span>{String(post.data.seriesOrder ?? index + 1).padStart(2, "0")}</span>
-          <div>
-            <h2><a href={withBasePath(getPostHref(post))}>{post.data.title}</a></h2>
-            <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
-            <p>{post.data.description}</p>
-          </div>
-        </li>
-      ))}
-    </ol>
+<BaseLayout title={`${series.name} · N=1 Lab`} absoluteTitle={true} description={`${series.name}系列文章。`} wideContent={true} bodyClass="body--archive body--series" shellClass="page-shell--archive" panelClass="content-panel--archive">
+  <article class="series-page"><header class="editorial-page-header"><a class="post-backlink" href={withBasePath("/articles/")}>← 返回文章</a><h1>{series.name}</h1></header>
+    <div class="writing-archive">{yearGroups.map(([year, posts]) => <section class="writing-year"><h2>{year}</h2><ol>{posts?.map((post) => <li><a href={withBasePath(getPostHref(post))}><time>{formatDate(post.data.date)}</time><h3>{post.data.title}</h3><p>{post.data.description}</p></a></li>)}</ol></section>)}</div>
   </article>
 </BaseLayout>

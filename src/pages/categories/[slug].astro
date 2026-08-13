@@ -1,48 +1,19 @@
-﻿---
+---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import PostCard from "../../components/PostCard.astro";
 import { categories } from "../../data/site";
-import { getAllPosts, getCategoryBySlug } from "../../lib/blog";
+import { formatDate, getAllPosts, getCategoryBySlug, getPostHref, getUpdatedDate } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
 
-export async function getStaticPaths() {
-  return categories.map((category) => ({
-    params: { slug: category.slug },
-  }));
-}
-
-const { slug } = Astro.params;
-const category = getCategoryBySlug(slug ?? "");
-
-if (!category) {
-  throw new Error(`Unknown category slug: ${slug}`);
-}
-
-const posts = await getAllPosts();
-const filteredPosts = posts.filter((post) => post.data.category === category.name);
+export async function getStaticPaths() { return categories.map((category) => ({ params: { slug: category.slug } })); }
+const category = getCategoryBySlug(Astro.params.slug ?? "");
+if (!category) throw new Error(`Unknown category slug: ${Astro.params.slug}`);
+const filteredPosts = (await getAllPosts()).filter((post) => post.data.category === category.name);
+const yearGroups = Object.entries(Object.groupBy(filteredPosts, (post) => String(getUpdatedDate(post).getFullYear()))).sort(([a], [b]) => Number(b) - Number(a));
 ---
 
-<BaseLayout
-  title={category.name}
-  description={category.description}
-  wideContent={true}
-  bodyClass="body--archive"
-  shellClass="page-shell--archive"
-  panelClass="content-panel--archive"
->
-  <section class="page-header page-header--archive">
-    <a class="post-backlink" href={withBasePath("/")}>← 返回首页</a>
-    <h1>{category.name}</h1>
-    <p>{category.description}</p>
-  </section>
-
-  {filteredPosts.length > 0 ? (
-    <div class="post-list">
-      {filteredPosts.map((post) => (
-        <PostCard post={post} />
-      ))}
-    </div>
-  ) : (
-    <div class="empty-state">这个分类暂时还没有文章，之后会慢慢补上。</div>
-  )}
+<BaseLayout title={category.name} description={category.description} wideContent={true} bodyClass="body--archive" shellClass="page-shell--archive" panelClass="content-panel--archive">
+  <header class="editorial-page-header"><a class="post-backlink" href={withBasePath("/articles/")}>← 返回文章</a><h1>{category.name}</h1><p>{category.description}</p></header>
+  <div class="writing-archive">
+    {yearGroups.map(([year, posts]) => <section class="writing-year"><h2>{year}</h2><ol>{posts?.map((post) => <li><a href={withBasePath(getPostHref(post))}><time>{formatDate(getUpdatedDate(post))}</time><h3>{post.data.title}</h3><p>{post.data.description}</p></a></li>)}</ol></section>)}
+  </div>
 </BaseLayout>

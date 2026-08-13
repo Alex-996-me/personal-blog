@@ -1,41 +1,20 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { currently, currentlyUpdated, siteConfig, thisSite } from "../data/site";
+import { siteConfig } from "../data/site";
 import { withBasePath } from "../lib/paths";
 ---
 
 <BaseLayout title="关于" description={siteConfig.author.shortBio} wideContent={true} bodyClass="body--about" shellClass="page-shell--archive" panelClass="content-panel--archive">
   <article class="about-page">
     <a class="post-backlink" href={withBasePath("/")}>← 返回首页</a>
+    <header><h1>关于</h1><p>{siteConfig.author.name}</p></header>
     <div class="about-page__layout">
       <div class="about-page__copy">
-        <p class="page-header__eyebrow">ABOUT / N=1 LAB</p>
-        <h1>{siteConfig.author.name}</h1>
-        <p class="about-page__lead">{siteConfig.author.shortBio}</p>
+        <p>{siteConfig.author.shortBio}</p>
         <p>{siteConfig.author.bio}</p>
+        <p>我把这里当成一个长期维护的公开日记本。写下来的东西未必成熟，但会尽量诚实，也愿意随着经验继续修改自己的判断。</p>
       </div>
-      <figure class="about-page__portrait">
-        <img src={withBasePath(siteConfig.author.portrait)} alt={`${siteConfig.author.name} 的照片`} />
-      </figure>
+      <figure class="about-page__portrait"><img src={withBasePath(siteConfig.author.portrait)} alt={`${siteConfig.author.name} 的照片`} width="900" height="1200" /></figure>
     </div>
-
-    {currently.length > 0 && (
-      <section class="about-currently" aria-labelledby="about-currently-title">
-        <header>
-          <div><p>CURRENTLY</p><h2 id="about-currently-title">此刻</h2></div>
-          {currentlyUpdated && <span>Updated {currentlyUpdated}</span>}
-        </header>
-        <dl>
-          {currently.map((item) => <div><dt>{item.label}</dt><dd>{item.value}</dd></div>)}
-        </dl>
-      </section>
-    )}
-
-    <section class="about-site-map" aria-labelledby="about-site-map-title">
-      <header><p>THIS SITE</p><h2 id="about-site-map-title">这里放什么</h2></header>
-      <dl>
-        {thisSite.map((item) => <div><dt>{item.label}</dt><dd>{item.value}</dd></div>)}
-      </dl>
-    </section>
   </article>
 </BaseLayout>

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { siteConfig, topicMatrix } from "../data/site";
+import { siteConfig } from "../data/site";
 import {
   formatDate,
   getAllInspirations,
@@ -16,12 +16,7 @@ import {
 } from "../lib/blog";
 import { withBasePath } from "../lib/paths";
 
-const [posts, inspirations, moments] = await Promise.all([
-  getAllPosts(),
-  getAllInspirations(),
-  getAllMoments(),
-]);
-
+const [posts, inspirations, moments] = await Promise.all([getAllPosts(), getAllInspirations(), getAllMoments()]);
 const latestPosts = getHomepageWriting(posts, 3);
 const ideaItems = inspirations.map((inspiration) => ({
   title: inspiration.data.title,
@@ -31,10 +26,8 @@ const ideaItems = inspirations.map((inspiration) => ({
   href: withBasePath(getInspirationDetailHref(inspiration)),
 }));
 const wrapIdeaIndex = (index: number) => ((index % ideaItems.length) + ideaItems.length) % ideaItems.length;
-const initialIdeaSlots = ideaItems.length > 0
-  ? [ideaItems[wrapIdeaIndex(-1)], ideaItems[0], ideaItems[wrapIdeaIndex(1)], ideaItems[wrapIdeaIndex(2)]]
-  : [];
-const initialIdeaRoles = ["previous", "current", "next", "incoming"];
+const initialIdeas = ideaItems.length > 0 ? [ideaItems[wrapIdeaIndex(-1)], ideaItems[0], ideaItems[wrapIdeaIndex(1)]] : [];
+const initialIdeaRoles = ["previous", "current", "next"];
 const recentMoments = moments.slice(0, 3).map((moment) => ({
   moment,
   location: getMomentLocation(moment),
@@ -42,52 +35,39 @@ const recentMoments = moments.slice(0, 3).map((moment) => ({
 }));
 ---
 
-<BaseLayout showSidebar={false} wideContent={true} bodyClass="body--hub-home" shellClass="page-shell--hub-home" panelClass="content-panel--hub-home">
+<BaseLayout wideContent={true} bodyClass="body--hub-home" shellClass="page-shell--hub-home" panelClass="content-panel--hub-home">
   <div class="home-story">
-    <section class="home-identity" aria-labelledby="home-identity-title" data-home-hero>
-      <div class="home-identity__mark" aria-hidden="true" data-hero-ghost>N=1</div>
-      <div class="home-identity__copy" data-hero-headline>
-        <p class="home-section-heading__eyebrow">PERSONAL KNOWLEDGE BASE / EST. 2026</p>
-        <h1 id="home-identity-title">{siteConfig.title}</h1>
-        <p>{siteConfig.tagline}</p>
-      </div>
-      <p class="home-identity__note" data-hero-description>文章、短思想、生活记录与长期实验，在这里慢慢连接。</p>
+    <section class="home-identity" aria-labelledby="home-identity-title">
+      <h1 id="home-identity-title">{siteConfig.title}</h1>
+      <p class="home-identity__tagline">{siteConfig.tagline}</p>
+      <p class="home-identity__note">海粟的写作、思考与生活记录。</p>
     </section>
 
     {ideaItems.length > 0 && (
-      <section class="home-ideas" aria-labelledby="home-ideas-title" data-motion-section="ideas">
+      <section class="home-ideas" aria-labelledby="home-ideas-title">
         <div class="home-section-heading">
-          <div>
-            <p class="home-section-heading__eyebrow">01 / IDEAS</p>
-            <h2 id="home-ideas-title">Ideas Flow</h2>
-          </div>
-          <a href={withBasePath("/daily/")}>Explore Notes <span aria-hidden="true">→</span></a>
+          <h2 id="home-ideas-title">灵感</h2>
+          <a href={withBasePath("/daily/")}>所有灵感 <span aria-hidden="true">→</span></a>
         </div>
-
         <div class="idea-flow" data-idea-flow tabindex="0" aria-label="灵感流，使用左右方向键切换">
           <div class="idea-flow__viewport">
             <div class="idea-flow__track" data-idea-track>
-              {initialIdeaSlots.map((idea, index) => (
+              {initialIdeas.map((idea, index) => (
                 <article class="idea-flow__item" data-idea-slot data-role={initialIdeaRoles[index]} aria-hidden={initialIdeaRoles[index] !== "current" ? "true" : undefined}>
-                  <p class="idea-flow__direction" data-idea-direction>{initialIdeaRoles[index] === "previous" ? "PREVIOUS" : initialIdeaRoles[index] === "next" ? "NEXT" : "IDEA"}</p>
                   <h3><a data-idea-title href={idea.href} tabindex={initialIdeaRoles[index] === "current" ? "0" : "-1"}>{idea.title}</a></h3>
                   <p class="idea-flow__excerpt" data-idea-excerpt>{idea.excerpt}</p>
-                  <div class="idea-flow__meta">
-                    <time data-idea-date datetime={idea.datetime}>{idea.date}</time>
-                    <a data-idea-read href={idea.href} tabindex={initialIdeaRoles[index] === "current" ? "0" : "-1"}>Read idea <span aria-hidden="true">→</span></a>
-                  </div>
+                  <time data-idea-date datetime={idea.datetime}>{idea.date}</time>
                 </article>
               ))}
             </div>
           </div>
-
           <div class="idea-flow__footer">
             <div class="idea-flow__controls" aria-label="切换灵感">
               <button type="button" data-idea-previous aria-label="上一条灵感">←</button>
-              <span data-idea-count>01 / {String(ideaItems.length).padStart(2, "0")}</span>
+              <span data-idea-count>1 / {ideaItems.length}</span>
               <button type="button" data-idea-next aria-label="下一条灵感">→</button>
             </div>
-            <button type="button" class="idea-flow__pause" data-idea-pause aria-pressed="false" aria-label="暂停灵感自动播放">PAUSE</button>
+            <button type="button" class="idea-flow__pause" data-idea-pause aria-pressed="false">暂停</button>
           </div>
           <div class="idea-flow__progress" aria-hidden="true"><span data-idea-progress></span></div>
         </div>
@@ -96,348 +76,125 @@ const recentMoments = moments.slice(0, 3).map((moment) => ({
     )}
 
     {recentMoments.length > 0 && (
-      <section class="home-moments" aria-labelledby="home-moments-title" data-motion-section="moments">
+      <section class="home-moments" aria-labelledby="home-moments-title">
         <div class="home-section-heading">
-          <div>
-            <h2 id="home-moments-title">生活</h2>
-          </div>
+          <h2 id="home-moments-title">生活</h2>
           <a href={withBasePath("/moments/")}>所有记录 <span aria-hidden="true">→</span></a>
         </div>
-
         <div class="home-moments__grid">
           {recentMoments.map(({ moment, image, location }, index) => (
             <a class:list={["home-moment", index === 0 && "home-moment--lead"]} href={withBasePath(getMomentHref(moment))}>
               <div class="home-moment__media">
-                {image ? <img src={withBasePath(image)} alt={moment.data.title} width="1200" height="800" loading={index === 0 ? "eager" : "lazy"} decoding="async" /> : <div class="home-moment__fallback" aria-hidden="true"></div>}
+                {image ? <img src={withBasePath(image)} alt="" width="1200" height="800" loading={index === 0 ? "eager" : "lazy"} decoding="async" /> : <div class="home-moment__fallback" aria-hidden="true"></div>}
               </div>
-              <div>
-                <span>{location?.city ?? "生活"}</span>
-                <h3>{moment.data.title}</h3>
-                {moment.data.description && <p>{moment.data.description}</p>}
-              </div>
+              <div><span>{location?.city ?? "生活"}</span><h3>{moment.data.title}</h3></div>
             </a>
           ))}
         </div>
       </section>
     )}
 
-    <section class="home-journal" aria-labelledby="home-journal-title" data-motion-section="writing">
+    <section class="home-journal" aria-labelledby="home-journal-title">
       <div class="home-section-heading">
-        <div>
-          <p class="home-section-heading__eyebrow">03 / WRITING</p>
-          <h2 id="home-journal-title">Recent Writing</h2>
-        </div>
-        <a href={withBasePath("/articles/")}>All Writing <span aria-hidden="true">→</span></a>
+        <h2 id="home-journal-title">最近在写</h2>
+        <a href={withBasePath("/articles/")}>所有文章 <span aria-hidden="true">→</span></a>
       </div>
-
-      <div class="home-journal__grid">
-        {latestPosts.map((post, index) => (
-          <a class:list={["home-journal__story", index === 0 && "home-journal__story--lead"]} href={withBasePath(getPostHref(post))}>
-            <div class="home-journal__media">
-              {post.data.cover ? (
-                <img src={withBasePath(post.data.cover)} alt={post.data.title} width="1200" height="800" loading={index === 0 ? "eager" : "lazy"} decoding="async" />
-              ) : (
-                <div class="home-journal__fallback" aria-hidden="true"><span>{post.data.category}</span><strong>{post.data.title}</strong></div>
-              )}
-              <span class="home-journal__index">0{index + 1}</span>
-            </div>
-            <div class="home-journal__meta"><span>{post.data.category}</span><span>更新于 {formatDate(getUpdatedDate(post))}</span></div>
-            <h3>{post.data.title}</h3>
-            <p>{post.data.description}</p>
-          </a>
+      <ol class="home-writing-list">
+        {latestPosts.map((post) => (
+          <li><a href={withBasePath(getPostHref(post))}><time datetime={getUpdatedDate(post).toISOString()}>{formatDate(getUpdatedDate(post))}</time><h3>{post.data.title}</h3><span>{post.data.category}</span><p>{post.data.description}</p></a></li>
         ))}
-      </div>
-    </section>
-
-    <section class="home-topic-links" aria-labelledby="home-topic-links-title" data-motion-section="topics">
-      <p class="home-section-heading__eyebrow">04 / EXPLORE BY TOPIC</p>
-      <h2 id="home-topic-links-title">Explore by Topic</h2>
-      <nav aria-label="文章主题">
-        {topicMatrix.map((topic, index) => (
-          <>
-            {index > 0 && <span aria-hidden="true">·</span>}
-            <a href={withBasePath(topic.href)}>{topic.name}</a>
-          </>
-        ))}
-      </nav>
+      </ol>
     </section>
   </div>
 
   <script is:inline>
     (() => {
-      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-      const hero = document.querySelector("[data-home-hero]");
-      let heroFrame = 0;
-      let heroHeight = Math.max(360, hero?.offsetHeight || 0);
-      const resetHero = () => {
-        if (!hero) return;
-        hero.style.removeProperty("--hero-ghost-y");
-        hero.style.removeProperty("--hero-title-y");
-        hero.style.removeProperty("--hero-copy-y");
-        hero.style.removeProperty("--hero-copy-opacity");
-      };
-      const updateHero = () => {
-        heroFrame = 0;
-        if (!hero || reduceMotion.matches) {
-          resetHero();
-          return;
-        }
-        const progress = Math.min(1, Math.max(0, window.scrollY / heroHeight));
-        hero.style.setProperty("--hero-ghost-y", `${progress * 16}px`);
-        hero.style.setProperty("--hero-title-y", `${progress * -8}px`);
-        hero.style.setProperty("--hero-copy-y", `${progress * -4}px`);
-        hero.style.setProperty("--hero-copy-opacity", String(1 - progress * 0.1));
-      };
-      const onScroll = () => {
-        if (!heroFrame) heroFrame = requestAnimationFrame(updateHero);
-      };
-      const onResize = () => {
-        heroHeight = Math.max(360, hero?.offsetHeight || 0);
-        onScroll();
-      };
-      updateHero();
-      window.addEventListener("scroll", onScroll, { passive: true });
-      window.addEventListener("resize", onResize, { passive: true });
-
-      const sections = [...document.querySelectorAll("[data-motion-section]")];
-      if (reduceMotion.matches || !("IntersectionObserver" in window)) {
-        sections.forEach((section) => section.classList.add("is-visible"));
-      } else {
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          });
-        }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
-        sections.forEach((section) => observer.observe(section));
-      }
-
       const flow = document.querySelector("[data-idea-flow]");
       const dataElement = document.querySelector("[data-idea-data]");
       if (!flow || !dataElement) return;
-
       let ideas = [];
       try { ideas = JSON.parse(dataElement.textContent || "[]"); } catch {}
       if (!Array.isArray(ideas) || ideas.length === 0) return;
-
-      const track = flow.querySelector("[data-idea-track]");
       const slots = [...flow.querySelectorAll("[data-idea-slot]")];
       const count = flow.querySelector("[data-idea-count]");
       const progress = flow.querySelector("[data-idea-progress]");
       const pauseButton = flow.querySelector("[data-idea-pause]");
-      const storageKey = "n1-idea-flow-state-v2";
-      const dwell = 3500;
-      const transitionDuration = 800;
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const dwell = 9000;
+      const duration = 600;
       const normalize = (value) => ((value % ideas.length) + ideas.length) % ideas.length;
       let index = 0;
-      let state = "idle";
-      let queuedDirection = 0;
-      let explicitPaused = false;
-      let remaining = dwell;
-      let cycleStartedAt = 0;
       let timer = 0;
-      let progressAnimation = null;
-      let touchStart = null;
-      const pauseReasons = new Set();
+      let moving = false;
+      let paused = reduced.matches;
 
-      try {
-        const saved = JSON.parse(sessionStorage.getItem(storageKey) || "null");
-        if (saved && Number.isInteger(saved.index)) index = normalize(saved.index);
-        explicitPaused = Boolean(saved?.paused);
-      } catch {}
-      if (explicitPaused) pauseReasons.add("explicit");
-      if (reduceMotion.matches) pauseReasons.add("reduced-motion");
-      if (document.hidden) pauseReasons.add("hidden");
-
-      const save = () => {
-        try { sessionStorage.setItem(storageKey, JSON.stringify({ index, paused: explicitPaused })); } catch {}
-      };
-      const roleDirection = (role) => role === "previous" ? "PREVIOUS" : role === "next" ? "NEXT" : "IDEA";
-      const fillSlot = (slot, itemIndex, role) => {
+      const fill = (slot, itemIndex, role) => {
         const item = ideas[normalize(itemIndex)];
         slot.dataset.role = role;
-        slot.querySelector("[data-idea-direction]").textContent = roleDirection(role);
-        const titleLink = slot.querySelector("[data-idea-title]");
-        titleLink.textContent = item.title;
-        titleLink.setAttribute("href", item.href);
-        titleLink.tabIndex = role === "current" ? 0 : -1;
+        slot.setAttribute("aria-hidden", role === "current" ? "false" : "true");
+        const link = slot.querySelector("[data-idea-title]");
+        link.textContent = item.title;
+        link.href = item.href;
+        link.tabIndex = role === "current" ? 0 : -1;
         slot.querySelector("[data-idea-excerpt]").textContent = item.excerpt;
         const date = slot.querySelector("[data-idea-date]");
         date.textContent = item.date;
-        date.setAttribute("datetime", item.datetime);
-        const readLink = slot.querySelector("[data-idea-read]");
-        readLink.setAttribute("href", item.href);
-        readLink.tabIndex = role === "current" ? 0 : -1;
-        slot.setAttribute("aria-hidden", role === "current" ? "false" : "true");
+        date.dateTime = item.datetime;
       };
-      const renderDefaultSlots = () => {
-        fillSlot(slots[0], index - 1, "previous");
-        fillSlot(slots[1], index, "current");
-        fillSlot(slots[2], index + 1, "next");
-        fillSlot(slots[3], index + 2, "incoming");
-        track.style.transform = "translate3d(0, 0, 0)";
-        count.textContent = `${String(index + 1).padStart(2, "0")} / ${String(ideas.length).padStart(2, "0")}`;
+      const render = () => {
+        fill(slots[0], index - 1, "previous");
+        fill(slots[1], index, "current");
+        fill(slots[2], index + 1, "next");
+        count.textContent = `${index + 1} / ${ideas.length}`;
       };
-      const renderBackwardSlots = () => {
-        fillSlot(slots[0], index - 2, "incoming");
-        fillSlot(slots[1], index - 1, "previous");
-        fillSlot(slots[2], index, "current");
-        fillSlot(slots[3], index + 1, "next");
-        track.style.transform = "translate3d(0, calc(-1 * var(--idea-flow-step)), 0)";
+      const stop = () => {
+        window.clearTimeout(timer);
+        timer = 0;
+        progress.getAnimations().forEach((animation) => animation.cancel());
       };
-      const updatePauseButton = () => {
-        pauseButton.textContent = explicitPaused ? "PLAY" : "PAUSE";
-        pauseButton.setAttribute("aria-pressed", explicitPaused ? "true" : "false");
-        pauseButton.setAttribute("aria-label", explicitPaused ? "继续灵感自动播放" : "暂停灵感自动播放");
+      const schedule = () => {
+        stop();
+        if (paused || document.hidden || ideas.length < 2) return;
+        progress.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: dwell, easing: "linear" });
+        timer = window.setTimeout(() => move(1), dwell);
       };
-      const setProgress = (ratio) => {
-        progress.style.transform = `scaleX(${Math.max(0, Math.min(1, ratio))})`;
-      };
-      const stopPlayback = () => {
-        if (timer) {
-          clearTimeout(timer);
-          timer = 0;
-          remaining = Math.max(0, remaining - (performance.now() - cycleStartedAt));
-        }
-        progressAnimation?.cancel();
-        progressAnimation = null;
-        setProgress(1 - remaining / dwell);
-      };
-      const startPlayback = () => {
-        if (state !== "idle" || pauseReasons.size > 0 || timer) return;
-        if (remaining <= 0) remaining = dwell;
-        cycleStartedAt = performance.now();
-        const startRatio = 1 - remaining / dwell;
-        progressAnimation = progress.animate(
-          [{ transform: `scaleX(${startRatio})` }, { transform: "scaleX(1)" }],
-          { duration: remaining, easing: "linear", fill: "forwards" },
+      const move = async (direction) => {
+        if (moving || ideas.length < 2) return;
+        moving = true;
+        stop();
+        const current = slots[1];
+        const nextIndex = normalize(index + direction);
+        const animation = current.animate(
+          [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: `translateY(${direction > 0 ? "-1.25rem" : "1.25rem"})` }],
+          { duration: reduced.matches ? 0 : duration / 2, easing: "ease-in", fill: "forwards" },
         );
-        timer = window.setTimeout(() => {
-          timer = 0;
-          remaining = 0;
-          void move(1);
-        }, remaining);
+        await animation.finished.catch(() => {});
+        index = nextIndex;
+        render();
+        current.animate(
+          [{ opacity: 0, transform: `translateY(${direction > 0 ? "1.25rem" : "-1.25rem"})` }, { opacity: 1, transform: "translateY(0)" }],
+          { duration: reduced.matches ? 0 : duration / 2, easing: "ease-out" },
+        );
+        moving = false;
+        schedule();
       };
-      const syncPlayback = () => {
-        if (pauseReasons.size > 0 || state !== "idle") stopPlayback();
-        else startPlayback();
-      };
-      const setPauseReason = (reason, paused) => {
-        if (paused) pauseReasons.add(reason);
-        else pauseReasons.delete(reason);
-        syncPlayback();
-      };
-      const animateItems = (direction, duration) => {
-        const frames = direction > 0
-          ? [
-              [{ opacity: 0.22, transform: "scale(.98)" }, { opacity: 0, transform: "scale(.97)" }],
-              [{ opacity: 1, transform: "scale(1)" }, { opacity: 0.22, transform: "scale(.98)" }],
-              [{ opacity: 0.38, transform: "scale(.985)" }, { opacity: 1, transform: "scale(1)" }],
-              [{ opacity: 0, transform: "scale(.97)" }, { opacity: 0.38, transform: "scale(.985)" }],
-            ]
-          : [
-              [{ opacity: 0, transform: "scale(.97)" }, { opacity: 0.22, transform: "scale(.98)" }],
-              [{ opacity: 0.22, transform: "scale(.98)" }, { opacity: 1, transform: "scale(1)" }],
-              [{ opacity: 1, transform: "scale(1)" }, { opacity: 0.38, transform: "scale(.985)" }],
-              [{ opacity: 0.38, transform: "scale(.985)" }, { opacity: 0, transform: "scale(.97)" }],
-            ];
-        return slots.map((slot, slotIndex) => slot.animate(frames[slotIndex], {
-          duration,
-          easing: "cubic-bezier(.16,1,.3,1)",
-          fill: "both",
-        }));
-      };
-      async function move(direction) {
-        if (ideas.length < 2) return;
-        direction = direction < 0 ? -1 : 1;
-        if (state === "transitioning") {
-          queuedDirection = direction;
-          return;
-        }
-        state = "transitioning";
-        stopPlayback();
-        const duration = reduceMotion.matches ? 120 : transitionDuration;
-        if (direction < 0) renderBackwardSlots();
-        const from = direction > 0 ? "translate3d(0, 0, 0)" : "translate3d(0, calc(-1 * var(--idea-flow-step)), 0)";
-        const to = direction > 0 ? "translate3d(0, calc(-1 * var(--idea-flow-step)), 0)" : "translate3d(0, 0, 0)";
-        const trackAnimation = track.animate([{ transform: from }, { transform: to }], {
-          duration,
-          easing: reduceMotion.matches ? "linear" : "cubic-bezier(.2,.8,.2,1)",
-          fill: "both",
-        });
-        const itemAnimations = animateItems(direction, duration);
-        await Promise.all([trackAnimation.finished, ...itemAnimations.map((animation) => animation.finished)].map((promise) => promise.catch(() => {})));
-        index = normalize(index + direction);
-        trackAnimation.cancel();
-        itemAnimations.forEach((animation) => animation.cancel());
-        renderDefaultSlots();
-        remaining = dwell;
-        state = "idle";
-        save();
-        const queued = queuedDirection;
-        queuedDirection = 0;
-        if (queued) {
-          void move(queued);
-          return;
-        }
-        syncPlayback();
-      }
-
-      renderDefaultSlots();
-      updatePauseButton();
-      syncPlayback();
-
-      flow.querySelector("[data-idea-next]")?.addEventListener("click", () => void move(1));
-      flow.querySelector("[data-idea-previous]")?.addEventListener("click", () => void move(-1));
-      pauseButton.addEventListener("click", () => {
-        explicitPaused = !explicitPaused;
-        setPauseReason("explicit", explicitPaused);
-        updatePauseButton();
-        save();
+      render();
+      schedule();
+      flow.querySelector("[data-idea-next]")?.addEventListener("click", () => move(1));
+      flow.querySelector("[data-idea-previous]")?.addEventListener("click", () => move(-1));
+      pauseButton?.addEventListener("click", () => {
+        paused = !paused;
+        pauseButton.textContent = paused ? "继续" : "暂停";
+        pauseButton.setAttribute("aria-pressed", String(paused));
+        schedule();
       });
       flow.addEventListener("keydown", (event) => {
-        if (event.key === "ArrowRight") { event.preventDefault(); void move(1); }
-        if (event.key === "ArrowLeft") { event.preventDefault(); void move(-1); }
+        if (event.key === "ArrowRight") move(1);
+        if (event.key === "ArrowLeft") move(-1);
       });
-      flow.addEventListener("focusin", (event) => {
-        const target = event.target;
-        if (!(target instanceof HTMLButtonElement)) return;
-        requestAnimationFrame(() => setPauseReason("focus", target.matches(":focus-visible")));
-      });
-      flow.addEventListener("focusout", () => setPauseReason("focus", false));
-      flow.addEventListener("touchstart", (event) => {
-        const touch = event.touches[0];
-        touchStart = touch ? { x: touch.clientX, y: touch.clientY } : null;
-        setPauseReason("touch", true);
-      }, { passive: true });
-      flow.addEventListener("touchend", (event) => {
-        const touch = event.changedTouches[0];
-        if (touch && touchStart) {
-          const dx = touch.clientX - touchStart.x;
-          const dy = touch.clientY - touchStart.y;
-          if (Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy) * 1.3) void move(dx < 0 ? 1 : -1);
-        }
-        touchStart = null;
-        setPauseReason("touch", false);
-      }, { passive: true });
-      flow.addEventListener("touchcancel", () => {
-        touchStart = null;
-        setPauseReason("touch", false);
-      }, { passive: true });
-      document.addEventListener("selectionchange", () => {
-        const selection = document.getSelection();
-        setPauseReason("selection", Boolean(selection && !selection.isCollapsed && flow.contains(selection.anchorNode)));
-      });
-      document.addEventListener("visibilitychange", () => setPauseReason("hidden", document.hidden));
-      reduceMotion.addEventListener("change", (event) => {
-        setPauseReason("reduced-motion", event.matches);
-        if (event.matches) resetHero();
-      });
-      window.addEventListener("pagehide", () => {
-        stopPlayback();
-        save();
-      });
+      document.addEventListener("visibilitychange", schedule);
+      reduced.addEventListener("change", (event) => { paused = event.matches; schedule(); });
+      window.addEventListener("pagehide", stop, { once: true });
     })();
   </script>
 </BaseLayout>

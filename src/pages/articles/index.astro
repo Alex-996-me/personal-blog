@@ -1,55 +1,34 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import CategoryGrid from "../../components/CategoryGrid.astro";
-import PostCard from "../../components/PostCard.astro";
-import { topicMatrix } from "../../data/site";
-import { formatDate, getAllPosts, getCategoryCounts, getPostHref, getSelectedPosts, getUpdatedDate } from "../../lib/blog";
+import { visibleCategories } from "../../data/site";
+import { formatDate, getAllPosts, getPostHref, getSelectedPosts, getUpdatedDate } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
 
 const posts = await getAllPosts();
-const selectedPosts = getSelectedPosts(posts);
-const categoryCounts = getCategoryCounts(posts);
-const topics = topicMatrix
-  .map((topic) => ({
-    ...topic,
-    count: categoryCounts.find((category) => category.slug === topic.slug)?.count ?? 0,
-  }));
+const selectedPosts = getSelectedPosts(posts, 4);
+const yearGroups = Object.entries(Object.groupBy(posts, (post) => String(getUpdatedDate(post).getFullYear())))
+  .sort(([left], [right]) => Number(right) - Number(left));
 ---
 
 <BaseLayout title="文章" description="N=1 Lab 的长文、实验记录与主题文章。" wideContent={true} bodyClass="body--archive" shellClass="page-shell--archive" panelClass="content-panel--archive">
-  <section class="page-header page-header--archive">
-    <a class="post-backlink" href={withBasePath("/")}>← 返回首页</a>
-    <p class="page-header__eyebrow">WRITING / ARCHIVE</p>
-    <h1>文章</h1>
-  </section>
-
-  <CategoryGrid topics={topics} />
+  <header class="editorial-page-header"><a class="post-backlink" href={withBasePath("/")}>← 返回首页</a><h1>文章</h1></header>
+  <nav class="article-category-links" aria-label="文章分类">
+    {visibleCategories.map((category, index) => (<>{index > 0 && <span aria-hidden="true">·</span>}<a href={withBasePath(`/categories/${category.slug}/`)}>{category.name}</a></>))}
+  </nav>
 
   {selectedPosts.length > 0 && (
     <section class="selected-writing" aria-labelledby="selected-writing-title">
-      <header>
-        <p>SELECTED</p>
-        <h2 id="selected-writing-title">Start Here</h2>
-      </header>
-      <ol>
-        {selectedPosts.map((post, index) => (
-          <li>
-            <span>{String(index + 1).padStart(2, "0")}</span>
-            <div>
-              <h3><a href={withBasePath(getPostHref(post))}>{post.data.title}</a></h3>
-              <p>{post.data.description}</p>
-              <small>{post.data.category} · {formatDate(getUpdatedDate(post))}</small>
-            </div>
-          </li>
-        ))}
-      </ol>
+      <h2 id="selected-writing-title">推荐阅读</h2>
+      <ol>{selectedPosts.map((post, index) => <li><a href={withBasePath(getPostHref(post))}><span>{String(index + 1).padStart(2, "0")}</span><strong>{post.data.title}</strong><p>{post.data.description}</p></a></li>)}</ol>
     </section>
   )}
 
-  <section class="articles-index__latest" aria-labelledby="latest-writing-title">
-    <h2 id="latest-writing-title">Latest Writing</h2>
-    <div class="post-list">
-      {posts.map((post) => <PostCard post={post} />)}
-    </div>
-  </section>
+  <div class="writing-archive">
+    {yearGroups.map(([year, yearPosts]) => (
+      <section class="writing-year" aria-labelledby={`writing-year-${year}`}>
+        <h2 id={`writing-year-${year}`}>{year}</h2>
+        <ol>{yearPosts?.map((post) => <li><a href={withBasePath(getPostHref(post))}><time datetime={getUpdatedDate(post).toISOString()}>{formatDate(getUpdatedDate(post))}</time><h3>{post.data.title}</h3><span>{post.data.category}</span><p>{post.data.description}</p></a></li>)}</ol>
+      </section>
+    ))}
+  </div>
 </BaseLayout>

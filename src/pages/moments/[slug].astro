@@ -13,6 +13,7 @@ import {
   type Moment,
 } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
+import "../../styles/moments.css";
 
 export async function getStaticPaths() {
   const moments = await getAllMoments();
@@ -48,7 +49,6 @@ function momentImage(entry: Moment) {
 <BaseLayout
   title={moment.data.title}
   description={moment.data.description}
-  showSidebar={false}
   wideContent={true}
   bodyClass="body--moments body--moment-detail"
   shellClass="page-shell--moments"

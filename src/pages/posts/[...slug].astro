@@ -32,11 +32,16 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 const youtubeEmbedUrl = getYoutubeEmbedUrl(post.data.youtube);
 const updated = getUpdatedDate(post);
+const hasUpdated = updated.valueOf() !== post.data.date.valueOf();
 const categoryHref = withBasePath(getCategoryHref(post.data.category));
 const isTrainingPost = post.data.category === "训练";
 const [allPosts, allInspirations] = await Promise.all([getAllPosts(), getAllInspirations()]);
 const relatedPosts = getRelatedWritingForPost(post, allPosts);
 const relatedIdeas = getRelatedIdeasForPost(post, allInspirations);
+const continueReading = [
+  ...relatedIdeas.map((idea) => ({ href: withBasePath(getInspirationDetailHref(idea)), title: idea.data.title, meta: "灵感" })),
+  ...relatedPosts.map((entry) => ({ href: withBasePath(getPostHref(entry)), title: entry.data.title, meta: entry.data.category })),
+].slice(0, 3);
 const seriesNavigation = getSeriesNavigation(post, allPosts);
 const seriesHref = post.data.series ? withBasePath(`/series/${getSeriesSlug(post.data.series)}/`) : "";
 const sources = getSources(post.data.source);
@@ -58,23 +63,11 @@ const sources = getSources(post.data.source);
     <header class="post-header">
       <h1>{post.data.title}</h1>
       <div class="post-meta">
-        <span>发布于：{formatDate(post.data.date)}</span>
-        <span>最后更新：{formatDate(updated)}</span>
+        <span>{formatDate(post.data.date)}</span>
         <a href={categoryHref}>{post.data.category}</a>
+        {hasUpdated && <span>更新于 {formatDate(updated)}</span>}
+        {post.data.series && <a href={seriesHref}>{post.data.series}{seriesNavigation.index >= 0 && ` · 第 ${seriesNavigation.index + 1} 篇`}</a>}
       </div>
-      {post.data.series && (
-        <p class="post-series-marker">
-          <span>SERIES</span>
-          <a href={seriesHref}>{post.data.series}{post.data.seriesOrder ? ` · ${String(post.data.seriesOrder).padStart(2, "0")}` : ""}</a>
-        </p>
-      )}
-      {post.data.tags.length > 0 && (
-        <div class="tag-list" aria-label="标签">
-          {post.data.tags.map((tag) => (
-            <span class="tag">#{tag}</span>
-          ))}
-        </div>
-      )}
     </header>
 
     {youtubeEmbedUrl && (
@@ -93,9 +86,11 @@ const sources = getSources(post.data.source);
       <Content />
     </div>
 
+    {post.data.tags.length > 0 && <p class="post-tags" aria-label="标签">{post.data.tags.map((tag) => `#${tag}`).join(" · ")}</p>}
+
     {sources.length > 0 && (
       <section class="content-sources" aria-labelledby="content-sources-title">
-        <h2 id="content-sources-title">Source</h2>
+        <h2 id="content-sources-title">参考</h2>
         <ul>
           {sources.map((source) => (
             <li>
@@ -110,25 +105,16 @@ const sources = getSources(post.data.source);
 
     {post.data.series && (seriesNavigation.previous || seriesNavigation.next) && (
       <nav class="series-navigation" aria-label="系列文章导航">
-        <header><span>SERIES</span><a href={seriesHref}>{post.data.series}</a></header>
+        <header><a href={seriesHref}>{post.data.series}</a></header>
         <div>
           {seriesNavigation.previous
-            ? <a href={withBasePath(getPostHref(seriesNavigation.previous))}><span>← PREVIOUS</span><strong>{seriesNavigation.previous.data.title}</strong></a>
+            ? <a href={withBasePath(getPostHref(seriesNavigation.previous))}><span>← 上一篇</span><strong>{seriesNavigation.previous.data.title}</strong></a>
             : <span></span>}
-          {seriesNavigation.next && <a href={withBasePath(getPostHref(seriesNavigation.next))}><span>NEXT →</span><strong>{seriesNavigation.next.data.title}</strong></a>}
+          {seriesNavigation.next && <a href={withBasePath(getPostHref(seriesNavigation.next))}><span>下一篇 →</span><strong>{seriesNavigation.next.data.title}</strong></a>}
         </div>
       </nav>
     )}
 
-    <RelatedContent
-      title="Related Ideas"
-      eyebrow="IDEAS"
-      items={relatedIdeas.map((idea) => ({ href: withBasePath(getInspirationDetailHref(idea)), title: idea.data.title, description: idea.data.description, meta: "IDEA" }))}
-    />
-    <RelatedContent
-      title="Related Writing"
-      eyebrow="WRITING"
-      items={relatedPosts.map((entry) => ({ href: withBasePath(getPostHref(entry)), title: entry.data.title, description: entry.data.description, meta: entry.data.category }))}
-    />
+    <RelatedContent items={continueReading} />
   </article>
 </BaseLayout>

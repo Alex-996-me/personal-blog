@@ -1,18 +1,16 @@
 ﻿---
 import Header from "../components/Header.astro";
-import Sidebar from "../components/Sidebar.astro";
 import Footer from "../components/Footer.astro";
 import SearchDialog from "../components/SearchDialog.astro";
 import { siteConfig } from "../data/site";
 import { withBasePath } from "../lib/paths";
 import "../styles/global.css";
-import "../styles/site-refresh.css";
+import "../styles/phase-b.css";
 
 interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
-  showSidebar?: boolean;
   wideContent?: boolean;
   bodyClass?: string;
   shellClass?: string;
@@ -29,7 +27,6 @@ const {
   title = siteConfig.title,
   description = siteConfig.description,
   ogImage = siteConfig.defaultOgImage,
-  showSidebar = false,
   wideContent = false,
   bodyClass = "",
   shellClass = "",
@@ -70,7 +67,7 @@ const ogImageUrl = new URL(withBasePath(ogImage), site).toString();
   </head>
   <body class={bodyClass}>
     <Header />
-    <div class:list={["page-shell", !showSidebar && "page-shell--single", shellClass]}>
+    <div class:list={["page-shell", "page-shell--single", shellClass]}>
       <main class="content-column" data-pagefind-body={searchType ? true : undefined} data-pagefind-ignore={!searchType ? true : undefined}>
         {searchType && <span class="pagefind-meta" data-pagefind-meta="type">{searchType}</span>}
         {searchSection && <span class="pagefind-meta" data-pagefind-meta="section">{searchSection}</span>}
@@ -78,7 +75,6 @@ const ogImageUrl = new URL(withBasePath(ogImage), site).toString();
           <slot />
         </div>
       </main>
-      {showSidebar && <Sidebar />}
     </div>
     <SearchDialog />
     <Footer />
