@@ -22,6 +22,7 @@ interface Props {
   headerSearchPlaceholder?: string;
   searchType?: "ARTICLE" | "IDEA" | "MOMENT";
   searchSection?: string;
+  absoluteTitle?: boolean;
 }
 
 const {
@@ -35,9 +36,10 @@ const {
   panelClass = "",
   searchType,
   searchSection = "",
+  absoluteTitle = false,
 } = Astro.props;
 
-const pageTitle = title === siteConfig.title ? title : `${title} | ${siteConfig.title}`;
+const pageTitle = absoluteTitle || title === siteConfig.title ? title : `${title} | ${siteConfig.title}`;
 const site = Astro.site ?? new URL(Astro.url.origin);
 const canonicalUrl = new URL(Astro.url.pathname, site).toString();
 const ogImageUrl = new URL(withBasePath(ogImage), site).toString();

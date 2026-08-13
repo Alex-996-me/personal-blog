@@ -33,6 +33,11 @@ const postSchema = z.object({
   fullSummary: z.array(z.string()).default([]),
   sectionSummaries: z.array(sectionSummarySchema).default([]),
   notionImport: notionImportSchema.optional(),
+  featured: z.boolean().default(false),
+  featuredRank: z.number().int().positive().optional(),
+  featuredHome: z.boolean().default(false),
+  series: z.string().optional(),
+  seriesOrder: z.number().int().positive().optional(),
   ...relationshipFields,
 });
 

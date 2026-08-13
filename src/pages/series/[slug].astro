@@ -1,0 +1,50 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { formatDate, getAllPosts, getPostHref, getSeriesGroups } from "../../lib/blog";
+import { withBasePath } from "../../lib/paths";
+
+export async function getStaticPaths() {
+  const groups = getSeriesGroups(await getAllPosts());
+  return groups.map((series) => ({ params: { slug: series.slug }, props: { series } }));
+}
+
+const { series } = Astro.props;
+const chronologicalDates = series.posts.map((post) => post.data.date).sort((left, right) => left.valueOf() - right.valueOf());
+const firstDate = chronologicalDates[0];
+const latestDate = chronologicalDates.at(-1);
+const dateRange = series.posts.length > 1 && firstDate && latestDate
+  ? `${formatDate(firstDate)} — ${formatDate(latestDate)}`
+  : firstDate ? formatDate(firstDate) : "";
+const description = `N=1 Lab 的“${series.name}”系列文章，共 ${series.posts.length} 篇。`;
+---
+
+<BaseLayout
+  title={`${series.name} · Series · N=1 Lab`}
+  absoluteTitle={true}
+  description={description}
+  wideContent={true}
+  bodyClass="body--archive body--series"
+  shellClass="page-shell--archive"
+  panelClass="content-panel--archive"
+>
+  <article class="series-page">
+    <a class="post-backlink" href={withBasePath("/articles/")}>← 返回文章</a>
+    <header class="series-page__header">
+      <p>SERIES</p>
+      <h1>{series.name}</h1>
+      <div><span>{series.posts.length} {series.posts.length === 1 ? "ENTRY" : "ENTRIES"}</span>{dateRange && <span>{dateRange}</span>}</div>
+    </header>
+    <ol class="series-index">
+      {series.posts.map((post, index) => (
+        <li>
+          <span>{String(post.data.seriesOrder ?? index + 1).padStart(2, "0")}</span>
+          <div>
+            <h2><a href={withBasePath(getPostHref(post))}>{post.data.title}</a></h2>
+            <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+            <p>{post.data.description}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </article>
+</BaseLayout>

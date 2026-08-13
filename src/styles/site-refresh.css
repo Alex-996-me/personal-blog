@@ -1470,8 +1470,76 @@
 .home-moment h3 { margin: 0.45rem 0; font-family: Georgia, "Noto Serif SC", serif; font-size: clamp(1.3rem, 2vw, 1.9rem); font-weight: 400; }
 .home-moment p { margin: 0; color: #9199a5; line-height: 1.65; }
 
+.selected-writing,
 .articles-index__latest { margin-top: clamp(3rem, 7vw, 7rem); }
 .articles-index__latest > h2 { margin-bottom: 2rem; font-family: Georgia, "Noto Serif SC", serif; font-size: clamp(2rem, 4vw, 4rem); font-weight: 400; }
+
+.selected-writing > header p,
+.series-page__header > p,
+.about-currently header p,
+.about-site-map header p,
+.post-series-marker > span,
+.series-navigation > header span {
+  margin: 0;
+  color: #d29a52;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+}
+
+.selected-writing > header h2,
+.about-currently h2,
+.about-site-map h2 {
+  margin: 0.35rem 0 1.6rem;
+  font-family: Georgia, "Noto Serif SC", serif;
+  font-size: clamp(2rem, 4vw, 4rem);
+  font-weight: 400;
+}
+
+.selected-writing ol,
+.series-index {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid #2a2f36;
+}
+
+.selected-writing li,
+.series-index li {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  gap: 1.2rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid #2a2f36;
+}
+
+.selected-writing li > span,
+.series-index li > span { color: #d29a52; font: 0.78rem/1.4 "IBM Plex Mono", "Cascadia Mono", monospace; letter-spacing: 0.12em; }
+.selected-writing h3,
+.series-index h2 { margin: 0; font-family: Georgia, "Noto Serif SC", serif; font-size: clamp(1.35rem, 2.3vw, 2rem); font-weight: 400; }
+.selected-writing h3 a,
+.series-index h2 a { color: inherit; text-decoration: none; }
+.selected-writing p,
+.series-index p { max-width: 52rem; margin: 0.55rem 0; color: #9ca5b0; line-height: 1.7; }
+.selected-writing small,
+.series-index time { color: #7f8995; font-size: 0.78rem; }
+
+.series-page { padding-block: clamp(1rem, 4vw, 4rem); }
+.series-page__header { margin: clamp(2rem, 6vw, 6rem) 0 clamp(3rem, 7vw, 7rem); }
+.series-page__header h1 { margin: 0.25rem 0; font-family: Georgia, "Noto Serif SC", serif; font-size: clamp(3.5rem, 9vw, 8rem); font-weight: 400; line-height: 0.95; }
+.series-page__header div { display: flex; flex-wrap: wrap; gap: 0.6rem 1.5rem; color: #8c96a2; font-size: 0.78rem; letter-spacing: 0.08em; }
+
+.post-series-marker { display: flex; flex-wrap: wrap; gap: 0.55rem 1rem; align-items: center; margin: 1.25rem 0 0; }
+.post-series-marker a,
+.series-navigation a { color: inherit; text-decoration: none; }
+.post-series-marker a { border-bottom: 1px solid #4c535d; }
+.series-navigation { margin-top: clamp(3rem, 7vw, 6rem); padding-top: 1.5rem; border-top: 1px solid #2a2f36; }
+.series-navigation > header { display: flex; gap: 1rem; align-items: center; }
+.series-navigation > header a { font-family: Georgia, "Noto Serif SC", serif; font-size: 1.3rem; }
+.series-navigation > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+.series-navigation > div > a { padding: 1rem 0; border-top: 1px solid #242930; }
+.series-navigation > div > a:last-child { text-align: right; }
+.series-navigation span { display: block; color: #d29a52; font-size: 0.68rem; letter-spacing: 0.12em; }
+.series-navigation strong { display: block; margin-top: 0.45rem; font-family: Georgia, "Noto Serif SC", serif; font-size: 1.1rem; font-weight: 400; }
 
 .about-page { padding-block: clamp(1rem, 4vw, 4rem); }
 .about-page__layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.8fr); gap: clamp(3rem, 8vw, 9rem); align-items: center; margin-top: clamp(2rem, 6vw, 6rem); }
@@ -1479,6 +1547,23 @@
 .about-page__copy p { max-width: 42rem; color: #b4bbc5; font-size: clamp(1rem, 1.4vw, 1.22rem); line-height: 1.9; }
 .about-page__lead { color: #f2f3f5 !important; font-size: clamp(1.25rem, 2vw, 1.75rem) !important; }
 .about-page__portrait img { display: block; width: 100%; max-height: 44rem; object-fit: cover; }
+
+.about-currently,
+.about-site-map { margin-top: clamp(4rem, 9vw, 9rem); }
+.about-currently > header { display: flex; justify-content: space-between; gap: 2rem; align-items: end; }
+.about-currently > header > span { color: #7f8995; font-size: 0.75rem; letter-spacing: 0.08em; }
+.about-currently dl,
+.about-site-map dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; }
+.about-currently dl > div,
+.about-site-map dl > div { padding: 1.25rem 1.5rem 1.25rem 0; border-top: 1px solid #2a2f36; }
+.about-currently dt,
+.about-site-map dt { color: #d29a52; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.about-currently dd,
+.about-site-map dd { margin: 0.7rem 0 0; color: #e9ebee; font-family: Georgia, "Noto Serif SC", serif; font-size: clamp(1.1rem, 1.8vw, 1.45rem); line-height: 1.55; }
+
+.site-footer__brand { display: grid; gap: 0.25rem; }
+.site-footer__brand strong { color: #f1f2f4; font-size: 0.82rem; letter-spacing: 0.12em; }
+.site-footer__brand span { color: #747e89; font-size: 0.72rem; }
 
 .related-content,
 .content-sources {
@@ -1530,6 +1615,7 @@ kbd { padding: .15rem .35rem; border: 1px solid #39414c; border-radius: .2rem; c
   .home-moments__grid, .related-content__list, .about-page__layout { grid-template-columns: 1fr; }
   .related-content__list a:nth-child(odd) { margin-right: 0; border-right: 0; }
   .home-moments__grid { gap: 2.5rem; }
+  .about-currently dl, .about-site-map dl { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
@@ -1543,6 +1629,11 @@ kbd { padding: .15rem .35rem; border: 1px solid #39414c; border-radius: .2rem; c
   .global-search-result { grid-template-columns: 4rem minmax(0,1fr); }
   .global-search-result > :last-child { display: none; }
   .global-search__footer > span { display: none; }
+  .selected-writing li, .series-index li { grid-template-columns: 2.8rem minmax(0, 1fr); gap: 0.7rem; }
+  .series-navigation > div { grid-template-columns: 1fr; }
+  .series-navigation > div > a:last-child { text-align: left; }
+  .about-currently > header { display: block; }
+  .about-currently > header > span { display: block; margin-bottom: 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

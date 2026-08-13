@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { siteConfig } from "../data/site";
+import { currently, currentlyUpdated, siteConfig, thisSite } from "../data/site";
 import { withBasePath } from "../lib/paths";
 ---
 
@@ -18,5 +18,24 @@ import { withBasePath } from "../lib/paths";
         <img src={withBasePath(siteConfig.author.portrait)} alt={`${siteConfig.author.name} 的照片`} />
       </figure>
     </div>
+
+    {currently.length > 0 && (
+      <section class="about-currently" aria-labelledby="about-currently-title">
+        <header>
+          <div><p>CURRENTLY</p><h2 id="about-currently-title">此刻</h2></div>
+          {currentlyUpdated && <span>Updated {currentlyUpdated}</span>}
+        </header>
+        <dl>
+          {currently.map((item) => <div><dt>{item.label}</dt><dd>{item.value}</dd></div>)}
+        </dl>
+      </section>
+    )}
+
+    <section class="about-site-map" aria-labelledby="about-site-map-title">
+      <header><p>THIS SITE</p><h2 id="about-site-map-title">这里放什么</h2></header>
+      <dl>
+        {thisSite.map((item) => <div><dt>{item.label}</dt><dd>{item.value}</dd></div>)}
+      </dl>
+    </section>
   </article>
 </BaseLayout>

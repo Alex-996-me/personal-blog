@@ -162,3 +162,17 @@ export const navigation = [
   { label: "Moments", href: "/moments/" },
   { label: "关于", href: "/about/" },
 ];
+
+export const currently = [
+  { label: "Research", value: "AI × human decision making" },
+  { label: "Training", value: "Boxing + SFG" },
+  { label: "Learning", value: "Statistics / Data Science" },
+];
+
+export const currentlyUpdated = "2026-08";
+
+export const thisSite = [
+  { label: "Writing", value: "系统化、相对成熟的文章。" },
+  { label: "Ideas", value: "仍在形成、等待被修正的判断。" },
+  { label: "Moments", value: "生活留下的地点、图片与片段。" },
+];

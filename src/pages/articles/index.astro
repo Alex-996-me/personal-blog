@@ -3,10 +3,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import CategoryGrid from "../../components/CategoryGrid.astro";
 import PostCard from "../../components/PostCard.astro";
 import { topicMatrix } from "../../data/site";
-import { getAllPosts, getCategoryCounts } from "../../lib/blog";
+import { formatDate, getAllPosts, getCategoryCounts, getPostHref, getSelectedPosts, getUpdatedDate } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
 
 const posts = await getAllPosts();
+const selectedPosts = getSelectedPosts(posts);
 const categoryCounts = getCategoryCounts(posts);
 const topics = topicMatrix
   .map((topic) => ({
@@ -24,8 +25,29 @@ const topics = topicMatrix
 
   <CategoryGrid topics={topics} />
 
+  {selectedPosts.length > 0 && (
+    <section class="selected-writing" aria-labelledby="selected-writing-title">
+      <header>
+        <p>SELECTED</p>
+        <h2 id="selected-writing-title">Start Here</h2>
+      </header>
+      <ol>
+        {selectedPosts.map((post, index) => (
+          <li>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <div>
+              <h3><a href={withBasePath(getPostHref(post))}>{post.data.title}</a></h3>
+              <p>{post.data.description}</p>
+              <small>{post.data.category} · {formatDate(getUpdatedDate(post))}</small>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )}
+
   <section class="articles-index__latest" aria-labelledby="latest-writing-title">
-    <h2 id="latest-writing-title">最近更新</h2>
+    <h2 id="latest-writing-title">Latest Writing</h2>
     <div class="post-list">
       {posts.map((post) => <PostCard post={post} />)}
     </div>

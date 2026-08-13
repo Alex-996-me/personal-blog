@@ -71,8 +71,10 @@ function resolveRelations<T extends { id: string }>(values: string[] | undefined
     return [];
   }
 
-  const wanted = new Set(values.map(normalizeRelationSlug));
-  return entries.filter((entry) => wanted.has(normalizeRelationSlug(getEntrySlug(entry))));
+  const bySlug = new Map(entries.map((entry) => [normalizeRelationSlug(getEntrySlug(entry)), entry]));
+  return values
+    .map((value) => bySlug.get(normalizeRelationSlug(value)))
+    .filter((entry): entry is T => Boolean(entry));
 }
 
 export function resolveRelatedPosts(values: string[] | undefined, posts: Post[]) {
@@ -84,11 +86,189 @@ export function resolveRelatedInspirations(values: string[] | undefined, inspira
 }
 
 export function resolveRelatedMoments(values: string[] | undefined, moments: Moment[]) {
-  return resolveRelations(values, moments);
+  if (!values?.length) return [];
+  const bySlug = new Map(moments.map((moment) => [normalizeRelationSlug(getMomentSlug(moment)), moment]));
+  return values
+    .map((value) => bySlug.get(normalizeRelationSlug(value)))
+    .filter((entry): entry is Moment => Boolean(entry));
 }
 
 export function getSources(source: string | string[] | undefined) {
   return source ? (Array.isArray(source) ? source : [source]) : [];
+}
+
+function compareByUpdatedDate<T extends DatedEntry>(left: T, right: T) {
+  return getEntryUpdatedDate(right).valueOf() - getEntryUpdatedDate(left).valueOf()
+    || left.id.localeCompare(right.id, "zh-CN");
+}
+
+function sharedTagCount(left: string[], right: string[]) {
+  const rightTags = new Set(right.map((tag) => tag.trim().toLocaleLowerCase("zh-CN")));
+  return left.reduce((count, tag) => count + (rightTags.has(tag.trim().toLocaleLowerCase("zh-CN")) ? 1 : 0), 0);
+}
+
+function mergeExplicitAndFallback<T extends { id: string }>(
+  currentId: string,
+  explicit: T[],
+  candidates: T[],
+  score: (entry: T) => number,
+  getDate: (entry: T) => Date,
+  limit = 3,
+) {
+  const seen = new Set([currentId]);
+  const result: T[] = [];
+
+  explicit.forEach((entry) => {
+    if (!seen.has(entry.id) && result.length < limit) {
+      seen.add(entry.id);
+      result.push(entry);
+    }
+  });
+
+  candidates
+    .filter((entry) => !seen.has(entry.id) && score(entry) > 0)
+    .sort((left, right) => score(right) - score(left)
+      || getDate(right).valueOf() - getDate(left).valueOf()
+      || left.id.localeCompare(right.id, "zh-CN"))
+    .forEach((entry) => {
+      if (result.length < limit && !seen.has(entry.id)) {
+        seen.add(entry.id);
+        result.push(entry);
+      }
+    });
+
+  return result;
+}
+
+export function getRelatedWritingForPost(post: Post, posts: Post[], limit = 3) {
+  const explicit = resolveRelatedPosts(post.data.relatedPosts, posts);
+  return mergeExplicitAndFallback(
+    post.id,
+    explicit,
+    posts,
+    (candidate) => {
+      const sameSeries = Boolean(post.data.series && candidate.data.series === post.data.series);
+      const tags = sharedTagCount(post.data.tags, candidate.data.tags);
+      const sameCategory = candidate.data.category === post.data.category;
+      return (sameSeries ? 10_000 : 0) + tags * 100 + (sameCategory ? 5 : 0);
+    },
+    getEntryUpdatedDate,
+    limit,
+  );
+}
+
+export function getRelatedIdeasForPost(post: Post, inspirations: Inspiration[], limit = 3) {
+  const explicit = resolveRelatedInspirations(post.data.relatedNotes, inspirations);
+  return mergeExplicitAndFallback(
+    "__cross-collection__",
+    explicit,
+    inspirations,
+    (candidate) => sharedTagCount(post.data.tags, candidate.data.tags) * 100,
+    getEntryUpdatedDate,
+    limit,
+  );
+}
+
+export function getRelatedIdeasForInspiration(inspiration: Inspiration, inspirations: Inspiration[], limit = 3) {
+  const explicit = resolveRelatedInspirations(inspiration.data.relatedNotes, inspirations);
+  return mergeExplicitAndFallback(
+    inspiration.id,
+    explicit,
+    inspirations,
+    (candidate) => sharedTagCount(inspiration.data.tags, candidate.data.tags) * 100
+      + (candidate.data.theme === inspiration.data.theme ? 3 : 0),
+    getEntryUpdatedDate,
+    limit,
+  );
+}
+
+export function getRelatedWritingForInspiration(inspiration: Inspiration, posts: Post[], limit = 3) {
+  const explicit = resolveRelatedPosts(inspiration.data.relatedPosts, posts);
+  return mergeExplicitAndFallback(
+    "__cross-collection__",
+    explicit,
+    posts,
+    (candidate) => sharedTagCount(inspiration.data.tags, candidate.data.tags) * 100,
+    getEntryUpdatedDate,
+    limit,
+  );
+}
+
+export function getRelatedMomentsForMoment(moment: Moment, moments: Moment[], limit = 3) {
+  const explicit = resolveRelatedMoments(moment.data.relatedMoments, moments);
+  const city = getMomentLocation(moment)?.city;
+  return mergeExplicitAndFallback(
+    moment.id,
+    explicit,
+    moments,
+    (candidate) => (city && getMomentLocation(candidate)?.city === city ? 10_000 : 0)
+      + sharedTagCount(moment.data.tags, candidate.data.tags) * 100,
+    getEntryUpdatedDate,
+    limit,
+  );
+}
+
+export function getSeriesSlug(seriesName: string) {
+  return seriesName
+    .normalize("NFKC")
+    .trim()
+    .toLocaleLowerCase("zh-CN")
+    .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+export function getSeriesPosts(seriesName: string, posts: Post[]) {
+  return posts
+    .filter((post) => post.data.series === seriesName)
+    .sort((left, right) => {
+      const leftOrder = left.data.seriesOrder;
+      const rightOrder = right.data.seriesOrder;
+      if (leftOrder !== undefined || rightOrder !== undefined) {
+        if (leftOrder === undefined) return 1;
+        if (rightOrder === undefined) return -1;
+        if (leftOrder !== rightOrder) return leftOrder - rightOrder;
+      }
+      return left.data.date.valueOf() - right.data.date.valueOf() || left.id.localeCompare(right.id, "zh-CN");
+    });
+}
+
+export function getSeriesGroups(posts: Post[]) {
+  const names = [...new Set(posts.map((post) => post.data.series?.trim()).filter((name): name is string => Boolean(name)))];
+  return names
+    .map((name) => ({ name, slug: getSeriesSlug(name), posts: getSeriesPosts(name, posts) }))
+    .sort((left, right) => left.name.localeCompare(right.name, "zh-CN"));
+}
+
+export function getSeriesNavigation(post: Post, posts: Post[]) {
+  if (!post.data.series) return { previous: undefined, next: undefined };
+  const seriesPosts = getSeriesPosts(post.data.series, posts);
+  const index = seriesPosts.findIndex((entry) => entry.id === post.id);
+  return {
+    previous: index > 0 ? seriesPosts[index - 1] : undefined,
+    next: index >= 0 && index < seriesPosts.length - 1 ? seriesPosts[index + 1] : undefined,
+  };
+}
+
+function compareFeatured(left: Post, right: Post) {
+  const leftRank = left.data.featuredRank;
+  const rightRank = right.data.featuredRank;
+  if (leftRank !== undefined || rightRank !== undefined) {
+    if (leftRank === undefined) return 1;
+    if (rightRank === undefined) return -1;
+    if (leftRank !== rightRank) return leftRank - rightRank;
+  }
+  return compareByUpdatedDate(left, right);
+}
+
+export function getSelectedPosts(posts: Post[], limit = 6) {
+  return posts.filter((post) => post.data.featured).sort(compareFeatured).slice(0, limit);
+}
+
+export function getHomepageWriting(posts: Post[], limit = 3) {
+  const candidates = posts.filter((post) => post.data.featuredHome).sort(compareFeatured);
+  if (candidates.length === 0) return posts.slice(0, limit);
+  const lead = candidates[0];
+  return [lead, ...posts.filter((post) => post.id !== lead.id).slice(0, limit - 1)];
 }
 
 function sortDatedEntries<T extends DatedEntry>(entries: T[]) {
@@ -265,6 +445,7 @@ function buildPostSearchText(post: Post) {
       post.data.title,
       post.data.description,
       post.data.category,
+      post.data.series,
       post.data.tags.join(" "),
       (post.data.fullSummary ?? []).join(" "),
       sectionSummaryText,

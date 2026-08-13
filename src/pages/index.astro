@@ -9,6 +9,7 @@ import {
   getInspirationDetailHref,
   getMomentHref,
   getMomentLocation,
+  getHomepageWriting,
   getPostHref,
   getUpdatedDate,
   stripMarkdownToText,
@@ -21,10 +22,10 @@ const [posts, inspirations, moments] = await Promise.all([
   getAllMoments(),
 ]);
 
-const latestPosts = posts.slice(0, 3);
+const latestPosts = getHomepageWriting(posts, 3);
 const ideaItems = inspirations.map((inspiration) => ({
   title: inspiration.data.title,
-  excerpt: inspiration.data.description.trim() || stripMarkdownToText(inspiration.body),
+  excerpt: stripMarkdownToText(inspiration.body) || inspiration.data.description.trim(),
   date: formatDate(inspiration.data.date),
   datetime: inspiration.data.date.toISOString(),
   href: withBasePath(getInspirationDetailHref(inspiration)),
@@ -227,7 +228,7 @@ const recentMoments = moments.slice(0, 3).map((moment) => ({
       const progress = flow.querySelector("[data-idea-progress]");
       const pauseButton = flow.querySelector("[data-idea-pause]");
       const storageKey = "n1-idea-flow-state-v2";
-      const dwell = 6000;
+      const dwell = 3500;
       const transitionDuration = 800;
       const normalize = (value) => ((value % ideas.length) + ideas.length) % ideas.length;
       let index = 0;

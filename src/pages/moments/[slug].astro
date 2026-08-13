@@ -10,7 +10,7 @@ import {
   getMomentHref,
   getMomentLocation,
   getMomentSlug,
-  resolveRelatedMoments,
+  getRelatedMomentsForMoment,
   type Moment,
 } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
@@ -38,8 +38,7 @@ const items = moment.data.items.length > 0
   : moment.data.images.map((image) => ({ image, title: "", description: "" }));
 const hero = items[0];
 const galleryItems = items.slice(1);
-const relatedMoments = resolveRelatedMoments(moment.data.relatedMoments, allMoments)
-  .filter((entry) => getMomentSlug(entry) !== getMomentSlug(moment));
+const relatedMoments = getRelatedMomentsForMoment(moment, allMoments);
 ---
 
 <BaseLayout

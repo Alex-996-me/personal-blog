@@ -7,9 +7,15 @@ const year = new Date().getFullYear();
 
 <footer class="site-footer">
   <div class="site-footer__inner">
-    <p>&copy; {year} {siteConfig.title}</p>
+    <div class="site-footer__brand">
+      <strong>{siteConfig.title.toUpperCase()}</strong>
+      <span>&copy; {year} · Built with Astro</span>
+    </div>
     <nav aria-label="页脚导航">
-      <a href={withBasePath("/about/")}>About</a>
+      <a href={withBasePath("/articles/")}>文章</a>
+      <a href={withBasePath("/daily/")}>灵感</a>
+      <a href={withBasePath("/moments/")}>Moments</a>
+      <a href={withBasePath("/about/")}>关于</a>
       <a href={withBasePath("/rss.xml")}>RSS</a>
     </nav>
   </div>
