@@ -13,6 +13,7 @@ import {
   getSeriesSlug,
   getInspirationDetailHref,
   getPostSlug,
+  getPostCoverTransitionName,
   getPostHref,
   getSources,
   getUpdatedDate,
@@ -45,6 +46,8 @@ const continueReading = [
 const seriesNavigation = getSeriesNavigation(post, allPosts);
 const seriesHref = post.data.series ? withBasePath(`/series/${getSeriesSlug(post.data.series)}/`) : "";
 const sources = getSources(post.data.source);
+const cover = post.data.cover?.trim();
+const coverTransitionName = cover ? getPostCoverTransitionName(post) : undefined;
 ---
 
 <BaseLayout
@@ -61,14 +64,32 @@ const sources = getSources(post.data.source);
     <a class="post-backlink" href={categoryHref}>← 返回{post.data.category}</a>
 
     <header class="post-header">
+      <p class="post-header__eyebrow">
+        <a href={categoryHref}>{post.data.category}</a>
+        {post.data.series && <><span aria-hidden="true">/</span><a href={seriesHref}>{post.data.series}</a></>}
+      </p>
       <h1>{post.data.title}</h1>
+      <p class="post-header__description">{post.data.description}</p>
       <div class="post-meta">
         <span>{formatDate(post.data.date)}</span>
-        <a href={categoryHref}>{post.data.category}</a>
         {hasUpdated && <span>更新于 {formatDate(updated)}</span>}
         {post.data.series && <a href={seriesHref}>{post.data.series}{seriesNavigation.index >= 0 && ` · 第 ${seriesNavigation.index + 1} 篇`}</a>}
       </div>
     </header>
+
+    {cover && (
+      <figure class="post-cover-hero" style={`view-transition-name: ${coverTransitionName};`}>
+        <img
+          src={withBasePath(cover)}
+          alt=""
+          width="1600"
+          height="1000"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
+      </figure>
+    )}
 
     {youtubeEmbedUrl && (
       <div class="video-embed">

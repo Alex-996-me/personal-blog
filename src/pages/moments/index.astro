@@ -40,39 +40,6 @@ const years = [...moments.reduce((yearMap, entry) => {
       .map(([month, entries]) => ({ month, entries })),
   }));
 
-const cityGroups = [...moments.reduce((groups, entry) => {
-  if (!entry.location) return groups;
-  const key = `${entry.location.country}::${entry.location.city}`;
-  const existing = groups.get(key);
-  if (existing) {
-    existing.count += 1;
-  } else {
-    groups.set(key, {
-      key,
-      city: entry.location.city,
-      country: entry.location.country,
-      latitude: entry.location.latitude,
-      longitude: entry.location.longitude,
-      count: 1,
-      target: `moment-${entry.slug}`,
-    });
-  }
-  return groups;
-}, new Map<string, {
-  key: string;
-  city: string;
-  country: string;
-  latitude: number;
-  longitude: number;
-  count: number;
-  target: string;
-}>()).values()]
-  .sort((left, right) => left.city.localeCompare(right.city, "zh-CN"))
-  .map((group) => ({
-    ...group,
-    x: ((group.longitude + 180) / 360) * 100,
-    y: ((90 - group.latitude) / 180) * 100,
-  }));
 ---
 
 <BaseLayout
@@ -89,56 +56,27 @@ const cityGroups = [...moments.reduce((groups, entry) => {
       <p>想留下来的地方、食物和日常。</p>
     </header>
 
-    {cityGroups.length > 0 && (
-      <section class="location-index" aria-labelledby="location-index-title">
-        <div class="location-index__heading">
-          <h2 id="location-index-title">地点</h2>
-          <p>从地点回到一段生活。</p>
-        </div>
-        <div class="location-index__map">
-          <svg viewBox="0 0 1000 500" role="img" aria-label="生活记录地点索引">
-            <g class="location-index__land" aria-hidden="true">
-              <path d="M42 116 89 73l99-25 92 23 45 54-28 40-53 5-20 51-62 22-66-35-38-48Z" />
-              <path d="m236 268 50 24 28 65-22 97-36 28-27-60-19-73Z" />
-              <path d="m449 104 54-39 101 7 41 40 68-8 91 37 61 69-27 43-96 9-55-28-63 26-27 72-48 85-46-30-27-102-50-41-10-67Z" />
-              <path d="m799 363 52-31 72 28 30 57-61 36-75-17Z" />
-              <path d="m353 113 37-27 45 14-8 37-57 15Z" />
-            </g>
-          </svg>
-          {cityGroups.map((group) => (
-            <button
-              type="button"
-              class="location-index__point"
-              style={`--point-x: ${group.x}%; --point-y: ${group.y}%;`}
-              data-location-target={group.target}
-              aria-label={`${group.city}，${group.count} 条生活记录`}
-            >
-              <span aria-hidden="true"></span>
-              <em>{group.city} · {group.count}</em>
-            </button>
-          ))}
-        </div>
-        <div class="location-index__cities" aria-label="地点列表">
-          {cityGroups.map((group) => (
-            <button type="button" data-location-target={group.target}>{group.city}<span>{group.count}</span></button>
-          ))}
-        </div>
-      </section>
-    )}
-
     <div class="moments-chronology">
-      {years.map(({ year, months }) => (
+      {years.map(({ year, months }, yearIndex) => (
         <section class="moments-year" aria-labelledby={`moments-year-${year}`}>
           <h2 id={`moments-year-${year}`}>{year}</h2>
           <div class="moments-year__months">
-            {months.map(({ month, entries }) => (
+            {months.map(({ month, entries }, monthIndex) => (
               <section class="moments-month" aria-labelledby={`moments-month-${year}-${month + 1}`}>
                 <h3 id={`moments-month-${year}-${month + 1}`}>{monthNames[month]}</h3>
                 <article class="moment-entry moment-entry--featured" id={`moment-${entries[0].slug}`}>
                   <a href={entries[0].href}>
                     <div class="moment-entry__media">
                       {entries[0].image
-                        ? <img src={withBasePath(entries[0].image)} alt={entries[0].moment.data.title} width="1440" height="960" loading="lazy" decoding="async" />
+                        ? <img
+                            src={withBasePath(entries[0].image)}
+                            alt={entries[0].moment.data.title}
+                            width="1440"
+                            height="960"
+                            loading={yearIndex === 0 && monthIndex === 0 ? "eager" : "lazy"}
+                            fetchpriority={yearIndex === 0 && monthIndex === 0 ? "high" : "auto"}
+                            decoding="async"
+                          />
                         : <span aria-hidden="true">N=1</span>}
                     </div>
                     <div class="moment-entry__copy">
@@ -177,24 +115,3 @@ const cityGroups = [...moments.reduce((groups, entry) => {
     </div>
   </main>
 </BaseLayout>
-
-<script>
-  const initializeLocationIndex = () => {
-    document.querySelectorAll<HTMLButtonElement>("[data-location-target]").forEach((button) => {
-      if (button.dataset.locationBound === "true") return;
-      button.dataset.locationBound = "true";
-      button.addEventListener("click", () => {
-        const target = document.getElementById(button.dataset.locationTarget ?? "");
-        if (!target) return;
-        target.scrollIntoView({
-          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-          block: "start",
-        });
-        target.querySelector<HTMLAnchorElement>("a")?.focus({ preventScroll: true });
-      });
-    });
-  };
-
-  initializeLocationIndex();
-  document.addEventListener("astro:page-load", initializeLocationIndex);
-</script>

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ArticleVisual from "../components/ArticleVisual.astro";
 import { siteConfig } from "../data/site";
 import {
   formatDate,
@@ -10,8 +11,6 @@ import {
   getMomentHref,
   getMomentLocation,
   getHomepageWriting,
-  getPostHref,
-  getUpdatedDate,
   stripMarkdownToText,
 } from "../lib/blog";
 import { withBasePath } from "../lib/paths";
@@ -99,11 +98,16 @@ const recentMoments = moments.slice(0, 3).map((moment) => ({
         <h2 id="home-journal-title">最近在写</h2>
         <a href={withBasePath("/articles/")}>所有文章 <span aria-hidden="true">→</span></a>
       </div>
-      <ol class="home-writing-list">
-        {latestPosts.map((post) => (
-          <li><a href={withBasePath(getPostHref(post))}><time datetime={getUpdatedDate(post).toISOString()}>{formatDate(getUpdatedDate(post))}</time><h3>{post.data.title}</h3><span>{post.data.category}</span><p>{post.data.description}</p></a></li>
-        ))}
-      </ol>
+      {latestPosts.length > 0 && (
+        <div class="home-writing-visuals">
+          <ArticleVisual post={latestPosts[0]} variant="hero" eager={true} />
+          {latestPosts.length > 1 && (
+            <div class="home-writing-visuals__secondary">
+              {latestPosts.slice(1).map((post) => <ArticleVisual post={post} variant="grid" />)}
+            </div>
+          )}
+        </div>
+      )}
     </section>
   </div>
 

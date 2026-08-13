@@ -1,0 +1,75 @@
+---
+import type { Post } from "../lib/blog";
+import {
+  formatDate,
+  getPostCoverTransitionName,
+  getPostHref,
+  getUpdatedDate,
+} from "../lib/blog";
+import { withBasePath } from "../lib/paths";
+
+interface Props {
+  post: Post;
+  variant?: "hero" | "grid" | "row";
+  index?: number;
+  eager?: boolean;
+  sharedTransition?: boolean;
+  compact?: boolean;
+}
+
+const {
+  post,
+  variant = "row",
+  index,
+  eager = false,
+  sharedTransition = true,
+  compact = false,
+} = Astro.props;
+const href = withBasePath(getPostHref(post));
+const cover = post.data.cover?.trim();
+const updated = getUpdatedDate(post);
+const transitionName = sharedTransition && cover ? getPostCoverTransitionName(post) : undefined;
+const dimensions = variant === "hero"
+  ? { width: 1600, height: 900 }
+  : variant === "grid"
+    ? { width: 1200, height: 750 }
+    : { width: 960, height: 600 };
+---
+
+<article class:list={["article-visual", `article-visual--${variant}`, compact && "article-visual--compact"]}>
+  <a href={href}>
+    <div
+      class:list={["article-visual__media", !cover && "article-visual__media--fallback"]}
+      style={transitionName ? `view-transition-name: ${transitionName};` : undefined}
+    >
+      {cover
+        ? (
+            <img
+              src={withBasePath(cover)}
+              alt=""
+              width={dimensions.width}
+              height={dimensions.height}
+              loading={eager ? "eager" : "lazy"}
+              fetchpriority={eager ? "high" : "auto"}
+              decoding="async"
+            />
+          )
+        : (
+            <div class="article-visual__fallback" aria-hidden="true">
+              <span>{post.data.category}</span>
+              <strong>{post.data.title}</strong>
+            </div>
+          )}
+    </div>
+    <div class="article-visual__copy">
+      <p class="article-visual__meta">
+        {index !== undefined && <span>{String(index + 1).padStart(2, "0")}</span>}
+        <span>{post.data.category}</span>
+        <time datetime={updated.toISOString()}>{formatDate(updated)}</time>
+      </p>
+      <h3>{post.data.title}</h3>
+      {!compact && <p class="article-visual__description">{post.data.description}</p>}
+      {post.data.series && <span class="article-visual__series">{post.data.series}</span>}
+    </div>
+  </a>
+</article>

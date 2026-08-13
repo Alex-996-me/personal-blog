@@ -285,6 +285,11 @@ export function getPostSlug(post: Post) {
   return getEntrySlug(post);
 }
 
+export function getPostCoverTransitionName(post: Post) {
+  const safeSlug = getPostSlug(post).replace(/[^a-zA-Z0-9_-]/g, "-");
+  return `post-cover-${safeSlug}`;
+}
+
 export function getInspirationSlug(inspiration: Inspiration) {
   return getEntrySlug(inspiration);
 }

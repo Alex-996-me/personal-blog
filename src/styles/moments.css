@@ -39,19 +39,6 @@
   font: 400 clamp(1.05rem, 1.6vw, 1.3rem)/1.75 Georgia, "Noto Serif SC", serif;
 }
 
-.location-index {
-  margin-top: clamp(2.5rem, 6vw, 5rem);
-}
-
-.location-index__heading {
-  display: flex;
-  justify-content: space-between;
-  gap: 1.5rem;
-  align-items: baseline;
-  margin-bottom: 1rem;
-}
-
-.location-index__heading h2,
 .moments-year > h2,
 .moment-story__related h2 {
   margin: 0;
@@ -59,103 +46,8 @@
   font-weight: 400;
 }
 
-.location-index__heading h2 {
-  font-size: clamp(1.7rem, 3vw, 2.6rem);
-}
-
-.location-index__heading p {
-  margin: 0;
-  color: #7f8995;
-  font-size: 0.8rem;
-}
-
-.location-index__map {
-  position: relative;
-  height: clamp(20rem, 32vw, 25rem);
-  overflow: hidden;
-  border-block: 1px solid #252b33;
-  background: #090c10;
-}
-
-.location-index__map svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.location-index__land {
-  fill: rgba(255, 255, 255, 0.015);
-  stroke: #343b45;
-  stroke-width: 1.2;
-  vector-effect: non-scaling-stroke;
-}
-
-.location-index__point {
-  position: absolute;
-  z-index: 1;
-  top: var(--point-y);
-  left: var(--point-x);
-  width: 0.9rem;
-  height: 0.9rem;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  color: inherit;
-  background: transparent;
-  cursor: pointer;
-  transform: translate(-50%, -50%);
-}
-
-.location-index__point > span {
-  display: block;
-  width: 0.38rem;
-  height: 0.38rem;
-  margin: auto;
-  border-radius: 50%;
-  background: #d9a45d;
-  transition: transform 160ms ease, background 160ms ease;
-}
-
-.location-index__point em {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 0.35rem);
-  padding: 0.25rem 0.4rem;
-  color: #d9a45d;
-  background: #090c10;
-  font: 0.68rem/1.2 "IBM Plex Mono", "Cascadia Mono", monospace;
-  font-style: normal;
-  letter-spacing: 0.04em;
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(-50%, 0.2rem);
-  transition: opacity 160ms ease, transform 160ms ease;
-  white-space: nowrap;
-}
-
-.location-index__point:hover > span,
-.location-index__point:focus-visible > span {
-  background: #f0bd78;
-  transform: scale(1.9);
-}
-
-.location-index__point:hover em,
-.location-index__point:focus-visible em {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-
-.location-index__point:focus-visible {
-  outline: 1px solid #d9a45d;
-  outline-offset: 0.2rem;
-}
-
-.location-index__cities {
-  display: none;
-}
-
 .moments-chronology {
-  margin-top: clamp(4rem, 9vw, 8rem);
+  margin-top: clamp(2.5rem, 5vw, 4.5rem);
 }
 
 .moments-year {
@@ -232,14 +124,14 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.82) contrast(1.03);
+  filter: saturate(0.96) contrast(1.02);
   transition: filter 300ms ease, transform 300ms ease;
 }
 
 .moment-entry:hover .moment-entry__media img,
 .moment-entry a:focus-visible .moment-entry__media img {
-  filter: saturate(1) contrast(1.05);
-  transform: scale(1.01);
+  filter: saturate(1) contrast(1.03);
+  transform: scale(1.008);
 }
 
 .moment-entry__media > span {
@@ -543,39 +435,6 @@
     font-size: clamp(3.8rem, 20vw, 6rem);
   }
 
-  .location-index__heading p {
-    display: none;
-  }
-
-  .location-index__map {
-    height: clamp(14rem, 64vw, 17.5rem);
-  }
-
-  .location-index__point em {
-    display: none;
-  }
-
-  .location-index__cities {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem 1rem;
-    padding-top: 0.85rem;
-  }
-
-  .location-index__cities button {
-    padding: 0;
-    border: 0;
-    color: #9da6b1;
-    background: transparent;
-    font: 0.72rem/1.5 inherit;
-    cursor: pointer;
-  }
-
-  .location-index__cities span {
-    margin-left: 0.3rem;
-    color: #d9a45d;
-  }
-
   .moments-year {
     grid-template-columns: 1fr;
     gap: 1.5rem;
@@ -615,8 +474,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .location-index__point > span,
-  .location-index__point em,
   .moment-entry__media img,
   .moment-lightbox {
     transition: none !important;

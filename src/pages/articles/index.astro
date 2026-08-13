@@ -1,11 +1,13 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import ArticleVisual from "../../components/ArticleVisual.astro";
 import { visibleCategories } from "../../data/site";
-import { formatDate, getAllPosts, getPostHref, getSelectedPosts, getUpdatedDate } from "../../lib/blog";
+import { getAllPosts, getSelectedPosts, getUpdatedDate } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
 
 const posts = await getAllPosts();
 const selectedPosts = getSelectedPosts(posts, 4);
+const selectedPostIds = new Set(selectedPosts.map((post) => post.id));
 const yearGroups = Object.entries(Object.groupBy(posts, (post) => String(getUpdatedDate(post).getFullYear())))
   .sort(([left], [right]) => Number(right) - Number(left));
 ---
@@ -19,7 +21,7 @@ const yearGroups = Object.entries(Object.groupBy(posts, (post) => String(getUpda
   {selectedPosts.length > 0 && (
     <section class="selected-writing" aria-labelledby="selected-writing-title">
       <h2 id="selected-writing-title">推荐阅读</h2>
-      <ol>{selectedPosts.map((post, index) => <li><a href={withBasePath(getPostHref(post))}><span>{String(index + 1).padStart(2, "0")}</span><strong>{post.data.title}</strong><p>{post.data.description}</p></a></li>)}</ol>
+      <div class="selected-writing__grid">{selectedPosts.map((post, index) => <ArticleVisual post={post} variant="grid" index={index} />)}</div>
     </section>
   )}
 
@@ -27,7 +29,7 @@ const yearGroups = Object.entries(Object.groupBy(posts, (post) => String(getUpda
     {yearGroups.map(([year, yearPosts]) => (
       <section class="writing-year" aria-labelledby={`writing-year-${year}`}>
         <h2 id={`writing-year-${year}`}>{year}</h2>
-        <ol>{yearPosts?.map((post) => <li><a href={withBasePath(getPostHref(post))}><time datetime={getUpdatedDate(post).toISOString()}>{formatDate(getUpdatedDate(post))}</time><h3>{post.data.title}</h3><span>{post.data.category}</span><p>{post.data.description}</p></a></li>)}</ol>
+        <div class="writing-year__entries">{yearPosts?.map((post) => <ArticleVisual post={post} variant="row" sharedTransition={!selectedPostIds.has(post.id)} />)}</div>
       </section>
     ))}
   </div>
