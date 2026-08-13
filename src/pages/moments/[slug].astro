@@ -1,16 +1,15 @@
 ---
 import { render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import RelatedContent from "../../components/RelatedContent.astro";
 import {
   formatDate,
   getAllMoments,
-  getMomentCategory,
   getMomentDate,
   getMomentHref,
   getMomentLocation,
   getMomentSlug,
   getRelatedMomentsForMoment,
+  stripMarkdownToText,
   type Moment,
 } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
@@ -25,20 +24,25 @@ export async function getStaticPaths() {
 
 const { moment } = Astro.props as { moment: Moment };
 const { Content } = await render(moment);
-const allMoments = await getAllMoments();
+const allMoments = (await getAllMoments()).sort((left, right) => getMomentDate(right).valueOf() - getMomentDate(left).valueOf());
 const currentIndex = allMoments.findIndex((entry) => getMomentSlug(entry) === getMomentSlug(moment));
 const newerMoment = currentIndex > 0 ? allMoments[currentIndex - 1] : undefined;
 const olderMoment = currentIndex >= 0 && currentIndex < allMoments.length - 1 ? allMoments[currentIndex + 1] : undefined;
 const location = getMomentLocation(moment);
 const date = getMomentDate(moment);
-const category = getMomentCategory(moment);
-const categoryNames = { food: "FOOD", travel: "TRAVEL", life: "LIFE", other: "OTHER" };
 const items = moment.data.items.length > 0
   ? moment.data.items
   : moment.data.images.map((image) => ({ image, title: "", description: "" }));
 const hero = items[0];
 const galleryItems = items.slice(1);
-const relatedMoments = getRelatedMomentsForMoment(moment, allMoments);
+const relatedMoments = getRelatedMomentsForMoment(moment, allMoments, 3);
+const bodyText = stripMarkdownToText(moment.body ?? "");
+const description = moment.data.description.trim();
+const showLead = Boolean(description) && !bodyText.startsWith(description);
+
+function momentImage(entry: Moment) {
+  return entry.data.items[0]?.image ?? entry.data.images[0] ?? "";
+}
 ---
 
 <BaseLayout
@@ -50,16 +54,16 @@ const relatedMoments = getRelatedMomentsForMoment(moment, allMoments);
   shellClass="page-shell--moments"
   panelClass="content-panel--moments"
   searchType="MOMENT"
-  searchSection="Moments"
+  searchSection="生活"
 >
   <article class="moment-story">
-    <a class="moment-story__back" href={withBasePath("/moments/")}>← MY LIFE ATLAS</a>
+    <a class="moment-story__back" href={withBasePath("/moments/")}>← 生活</a>
 
     <header class="moment-story__header">
-      <div class="moment-story__kicker">
+      <p class="moment-story__kicker">
         {location && <span>{location.city} · {location.country}</span>}
         <time datetime={date.toISOString()}>{formatDate(date)}</time>
-      </div>
+      </p>
       <h1>{moment.data.title}</h1>
     </header>
 
@@ -72,14 +76,7 @@ const relatedMoments = getRelatedMomentsForMoment(moment, allMoments);
           data-lightbox-alt={hero.title || moment.data.title}
           aria-label={`查看大图：${hero.title || moment.data.title}`}
         >
-          <img
-            src={withBasePath(hero.image)}
-            alt={hero.title || moment.data.title}
-            width="1600"
-            height="1100"
-            loading="eager"
-            decoding="async"
-          />
+          <img src={withBasePath(hero.image)} alt={hero.title || moment.data.title} width="1600" height="1067" loading="eager" decoding="async" />
         </button>
         {(hero.title || hero.description) && (
           <figcaption>
@@ -90,29 +87,20 @@ const relatedMoments = getRelatedMomentsForMoment(moment, allMoments);
       </figure>
     )}
 
-    {(moment.data.description || moment.data.tags.length > 0) && (
-      <section class="moment-story__note" aria-label="Moment note">
-        {moment.data.description && <p>{moment.data.description}</p>}
-        {moment.data.tags.length > 0 && (
-          <ul aria-label="标签">
-            {moment.data.tags.map((tag) => <li>{tag}</li>)}
-          </ul>
-        )}
-      </section>
-    )}
-
-    {moment.body?.trim() && (
-      <div class="moment-story__body prose">
-        <Content />
+    {(showLead || moment.data.tags.length > 0) && (
+      <div class="moment-story__lead">
+        {showLead && <p>{description}</p>}
+        {moment.data.tags.length > 0 && <p class="moment-story__tags">{moment.data.tags.join(" · ")}</p>}
       </div>
     )}
 
+    {moment.body?.trim() && <div class="moment-story__body prose"><Content /></div>}
+
     {galleryItems.length > 0 && (
-      <section class="moment-story__gallery" aria-labelledby="moment-gallery-title">
-        <h2 id="moment-gallery-title">Photo Notes</h2>
-        <div class="moment-story__gallery-grid">
-          {galleryItems.map((item) => (
-            <figure>
+      <section class="moment-gallery" aria-label="照片">
+        <div class="moment-gallery__grid">
+          {galleryItems.map((item, index) => (
+            <figure class:list={[index > 0 && index % 5 === 0 && "moment-gallery__wide"]}>
               <button
                 type="button"
                 class="moment-story__image-button"
@@ -120,14 +108,7 @@ const relatedMoments = getRelatedMomentsForMoment(moment, allMoments);
                 data-lightbox-alt={item.title || moment.data.title}
                 aria-label={`查看大图：${item.title || moment.data.title}`}
               >
-                <img
-                  src={withBasePath(item.image)}
-                  alt={item.title || moment.data.title}
-                  width="1200"
-                  height="900"
-                  loading="lazy"
-                  decoding="async"
-                />
+                <img src={withBasePath(item.image)} alt={item.title || moment.data.title} width="1200" height="900" loading="lazy" decoding="async" />
               </button>
               {(item.title || item.description) && (
                 <figcaption>
@@ -141,35 +122,30 @@ const relatedMoments = getRelatedMomentsForMoment(moment, allMoments);
       </section>
     )}
 
-    {location && (
-      <dl class="moment-story__location" aria-label="地点信息">
-        <div><dt>CITY</dt><dd>{location.city}</dd></div>
-        <div><dt>COUNTRY</dt><dd>{location.country}</dd></div>
-        {location.place && <div><dt>PLACE</dt><dd>{location.place}</dd></div>}
-        <div><dt>TYPE</dt><dd>{categoryNames[category]}</dd></div>
-        <div><dt>COORDINATES</dt><dd>{location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}</dd></div>
-      </dl>
-    )}
-
     {relatedMoments.length > 0 && (
-      <RelatedContent
-        title="Related Moments"
-        eyebrow="MOMENTS"
-        items={relatedMoments.map((entry) => ({
-          href: withBasePath(getMomentHref(entry)),
-          title: entry.data.title,
-          description: entry.data.description,
-          meta: getMomentLocation(entry)?.city ?? "MOMENT",
-        }))}
-      />
+      <section class="moment-story__related" aria-labelledby="related-moments-title">
+        <h2 id="related-moments-title">更多生活记录</h2>
+        <div>
+          {relatedMoments.map((entry) => {
+            const image = momentImage(entry);
+            const entryLocation = getMomentLocation(entry);
+            return (
+              <a href={withBasePath(getMomentHref(entry))}>
+                {image && <img src={withBasePath(image)} alt="" width="180" height="120" loading="lazy" decoding="async" />}
+                <span><small>{entryLocation?.city ?? "生活"}</small><strong>{entry.data.title}</strong></span>
+              </a>
+            );
+          })}
+        </div>
+      </section>
     )}
 
     {(olderMoment || newerMoment) && (
       <nav class="moment-story__pagination" aria-label="前后生活记录">
         {olderMoment
-          ? <a href={withBasePath(getMomentHref(olderMoment))}><span>← PREVIOUS</span><strong>{olderMoment.data.title}</strong></a>
+          ? <a href={withBasePath(getMomentHref(olderMoment))}><span>← 上一篇</span><strong>{olderMoment.data.title}</strong></a>
           : <span></span>}
-        {newerMoment && <a href={withBasePath(getMomentHref(newerMoment))}><span>NEXT →</span><strong>{newerMoment.data.title}</strong></a>}
+        {newerMoment && <a href={withBasePath(getMomentHref(newerMoment))}><span>下一篇 →</span><strong>{newerMoment.data.title}</strong></a>}
       </nav>
     )}
   </article>
@@ -187,7 +163,6 @@ const relatedMoments = getRelatedMomentsForMoment(moment, allMoments);
     momentLightboxCleanup?.();
     const dialog = document.querySelector<HTMLDialogElement>("[data-moment-lightbox]");
     if (!dialog) return;
-
     const image = dialog.querySelector<HTMLImageElement>("img");
     const controller = new AbortController();
     const { signal } = controller;
@@ -200,12 +175,8 @@ const relatedMoments = getRelatedMomentsForMoment(moment, allMoments);
         dialog.showModal();
       }, { signal });
     });
-
     dialog.querySelector<HTMLButtonElement>("[data-lightbox-close]")?.addEventListener("click", () => dialog.close(), { signal });
-    dialog.addEventListener("click", (event) => {
-      if (event.target === dialog) dialog.close();
-    }, { signal });
-
+    dialog.addEventListener("click", (event) => { if (event.target === dialog) dialog.close(); }, { signal });
     momentLightboxCleanup = () => controller.abort();
   };
 

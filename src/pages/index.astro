@@ -99,20 +99,19 @@ const recentMoments = moments.slice(0, 3).map((moment) => ({
       <section class="home-moments" aria-labelledby="home-moments-title" data-motion-section="moments">
         <div class="home-section-heading">
           <div>
-            <p class="home-section-heading__eyebrow">02 / MOMENTS</p>
-            <h2 id="home-moments-title">Recent Moments</h2>
+            <h2 id="home-moments-title">生活</h2>
           </div>
-          <a href={withBasePath("/moments/")}>Explore Moments <span aria-hidden="true">→</span></a>
+          <a href={withBasePath("/moments/")}>所有记录 <span aria-hidden="true">→</span></a>
         </div>
 
         <div class="home-moments__grid">
           {recentMoments.map(({ moment, image, location }, index) => (
-            <a class="home-moment" href={withBasePath(getMomentHref(moment))}>
+            <a class:list={["home-moment", index === 0 && "home-moment--lead"]} href={withBasePath(getMomentHref(moment))}>
               <div class="home-moment__media">
                 {image ? <img src={withBasePath(image)} alt={moment.data.title} width="1200" height="800" loading={index === 0 ? "eager" : "lazy"} decoding="async" /> : <div class="home-moment__fallback" aria-hidden="true"></div>}
               </div>
               <div>
-                <span>{location?.city ?? "MOMENT"}</span>
+                <span>{location?.city ?? "生活"}</span>
                 <h3>{moment.data.title}</h3>
                 {moment.data.description && <p>{moment.data.description}</p>}
               </div>
