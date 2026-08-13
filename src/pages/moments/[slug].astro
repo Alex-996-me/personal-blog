@@ -87,10 +87,9 @@ function momentImage(entry: Moment) {
       </figure>
     )}
 
-    {(showLead || moment.data.tags.length > 0) && (
+    {showLead && (
       <div class="moment-story__lead">
-        {showLead && <p>{description}</p>}
-        {moment.data.tags.length > 0 && <p class="moment-story__tags">{moment.data.tags.join(" · ")}</p>}
+        <p>{description}</p>
       </div>
     )}
 
@@ -143,9 +142,9 @@ function momentImage(entry: Moment) {
     {(olderMoment || newerMoment) && (
       <nav class="moment-story__pagination" aria-label="前后生活记录">
         {olderMoment
-          ? <a href={withBasePath(getMomentHref(olderMoment))}><span>← 上一篇</span><strong>{olderMoment.data.title}</strong></a>
+          ? <a href={withBasePath(getMomentHref(olderMoment))}><span>← 上一条</span><strong>{olderMoment.data.title}</strong></a>
           : <span></span>}
-        {newerMoment && <a href={withBasePath(getMomentHref(newerMoment))}><span>下一篇 →</span><strong>{newerMoment.data.title}</strong></a>}
+        {newerMoment && <a href={withBasePath(getMomentHref(newerMoment))}><span>下一条 →</span><strong>{newerMoment.data.title}</strong></a>}
       </nav>
     )}
   </article>
