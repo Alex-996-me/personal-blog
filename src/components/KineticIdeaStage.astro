@@ -1,0 +1,359 @@
+---
+interface IdeaItem {
+  title: string;
+  excerpt: string;
+  date: string;
+  datetime: string;
+  href: string;
+  theme: "思考" | "生活" | "科学" | string;
+}
+
+interface Props {
+  items: IdeaItem[];
+}
+
+const { items } = Astro.props;
+const padCounter = (value: number) => String(value).padStart(3, "0");
+const titleLength = (value: string) => [...value.replace(/\s/g, "")].length;
+const getTitleScale = (value: string) => {
+  const length = titleLength(value);
+  if (length <= 4) return "short";
+  if (length <= 10) return "medium";
+  return "long";
+};
+const getComposition = (item: IdeaItem, index: number) => {
+  const length = titleLength(item.title);
+  if (length <= 4) return "statement";
+  if (length <= 10 && (item.excerpt.length <= 72 || index % 2 === 0)) return "split";
+  return "editorial";
+};
+const themeName = (theme: string) => theme === "生活" ? "LIVING" : theme === "科学" ? "SCIENCE" : "THINKING";
+const themeKey = (theme: string) => theme === "生活" ? "living" : theme === "科学" ? "science" : "thinking";
+const first = items[0];
+const previous = items[(items.length - 1) % items.length];
+const next = items[items.length > 1 ? 1 : 0];
+const serializedItems = JSON.stringify(items).replace(/</g, "\\u003c");
+---
+
+<section
+  class="idea-stage"
+  data-idea-stage
+  data-theme={themeKey(first.theme)}
+  tabindex="0"
+  aria-labelledby="idea-stage-heading"
+>
+  <div class="idea-stage__field" data-idea-field aria-hidden="true"></div>
+  <div class="idea-stage__watermark" data-idea-watermark aria-hidden="true">{themeName(first.theme)}</div>
+
+  <header class="idea-stage__topline">
+    <p id="idea-stage-heading">
+      <span>IDEA /</span>
+      <span class="idea-stage__counter" data-idea-counter aria-label={`第 1 条，共 ${items.length} 条`}>
+        <span data-counter-current>{padCounter(1)}</span>
+        <span data-counter-next aria-hidden="true">{padCounter(1)}</span>
+      </span>
+    </p>
+    <span data-idea-theme-label>{themeName(first.theme)}</span>
+  </header>
+
+  <div class="idea-stage__layers">
+    <a
+      class:list={[
+        "idea-stage__idea",
+        "is-active",
+        `idea-stage__idea--${getTitleScale(first.title)}`,
+        `idea-stage__idea--${getComposition(first, 0)}`,
+      ]}
+      data-idea-layer
+      href={first.href}
+    >
+      <h3 data-idea-title>{first.title}</h3>
+      <p data-idea-excerpt>{first.excerpt}</p>
+    </a>
+    <a class="idea-stage__idea" data-idea-layer href={next.href} aria-hidden="true" tabindex="-1">
+      <h3 data-idea-title>{next.title}</h3>
+      <p data-idea-excerpt>{next.excerpt}</p>
+    </a>
+  </div>
+
+  {items.length > 1 && (
+    <>
+      <button type="button" class="idea-stage__preview idea-stage__preview--previous" data-idea-previous aria-label="上一条灵感">
+        <span aria-hidden="true">← PREVIOUS</span>
+        <strong data-idea-previous-title>{previous.title}</strong>
+      </button>
+      <button type="button" class="idea-stage__preview idea-stage__preview--next" data-idea-next aria-label="下一条灵感">
+        <span aria-hidden="true">NEXT →</span>
+        <strong data-idea-next-title>{next.title}</strong>
+      </button>
+    </>
+  )}
+
+  <footer class="idea-stage__footer">
+    <time data-idea-date datetime={first.datetime}>{first.date}</time>
+    <div class="idea-stage__actions">
+      <a data-idea-open href={first.href}>OPEN →</a>
+      <button type="button" data-idea-toggle aria-pressed="false">PAUSE</button>
+    </div>
+  </footer>
+
+  <script type="application/json" data-idea-stage-data set:html={serializedItems}></script>
+</section>
+
+<script>
+  type IdeaItem = {
+    title: string;
+    excerpt: string;
+    date: string;
+    datetime: string;
+    href: string;
+    theme: string;
+  };
+
+  type StageElement = HTMLElement & { ideaStageCleanup?: () => void };
+
+  const normalizeTheme = (theme: string) => theme === "生活" ? "living" : theme === "科学" ? "science" : "thinking";
+  const getThemeName = (theme: string) => theme === "生活" ? "LIVING" : theme === "科学" ? "SCIENCE" : "THINKING";
+  const getVisibleLength = (value: string) => [...value.replace(/\s/g, "")].length;
+  const getScale = (value: string) => {
+    const length = getVisibleLength(value);
+    if (length <= 4) return "short";
+    if (length <= 10) return "medium";
+    return "long";
+  };
+  const getLayout = (item: IdeaItem, index: number) => {
+    const length = getVisibleLength(item.title);
+    if (length <= 4) return "statement";
+    if (length <= 10 && (item.excerpt.length <= 72 || index % 2 === 0)) return "split";
+    return "editorial";
+  };
+
+  function initializeIdeaStage(stage: StageElement) {
+    stage.ideaStageCleanup?.();
+
+    const dataElement = stage.querySelector<HTMLScriptElement>("[data-idea-stage-data]");
+    if (!dataElement) return;
+
+    let items: IdeaItem[] = [];
+    try {
+      items = JSON.parse(dataElement.textContent || "[]");
+    } catch {
+      return;
+    }
+    if (!items.length) return;
+
+    const layers = [...stage.querySelectorAll<HTMLAnchorElement>("[data-idea-layer]")];
+    if (layers.length !== 2) return;
+
+    const previousTitle = stage.querySelector<HTMLElement>("[data-idea-previous-title]");
+    const nextTitle = stage.querySelector<HTMLElement>("[data-idea-next-title]");
+    const previousButton = stage.querySelector<HTMLButtonElement>("[data-idea-previous]");
+    const nextButton = stage.querySelector<HTMLButtonElement>("[data-idea-next]");
+    const date = stage.querySelector<HTMLTimeElement>("[data-idea-date]");
+    const open = stage.querySelector<HTMLAnchorElement>("[data-idea-open]");
+    const toggle = stage.querySelector<HTMLButtonElement>("[data-idea-toggle]");
+    const counter = stage.querySelector<HTMLElement>("[data-idea-counter]");
+    const counterCurrent = stage.querySelector<HTMLElement>("[data-counter-current]");
+    const counterNext = stage.querySelector<HTMLElement>("[data-counter-next]");
+    const watermark = stage.querySelector<HTMLElement>("[data-idea-watermark]");
+    const themeLabel = stage.querySelector<HTMLElement>("[data-idea-theme-label]");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const abortController = new AbortController();
+    const { signal } = abortController;
+
+    const dwell = 3900;
+    const transitionDuration = 540;
+    let index = 0;
+    let activeLayer = layers[0];
+    let idleLayer = layers[1];
+    let timer = 0;
+    let transitionTimer = 0;
+    let moving = false;
+    let manuallyPaused = false;
+    let touchActive = false;
+    let selectionActive = false;
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    const normalize = (value: number) => ((value % items.length) + items.length) % items.length;
+    const pad = (value: number) => String(value).padStart(3, "0");
+    const autoplayBlocked = () => manuallyPaused || reducedMotion.matches || document.hidden || touchActive || selectionActive;
+
+    const clearTimers = () => {
+      window.clearTimeout(timer);
+      window.clearTimeout(transitionTimer);
+      timer = 0;
+      transitionTimer = 0;
+    };
+
+    const fillLayer = (layer: HTMLAnchorElement, itemIndex: number) => {
+      const item = items[normalize(itemIndex)];
+      layer.href = item.href;
+      layer.querySelector<HTMLElement>("[data-idea-title]")!.textContent = item.title;
+      layer.querySelector<HTMLElement>("[data-idea-excerpt]")!.textContent = item.excerpt;
+      layer.className = `idea-stage__idea idea-stage__idea--${getScale(item.title)} idea-stage__idea--${getLayout(item, normalize(itemIndex))}`;
+    };
+
+    const updateSupportingContent = () => {
+      const current = items[index];
+      const previous = items[normalize(index - 1)];
+      const next = items[normalize(index + 1)];
+      if (previousTitle) previousTitle.textContent = previous.title;
+      if (nextTitle) nextTitle.textContent = next.title;
+      if (date) {
+        date.textContent = current.date;
+        date.dateTime = current.datetime;
+      }
+      if (open) open.href = current.href;
+      const theme = normalizeTheme(current.theme);
+      stage.dataset.theme = theme;
+      if (watermark) watermark.textContent = getThemeName(current.theme);
+      if (themeLabel) themeLabel.textContent = getThemeName(current.theme);
+    };
+
+    const rollCounter = (nextIndex: number) => {
+      if (!counter || !counterCurrent || !counterNext) return;
+      const nextValue = pad(nextIndex + 1);
+      counter.setAttribute("aria-label", `第 ${nextIndex + 1} 条，共 ${items.length} 条`);
+      if (reducedMotion.matches) {
+        counterCurrent.textContent = nextValue;
+        return;
+      }
+      counterNext.textContent = nextValue;
+      counterNext.animate(
+        [{ transform: "translateY(100%)" }, { transform: "translateY(0)" }],
+        { duration: 250, easing: "cubic-bezier(.22,.8,.2,1)", fill: "both" },
+      );
+      const outgoing = counterCurrent.animate(
+        [{ transform: "translateY(0)" }, { transform: "translateY(-100%)" }],
+        { duration: 250, easing: "cubic-bezier(.22,.8,.2,1)", fill: "both" },
+      );
+      outgoing.finished.then(() => {
+        counterCurrent.textContent = nextValue;
+        counterCurrent.getAnimations().forEach((animation) => animation.cancel());
+        counterNext.getAnimations().forEach((animation) => animation.cancel());
+      }).catch(() => {});
+    };
+
+    const schedule = () => {
+      window.clearTimeout(timer);
+      timer = 0;
+      if (items.length < 2 || autoplayBlocked()) return;
+      timer = window.setTimeout(() => move(1), dwell);
+    };
+
+    const finishMove = () => {
+      activeLayer.className = "idea-stage__idea";
+      activeLayer.setAttribute("aria-hidden", "true");
+      activeLayer.tabIndex = -1;
+      idleLayer.classList.remove("is-entering", "is-from-left", "is-from-right");
+      idleLayer.classList.add("is-active");
+      idleLayer.removeAttribute("aria-hidden");
+      idleLayer.tabIndex = 0;
+      const outgoing = activeLayer;
+      activeLayer = idleLayer;
+      idleLayer = outgoing;
+      moving = false;
+      schedule();
+    };
+
+    const move = (direction: number) => {
+      if (moving || items.length < 2) return;
+      moving = true;
+      clearTimers();
+      const nextIndex = normalize(index + direction);
+      fillLayer(idleLayer, nextIndex);
+      idleLayer.classList.add(direction > 0 ? "is-from-right" : "is-from-left");
+      idleLayer.setAttribute("aria-hidden", "true");
+      idleLayer.tabIndex = -1;
+      rollCounter(nextIndex);
+
+      requestAnimationFrame(() => {
+        activeLayer.classList.add(direction > 0 ? "is-leaving-left" : "is-leaving-right");
+        idleLayer.classList.add("is-entering");
+      });
+
+      index = nextIndex;
+      updateSupportingContent();
+      transitionTimer = window.setTimeout(finishMove, reducedMotion.matches ? 120 : transitionDuration);
+    };
+
+    const updatePauseLabel = () => {
+      if (!toggle) return;
+      toggle.textContent = manuallyPaused ? "PLAY" : "PAUSE";
+      toggle.setAttribute("aria-pressed", String(manuallyPaused));
+    };
+
+    previousButton?.addEventListener("click", () => move(-1), { signal });
+    nextButton?.addEventListener("click", () => move(1), { signal });
+    toggle?.addEventListener("click", () => {
+      manuallyPaused = !manuallyPaused;
+      updatePauseLabel();
+      schedule();
+    }, { signal });
+
+    stage.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        move(1);
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        move(-1);
+      } else if (event.key === " " && event.target === stage) {
+        event.preventDefault();
+        manuallyPaused = !manuallyPaused;
+        updatePauseLabel();
+        schedule();
+      }
+    }, { signal });
+
+    stage.addEventListener("touchstart", (event) => {
+      const touch = event.touches[0];
+      touchActive = true;
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+      window.clearTimeout(timer);
+    }, { passive: true, signal });
+
+    stage.addEventListener("touchend", (event) => {
+      const touch = event.changedTouches[0];
+      const dx = touch.clientX - touchStartX;
+      const dy = touch.clientY - touchStartY;
+      touchActive = false;
+      if (Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy) * 1.3) move(dx < 0 ? 1 : -1);
+      else schedule();
+    }, { passive: true, signal });
+
+    const onVisibilityChange = () => document.hidden ? clearTimers() : schedule();
+    const onMotionChange = () => {
+      if (reducedMotion.matches) clearTimers();
+      else schedule();
+    };
+    const onSelectionChange = () => {
+      const selection = document.getSelection();
+      selectionActive = Boolean(selection && !selection.isCollapsed && selection.anchorNode && stage.contains(selection.anchorNode));
+      if (selectionActive) window.clearTimeout(timer);
+      else schedule();
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange, { signal });
+    document.addEventListener("selectionchange", onSelectionChange, { signal });
+    reducedMotion.addEventListener("change", onMotionChange);
+
+    stage.ideaStageCleanup = () => {
+      clearTimers();
+      abortController.abort();
+      reducedMotion.removeEventListener("change", onMotionChange);
+    };
+
+    updatePauseLabel();
+    schedule();
+  }
+
+  const initializeAllIdeaStages = () => {
+    document.querySelectorAll<StageElement>("[data-idea-stage]").forEach(initializeIdeaStage);
+  };
+
+  initializeAllIdeaStages();
+  document.addEventListener("astro:page-load", initializeAllIdeaStages);
+</script>

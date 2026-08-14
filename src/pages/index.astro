@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ArticleVisual from "../components/ArticleVisual.astro";
+import KineticIdeaStage from "../components/KineticIdeaStage.astro";
 import { siteConfig } from "../data/site";
 import {
   formatDate,
@@ -17,16 +18,15 @@ import { withBasePath } from "../lib/paths";
 
 const [posts, inspirations, moments] = await Promise.all([getAllPosts(), getAllInspirations(), getAllMoments()]);
 const latestPosts = getHomepageWriting(posts, 3);
+const truncateIdeaExcerpt = (value: string, limit = 180) => value.length > limit ? `${value.slice(0, limit).trimEnd()}…` : value;
 const ideaItems = inspirations.map((inspiration) => ({
   title: inspiration.data.title,
-  excerpt: stripMarkdownToText(inspiration.body) || inspiration.data.description.trim(),
+  excerpt: truncateIdeaExcerpt(inspiration.data.description.trim() || stripMarkdownToText(inspiration.body)),
   date: formatDate(inspiration.data.date),
   datetime: inspiration.data.date.toISOString(),
   href: withBasePath(getInspirationDetailHref(inspiration)),
+  theme: inspiration.data.theme ?? "思考",
 }));
-const wrapIdeaIndex = (index: number) => ((index % ideaItems.length) + ideaItems.length) % ideaItems.length;
-const initialIdeas = ideaItems.length > 0 ? [ideaItems[wrapIdeaIndex(-1)], ideaItems[0], ideaItems[wrapIdeaIndex(1)]] : [];
-const initialIdeaRoles = ["previous", "current", "next"];
 const recentMoments = moments.slice(0, 3).map((moment) => ({
   moment,
   location: getMomentLocation(moment),
@@ -48,29 +48,7 @@ const recentMoments = moments.slice(0, 3).map((moment) => ({
           <h2 id="home-ideas-title">灵感</h2>
           <a href={withBasePath("/daily/")}>所有灵感 <span aria-hidden="true">→</span></a>
         </div>
-        <div class="idea-flow" data-idea-flow tabindex="0" aria-label="灵感流，使用左右方向键切换">
-          <div class="idea-flow__viewport">
-            <div class="idea-flow__track" data-idea-track>
-              {initialIdeas.map((idea, index) => (
-                <article class="idea-flow__item" data-idea-slot data-role={initialIdeaRoles[index]} aria-hidden={initialIdeaRoles[index] !== "current" ? "true" : undefined}>
-                  <h3><a data-idea-title href={idea.href} tabindex={initialIdeaRoles[index] === "current" ? "0" : "-1"}>{idea.title}</a></h3>
-                  <p class="idea-flow__excerpt" data-idea-excerpt>{idea.excerpt}</p>
-                  <time data-idea-date datetime={idea.datetime}>{idea.date}</time>
-                </article>
-              ))}
-            </div>
-          </div>
-          <div class="idea-flow__footer">
-            <div class="idea-flow__controls" aria-label="切换灵感">
-              <button type="button" data-idea-previous aria-label="上一条灵感">←</button>
-              <span data-idea-count>1 / {ideaItems.length}</span>
-              <button type="button" data-idea-next aria-label="下一条灵感">→</button>
-            </div>
-            <button type="button" class="idea-flow__pause" data-idea-pause aria-pressed="false">暂停</button>
-          </div>
-          <div class="idea-flow__progress" aria-hidden="true"><span data-idea-progress></span></div>
-        </div>
-        <script type="application/json" data-idea-data set:html={JSON.stringify(ideaItems)}></script>
+        <KineticIdeaStage items={ideaItems} />
       </section>
     )}
 
@@ -111,94 +89,4 @@ const recentMoments = moments.slice(0, 3).map((moment) => ({
     </section>
   </div>
 
-  <script is:inline>
-    (() => {
-      const flow = document.querySelector("[data-idea-flow]");
-      const dataElement = document.querySelector("[data-idea-data]");
-      if (!flow || !dataElement) return;
-      let ideas = [];
-      try { ideas = JSON.parse(dataElement.textContent || "[]"); } catch {}
-      if (!Array.isArray(ideas) || ideas.length === 0) return;
-      const slots = [...flow.querySelectorAll("[data-idea-slot]")];
-      const count = flow.querySelector("[data-idea-count]");
-      const progress = flow.querySelector("[data-idea-progress]");
-      const pauseButton = flow.querySelector("[data-idea-pause]");
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-      const dwell = 9000;
-      const duration = 600;
-      const normalize = (value) => ((value % ideas.length) + ideas.length) % ideas.length;
-      let index = 0;
-      let timer = 0;
-      let moving = false;
-      let paused = reduced.matches;
-
-      const fill = (slot, itemIndex, role) => {
-        const item = ideas[normalize(itemIndex)];
-        slot.dataset.role = role;
-        slot.setAttribute("aria-hidden", role === "current" ? "false" : "true");
-        const link = slot.querySelector("[data-idea-title]");
-        link.textContent = item.title;
-        link.href = item.href;
-        link.tabIndex = role === "current" ? 0 : -1;
-        slot.querySelector("[data-idea-excerpt]").textContent = item.excerpt;
-        const date = slot.querySelector("[data-idea-date]");
-        date.textContent = item.date;
-        date.dateTime = item.datetime;
-      };
-      const render = () => {
-        fill(slots[0], index - 1, "previous");
-        fill(slots[1], index, "current");
-        fill(slots[2], index + 1, "next");
-        count.textContent = `${index + 1} / ${ideas.length}`;
-      };
-      const stop = () => {
-        window.clearTimeout(timer);
-        timer = 0;
-        progress.getAnimations().forEach((animation) => animation.cancel());
-      };
-      const schedule = () => {
-        stop();
-        if (paused || document.hidden || ideas.length < 2) return;
-        progress.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: dwell, easing: "linear" });
-        timer = window.setTimeout(() => move(1), dwell);
-      };
-      const move = async (direction) => {
-        if (moving || ideas.length < 2) return;
-        moving = true;
-        stop();
-        const current = slots[1];
-        const nextIndex = normalize(index + direction);
-        const animation = current.animate(
-          [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: `translateY(${direction > 0 ? "-1.25rem" : "1.25rem"})` }],
-          { duration: reduced.matches ? 0 : duration / 2, easing: "ease-in", fill: "forwards" },
-        );
-        await animation.finished.catch(() => {});
-        index = nextIndex;
-        render();
-        current.animate(
-          [{ opacity: 0, transform: `translateY(${direction > 0 ? "1.25rem" : "-1.25rem"})` }, { opacity: 1, transform: "translateY(0)" }],
-          { duration: reduced.matches ? 0 : duration / 2, easing: "ease-out" },
-        );
-        moving = false;
-        schedule();
-      };
-      render();
-      schedule();
-      flow.querySelector("[data-idea-next]")?.addEventListener("click", () => move(1));
-      flow.querySelector("[data-idea-previous]")?.addEventListener("click", () => move(-1));
-      pauseButton?.addEventListener("click", () => {
-        paused = !paused;
-        pauseButton.textContent = paused ? "继续" : "暂停";
-        pauseButton.setAttribute("aria-pressed", String(paused));
-        schedule();
-      });
-      flow.addEventListener("keydown", (event) => {
-        if (event.key === "ArrowRight") move(1);
-        if (event.key === "ArrowLeft") move(-1);
-      });
-      document.addEventListener("visibilitychange", schedule);
-      reduced.addEventListener("change", (event) => { paused = event.matches; schedule(); });
-      window.addEventListener("pagehide", stop, { once: true });
-    })();
-  </script>
 </BaseLayout>

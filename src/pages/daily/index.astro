@@ -1,42 +1,116 @@
 ---
-import { render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { formatDate, getAllInspirations, getInspirationAnchorId, getInspirationUpdatedDate } from "../../lib/blog";
+import {
+  getAllInspirations,
+  getInspirationAnchorId,
+  getInspirationDetailHref,
+  stripMarkdownToText,
+} from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
 
 const inspirations = await getAllInspirations();
-const renderedInspirations = await Promise.all(inspirations.map(async (inspiration) => {
-  const { Content } = await render(inspiration);
-  const updated = getInspirationUpdatedDate(inspiration);
-  return { inspiration, Content, updated, hasUpdated: updated.valueOf() !== inspiration.data.date.valueOf() };
+const truncate = (value: string, limit = 190) => value.length > limit ? `${value.slice(0, limit).trimEnd()}…` : value;
+const titleLength = (value: string) => [...value.replace(/\s/g, "")].length;
+const titleScale = (value: string) => {
+  const length = titleLength(value);
+  if (length <= 4) return "short";
+  if (length <= 10) return "medium";
+  return "long";
+};
+const ideaItems = inspirations.map((inspiration, index) => ({
+  id: getInspirationAnchorId(inspiration),
+  number: String(inspirations.length - index).padStart(3, "0"),
+  title: inspiration.data.title,
+  excerpt: truncate(inspiration.data.description.trim() || stripMarkdownToText(inspiration.body)),
+  theme: inspiration.data.theme ?? "思考",
+  href: withBasePath(getInspirationDetailHref(inspiration)),
+  pattern: index % 8,
+  rhythm: index % 3,
+  scale: titleScale(inspiration.data.title),
 }));
 ---
 
 <BaseLayout title="灵感" description="一些还没有长成文章的想法。" wideContent={true} bodyClass="body--daily" shellClass="page-shell--daily" panelClass="content-panel--daily">
-  <header class="editorial-page-header daily-notebook__header">
+  <header class="idea-canvas-header">
     <a class="post-backlink" href={withBasePath("/")}>← 返回首页</a>
-    <h1>灵感</h1>
-    <p>一些还没有长成文章的想法。</p>
-    <button type="button" class="daily-notebook__random" data-random-idea>随机一条 →</button>
+    <div class="idea-canvas-header__title">
+      <div>
+        <p>THINKING IN MOTION</p>
+        <h1>IDEAS</h1>
+      </div>
+      <p>一些还没有长成文章的想法。</p>
+    </div>
+    <div class="idea-canvas-header__controls">
+      <div class="idea-canvas-filters" aria-label="按主题筛选灵感">
+        <button type="button" data-idea-filter="all" aria-pressed="true">ALL</button>
+        <button type="button" data-idea-filter="思考" aria-pressed="false">思考</button>
+        <button type="button" data-idea-filter="生活" aria-pressed="false">生活</button>
+        <button type="button" data-idea-filter="科学" aria-pressed="false">科学</button>
+      </div>
+      <button type="button" class="idea-canvas-shuffle" data-idea-shuffle>SHUFFLE →</button>
+    </div>
+    <p class="idea-canvas-header__count">{inspirations.length} unfinished thoughts</p>
   </header>
-  <main class="daily-explained" aria-label="灵感">
-    {renderedInspirations.map(({ inspiration, Content, updated, hasUpdated }) => (
-      <article id={getInspirationAnchorId(inspiration)} class="daily-explained__item" data-daily-idea>
-        <div class="daily-explained__meta"><time datetime={inspiration.data.date.toISOString()}>{formatDate(inspiration.data.date)}</time>{hasUpdated && <time datetime={updated.toISOString()}>更新 {formatDate(updated)}</time>}</div>
-        <div class="daily-explained__content"><h2>{inspiration.data.title}</h2><div class="prose prose--inspiration"><Content /></div></div>
+
+  <main class="idea-canvas" data-idea-canvas aria-label="灵感画布">
+    {ideaItems.map((idea) => (
+      <article
+        id={idea.id}
+        class:list={[
+          "idea-canvas__node",
+          `idea-canvas__node--pattern-${idea.pattern}`,
+          `idea-canvas__node--rhythm-${idea.rhythm}`,
+          `idea-canvas__node--${idea.scale}`,
+        ]}
+        data-idea-node
+        data-theme={idea.theme}
+      >
+        <a href={idea.href}>
+          <span class="idea-canvas__number">{idea.number}</span>
+          <h2>{idea.title}</h2>
+          <p>{idea.excerpt}</p>
+          <span class="idea-canvas__theme"><i aria-hidden="true"></i>{idea.theme}</span>
+        </a>
       </article>
     ))}
   </main>
-  <script is:inline>
-    (() => {
-      const button = document.querySelector("[data-random-idea]");
-      const ideas = [...document.querySelectorAll("[data-daily-idea]")];
-      if (!button || ideas.length < 2) return;
-      button.addEventListener("click", () => {
-        const target = ideas[Math.floor(Math.random() * ideas.length)];
-        target.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
-        history.replaceState(null, "", `#${target.id}`);
+
+  <script>
+    function initializeIdeaCanvas() {
+      const canvas = document.querySelector<HTMLElement>("[data-idea-canvas]");
+      if (!canvas || canvas.dataset.initialized === "true") return;
+      canvas.dataset.initialized = "true";
+
+      const nodes = [...canvas.querySelectorAll<HTMLElement>("[data-idea-node]")];
+      const filters = [...document.querySelectorAll<HTMLButtonElement>("[data-idea-filter]")];
+      const shuffle = document.querySelector<HTMLButtonElement>("[data-idea-shuffle]");
+      let filterTimer = 0;
+
+      const applyFilter = (theme: string) => {
+        window.clearTimeout(filterTimer);
+        canvas.classList.add("is-updating");
+        filters.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.ideaFilter === theme)));
+        filterTimer = window.setTimeout(() => {
+          nodes.forEach((node) => {
+            node.hidden = theme !== "all" && node.dataset.theme !== theme;
+          });
+          requestAnimationFrame(() => canvas.classList.remove("is-updating"));
+        }, 170);
+      };
+
+      filters.forEach((button) => button.addEventListener("click", () => applyFilter(button.dataset.ideaFilter || "all")));
+      shuffle?.addEventListener("click", () => {
+        const visibleLinks = nodes
+          .filter((node) => !node.hidden)
+          .map((node) => node.querySelector<HTMLAnchorElement>("a"))
+          .filter((link): link is HTMLAnchorElement => Boolean(link));
+        if (!visibleLinks.length) return;
+        const randomIndex = Math.floor(Math.random() * visibleLinks.length);
+        window.location.assign(visibleLinks[randomIndex].href);
       });
-    })();
+    }
+
+    initializeIdeaCanvas();
+    document.addEventListener("astro:page-load", initializeIdeaCanvas);
   </script>
 </BaseLayout>
