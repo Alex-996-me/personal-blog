@@ -1,7 +1,7 @@
 ---
 title: "SFG / HARDSTYLE 个人训练手册"
 date: "2026-08-10"
-updated: "2026-08-16"
+updated: "2026-08-10"
 category: "训练"
 tags:
   - "壶铃"
@@ -38,11 +38,11 @@ cover: "/images/posts/sfg-hardstyle/practice-feat-lift.png"
 
 ### 1. 先分类：Practice、Feat、Lift
 
-**教程视频：** BV1u1M567E1E · BV17KMi6WEe7
+**教程视频：** [BV1u1M567E1E](https://www.bilibili.com/video/BV1u1M567E1E) · [BV17KMi6WEe7](https://www.bilibili.com/video/BV17KMi6WEe7)
 
 > 同一个动作因为“目的不同”，训练方法就应不同。日常练习用于积累；挑战用于验证；竞赛用于在具体日期把表现推到峰值。
 
-!图 1-1｜动作本身不决定训练逻辑，目的才决定。
+![图 1-1｜动作本身不决定训练逻辑，目的才决定。](/images/posts/sfg-hardstyle/practice-feat-lift.png)
 
 *图 1-1｜动作本身不决定训练逻辑，目的才决定。*
 
@@ -54,22 +54,22 @@ cover: "/images/posts/sfg-hardstyle/practice-feat-lift.png"
 
 ### 2. 刺激—恢复—适应：训练不是“越狠越有效”
 
-!图 1-2｜训练的闭环：刺激只有经过恢复，才变成适应。
+![图 1-2｜训练的闭环：刺激只有经过恢复，才变成适应。](/images/posts/sfg-hardstyle/stimulus-recovery-adaptation.png)
 
-**教程视频：** BV15tMg6VEud · BV1e5MV6SE7v
+**教程视频：** [BV15tMg6VEud](https://www.bilibili.com/video/BV15tMg6VEud) · [BV1e5MV6SE7v](https://www.bilibili.com/video/BV1e5MV6SE7v)
 
 *图 1-2｜训练的闭环：刺激只有经过恢复，才变成适应。*
 
 > SAID 原则：身体会针对你反复施加的压力产生特异性适应；但压力过大或持续过久，最终都会对身体产生损耗。
 
 “练完越累越有效”的直觉是错误的。真正要关注的是：这次刺激能否被恢复，并提升自己下一次训练的baseline。
-!图 1-3｜ Baseline 思维：用“平时轻松能做的重量”做 readiness 参照。
+![图 1-3｜ Baseline 思维：用“平时轻松能做的重量”做 readiness 参照。](/images/posts/sfg-hardstyle/baseline-readiness.png)
 
 *图 1-3｜ Baseline 思维：用“平时轻松能做的重量”做 readiness 参照。*
 
 ### 3. 训练不是测试：中等负荷、高质量、远离力竭
 
-**教程视频：** BV1KtM36AEPL · BV1qSGK6jEPw
+**教程视频：** [BV1KtM36AEPL](https://www.bilibili.com/video/BV1KtM36AEPL) · [BV1qSGK6jEPw](https://www.bilibili.com/video/BV1qSGK6jEPw)
 
 > StrongFirst 强调：中等负荷积累、负荷有变化、每组只做最大可能次数的一部分。
 
@@ -84,7 +84,7 @@ cover: "/images/posts/sfg-hardstyle/practice-feat-lift.png"
 
 ### 4. 组间休息：力量训练真的要“休息”
 
-**教程视频：** BV1Q7MV62EGa
+**教程视频：** [BV1Q7MV62EGa](https://www.bilibili.com/video/BV1Q7MV62EGa)
 
 > 同样的固定休息时间，会随着疲劳累积从“正常”变成“压力性”。
 
@@ -100,9 +100,9 @@ cover: "/images/posts/sfg-hardstyle/practice-feat-lift.png"
 
 ### 5. 全身张力：把身体从“零件堆”变成一个整体
 
-**教程视频：** BV1dTM361EF7
+**教程视频：** [BV1dTM361EF7](https://www.bilibili.com/video/BV1dTM361EF7)
 
-!图 2-1｜张力链示意：作者尤其强调握力、背阔、核心三个枢纽。
+![图 2-1｜张力链示意：作者尤其强调握力、背阔、核心三个枢纽。](/images/posts/sfg-hardstyle/whole-body-tension-chain.png)
 
 *图 2-1｜张力链示意：作者尤其强调握力、背阔、核心三个枢纽。*
 
@@ -119,9 +119,9 @@ cover: "/images/posts/sfg-hardstyle/practice-feat-lift.png"
 
 ### 6. 张力不是一直僵硬：Hardstyle 真正的本事是“开—关”
 
-**教程视频：** BV1KtM36AEPL · BV1dTM361EF7
+**教程视频：** [BV1KtM36AEPL](https://www.bilibili.com/video/BV1KtM36AEPL) · [BV1dTM361EF7](https://www.bilibili.com/video/BV1dTM361EF7)
 
-!图 2-2｜硬式训练的节奏：需要时极硬，不需要时尽快松。
+![图 2-2｜硬式训练的节奏：需要时极硬，不需要时尽快松。](/images/posts/sfg-hardstyle/hardstyle-tension-switch.png)
 
 *图 2-2｜硬式训练的节奏：需要时极硬，不需要时尽快松。*
 
@@ -131,9 +131,9 @@ Hardstyle 与拳击发力本质上是一脉相承的：用很短的时间制造�
 
 ### 7. 呼吸与腹内压：先建立压力圆柱，再输出力量
 
-**教程视频：** BV1DqMg6TELZ · BV1Sk3g6CEDY
+**教程视频：** [BV1DqMg6TELZ](https://www.bilibili.com/video/BV1DqMg6TELZ) · [BV1Sk3g6CEDY](https://www.bilibili.com/video/BV1Sk3g6CEDY)
 
-!图 2-3｜360°腹内压示意。
+![图 2-3｜360°腹内压示意。](/images/posts/sfg-hardstyle/iap-360-pressure-cylinder.png)
 
 *图 2-3｜360°腹内压示意。*
 
@@ -152,7 +152,7 @@ Hardstyle 与拳击发力本质上是一脉相承的：用很短的时间制造�
 
 ### 8. 快肌、慢肌与“用意图加速”
 
-**教程视频：** BV1HLMG6FEz5
+**教程视频：** [BV1HLMG6FEz5](https://www.bilibili.com/video/BV1HLMG6FEz5)
 
 > 不要简单认为“慢肌只能耐力、快肌才负责力量”：即使重杠铃客观速度很慢，主观上仍要想的是尽快加速。
 
@@ -164,9 +164,9 @@ Hardstyle 与拳击发力本质上是一脉相承的：用很短的时间制造�
 
 ### 9. 为什么是壶铃：它处在“自重”和“杠铃”之间
 
-**教程视频：** BV1yLgS6rEpj · BV1e63Z6nECb
+**教程视频：** [BV1yLgS6rEpj](https://www.bilibili.com/video/BV1yLgS6rEpj) · [BV1e63Z6nECb](https://www.bilibili.com/video/BV1e63Z6nECb)
 
-!图 3-1｜工具生态：不是壶铃 vs 杠铃，而是任务分工。
+![图 3-1｜工具生态：不是壶铃 vs 杠铃，而是任务分工。](/images/posts/sfg-hardstyle/tool-ecosystem.png)
 
 *图 3-1｜工具生态：不是壶铃 vs 杠铃，而是任务分工。*
 
@@ -174,13 +174,13 @@ Hardstyle 与拳击发力本质上是一脉相承的：用很短的时间制造�
 
 ### 10. Swing：Hardstyle 的“母动作”
 
-**教程视频：** BV1negY6sEVT · BV1e63Z6nECb
+**教程视频：** [BV1negY6sEVT](https://www.bilibili.com/video/BV1negY6sEVT) · [BV1e63Z6nECb](https://www.bilibili.com/video/BV1e63Z6nECb)
 
-!图 3-2｜Swing 首先是髋铰链，不是蹲起。
+![图 3-2｜Swing 首先是髋铰链，不是蹲起。](/images/posts/sfg-hardstyle/hinge-vs-squat.png)
 
 *图 3-2｜Swing 首先是髋铰链，不是蹲起。*
 
-!图 3-3｜Swing 的循环：装载—锁定—爆发—漂浮—站立平板。
+![图 3-3｜Swing 的循环：装载—锁定—爆发—漂浮—站立平板。](/images/posts/sfg-hardstyle/swing-cycle.png)
 
 *图 3-3｜Swing 的循环：装载—锁定—爆发—漂浮—站立平板。*
 
@@ -205,9 +205,9 @@ Hardstyle 与拳击发力本质上是一脉相承的：用很短的时间制造�
 
 ### 11. TGU：慢速的“全身整合实验室”
 
-**教程视频：** BV1Sk3g6CEDY
+**教程视频：** [BV1Sk3g6CEDY](https://www.bilibili.com/video/BV1Sk3g6CEDY)
 
-!图 3-4｜TGU 节点图：每个节点都应该能停住、呼吸、重新组织。
+![图 3-4｜TGU 节点图：每个节点都应该能停住、呼吸、重新组织。](/images/posts/sfg-hardstyle/tgu-nodes.png)
 
 *图 3-4｜TGU 节点图：每个节点都应该能停住、呼吸、重新组织。*
 
@@ -225,7 +225,7 @@ Hardstyle 与拳击发力本质上是一脉相承的：用很短的时间制造�
 
 ### 12. Goblet Squat（高脚杯深蹲）：先把“蹲”教会，再谈负重
 
-**教程视频：** BV12r376tEC1
+**教程视频：** [BV12r376tEC1](https://www.bilibili.com/video/BV12r376tEC1)
 
 > 前置壶铃既是负重，也是 counterbalance（配重）。它允许很多人更自然地保持脚掌、膝盖与躯干位置，并通过前置重量逼出核心张力。
 
@@ -238,7 +238,7 @@ Hardstyle 与拳击发力本质上是一脉相承的：用很短的时间制造�
 | 5. 髋肩同步 | 不起“早安式”蹲 |
 | 6. 顶端完全伸展 | 髋膝站直，但不后仰 |
 
-!图 3-5｜用 Hinge 与 Squat 的差别提醒自己：Goblet squat 是“向下坐”，Swing 是“向后折”。
+![图 3-5｜用 Hinge 与 Squat 的差别提醒自己：Goblet squat 是“向下坐”，Swing 是“向后折”。](/images/posts/sfg-hardstyle/hinge-vs-squat.png)
 
 *图 3-5｜用 Hinge 与 Squat 的差别提醒自己：Goblet squat 是“向下坐”，Swing 是“向后折”。*
 
@@ -248,9 +248,9 @@ Hardstyle 与拳击发力本质上是一脉相承的：用很短的时间制造�
 
 ### 13. Clean + Military Press：先有底座，再有推举
 
-**教程视频：** BV1V23j6KE9G
+**教程视频：** [BV1V23j6KE9G](https://www.bilibili.com/video/BV1V23j6KE9G)
 
-!图 3-6｜Hardstyle press 的张力链。
+![图 3-6｜Hardstyle press 的张力链。](/images/posts/sfg-hardstyle/military-press-tension-chain.png)
 
 *图 3-6｜Hardstyle press 的张力链。*
 
@@ -262,7 +262,7 @@ Clean 与 Swing 共享髋铰链，但在铃经过身体前方时更早引导，�
 
 #### Bottoms-up倒握壶铃：放大你的弱点
 
-!图 3-7｜Bottoms-up 进阶：先持稳，再走，再 Clean，最后 Press。
+![图 3-7｜Bottoms-up 进阶：先持稳，再走，再 Clean，最后 Press。](/images/posts/sfg-hardstyle/bottoms-up-progression.png)
 
 *图 3-7｜Bottoms-up 进阶：先持稳，再走，再 Clean，最后 Press。*
 
@@ -270,9 +270,9 @@ Clean 与 Swing 共享髋铰链，但在铃经过身体前方时更早引导，�
 
 ### 14. 从双手 Swing → 单臂 Swing → Snatch
 
-**教程视频：** BV1zggX6kEsL
+**教程视频：** [BV1zggX6kEsL](https://www.bilibili.com/video/BV1zggX6kEsL)
 
-!图 3-8｜不对称进阶路线。
+![图 3-8｜不对称进阶路线。](/images/posts/sfg-hardstyle/asymmetry-progression.png)
 
 *图 3-8｜不对称进阶路线。*
 
@@ -288,7 +288,7 @@ Clean 与 Swing 共享髋铰链，但在铃经过身体前方时更早引导，�
 
 ### 15. S&S 的核心不是两项动作，而是两条原则
 
-**教程视频：** BV1qSGK6jEPw
+**教程视频：** [BV1qSGK6jEPw](https://www.bilibili.com/video/BV1qSGK6jEPw)
 
 > ① 尽可能高频练习；② 永远不要把常规训练做成力竭。Swing + TGU 只是承载这套哲学的最小动作组合。
 
@@ -302,9 +302,9 @@ S&S 通过少动作、频繁暴露、低疲劳来强化动作自动化和基础�
 
 ### 16. 从入门到 Simple：Loop-step，而不是整块跳重
 
-**教程视频：** BV1r8G36vEFJ
+**教程视频：** [BV1r8G36vEFJ](https://www.bilibili.com/video/BV1r8G36vEFJ)
 
-!图 4-1｜Loop-step：先把重铃插进你已经拥有的训练里。
+![图 4-1｜Loop-step：先把重铃插进你已经拥有的训练里。](/images/posts/sfg-hardstyle/ss-loop-step.png)
 
 *图 4-1｜Loop-step：先把重铃插进你已经拥有的训练里。*
 
@@ -320,9 +320,9 @@ S&S 通过少动作、频繁暴露、低疲劳来强化动作自动化和基础�
 
 ### 17. Simple → Sinister：越往上，越需要“波浪”
 
-**教程视频：** BV1pm3S6CEzC · BV1no3Q6LEVC
+**教程视频：** [BV1pm3S6CEzC](https://www.bilibili.com/video/BV1pm3S6CEzC) · [BV1no3Q6LEVC](https://www.bilibili.com/video/BV1no3Q6LEVC)
 
-!图 4-2｜Tsunami Wave 的精神：总量不线性，目标重铃占比慢慢增加。
+![图 4-2｜Tsunami Wave 的精神：总量不线性，目标重铃占比慢慢增加。](/images/posts/sfg-hardstyle/tsunami-wave.png)
 
 *图 4-2｜Tsunami Wave 的精神：总量不线性，目标重铃占比慢慢增加。*
 
@@ -334,7 +334,7 @@ S&S 通过少动作、频繁暴露、低疲劳来强化动作自动化和基础�
 
 ### 18. 四种进阶维度：重量只是其中之一
 
-**教程视频：** BV1LpGc68EPK · BV1zggX6kEsL · BV1jE346NEYr
+**教程视频：** [BV1LpGc68EPK](https://www.bilibili.com/video/BV1LpGc68EPK) · [BV1zggX6kEsL](https://www.bilibili.com/video/BV1zggX6kEsL) · [BV1jE346NEYr](https://www.bilibili.com/video/BV1jE346NEYr)
 
 
 | 维度 | 代表训练 | 你在增加什么 |
@@ -348,9 +348,9 @@ S&S 通过少动作、频繁暴露、低疲劳来强化动作自动化和基础�
 
 ### 19. Double KB：总负荷与“不对称系统”
 
-**教程视频：** BV1jE346NEYr
+**教程视频：** [BV1jE346NEYr](https://www.bilibili.com/video/BV1jE346NEYr)
 
-!图 5-1｜单壶、双壶同重、双壶异重带来的任务不同。
+![图 5-1｜单壶、双壶同重、双壶异重带来的任务不同。](/images/posts/sfg-hardstyle/double-kettlebell-system-load.png)
 
 *图 5-1｜单壶、双壶同重、双壶异重带来的任务不同。*
 
@@ -360,9 +360,9 @@ S&S 通过少动作、频繁暴露、低疲劳来强化动作自动化和基础�
 
 ### 20. Complex：力量耐力，但不是“技术崩坏挑战”
 
-**教程视频：** BV1Ey3C6HErt
+**教程视频：** [BV1Ey3C6HErt](https://www.bilibili.com/video/BV1Ey3C6HErt)
 
-!图 5-2｜Complex 的定义：不同动作连续衔接，铃在整段中不落地。
+![图 5-2｜Complex 的定义：不同动作连续衔接，铃在整段中不落地。](/images/posts/sfg-hardstyle/complex-chain.png)
 
 *图 5-2｜Complex 的定义：不同动作连续衔接，铃在整段中不落地。*
 
@@ -379,9 +379,9 @@ S&S 通过少动作、频繁暴露、低疲劳来强化动作自动化和基础�
 
 ### 21. 壶铃 vs 杠铃：互补，不站队
 
-**教程视频：** BV1e63Z6nECb · BV1yLgS6rEpj
+**教程视频：** [BV1e63Z6nECb](https://www.bilibili.com/video/BV1e63Z6nECb) · [BV1yLgS6rEpj](https://www.bilibili.com/video/BV1yLgS6rEpj)
 
-!图 6-1｜工具生态：拳击是“项目”，壶铃/杠铃是“工具”。
+![图 6-1｜工具生态：拳击是“项目”，壶铃/杠铃是“工具”。](/images/posts/sfg-hardstyle/tool-ecosystem.png)
 
 *图 6-1｜工具生态：拳击是“项目”，壶铃/杠铃是“工具”。*
 
@@ -391,9 +391,9 @@ S&S 通过少动作、频繁暴露、低疲劳来强化动作自动化和基础�
 
 ### 22. Deadlift：先“上弦”，再离地
 
-**教程视频：** BV1aQMX6oEcX
+**教程视频：** [BV1aQMX6oEcX](https://www.bilibili.com/video/BV1aQMX6oEcX)
 
-!图 6-2｜硬拉起杠前的预张力流程。
+![图 6-2｜硬拉起杠前的预张力流程。](/images/posts/sfg-hardstyle/deadlift-pre-tension.png)
 
 *图 6-2｜硬拉起杠前的预张力流程。*
 
@@ -405,7 +405,7 @@ S&S 通过少动作、频繁暴露、低疲劳来强化动作自动化和基础�
 
 ### 23. Front Squat：Goblet Squat 的自然升级
 
-**教程视频：** BV1WbMR6nERM
+**教程视频：** [BV1WbMR6nERM](https://www.bilibili.com/video/BV1WbMR6nERM)
 
 > 前蹲当作 Goblet squat 到更高杠铃负荷的桥梁：前置负荷迫使躯干更直立、前侧核心更积极，并且失误时可以更直接地弃杠。
 
@@ -415,13 +415,13 @@ S&S 通过少动作、频繁暴露、低疲劳来强化动作自动化和基础�
 
 ### 24. Bench Press：把肩带和躯干先变成“底座”
 
-**教程视频：** BV1WbMR6nERM
+**教程视频：** [BV1WbMR6nERM](https://www.bilibili.com/video/BV1WbMR6nERM)
 
 胸椎伸展、肩胛下沉后缩、上臂与躯干保持约 45°、触胸点进入所谓 golden zone。其大框架仍然是张力链：脚—躯干—肩胛—手臂形成可传力整体。
 
 ### 25. Barbell Military Press：把壶铃推举的张力迁移过去
 
-**教程视频：** BV1LSMo6yEax · BV1V23j6KE9G
+**教程视频：** [BV1LSMo6yEax](https://www.bilibili.com/video/BV1LSMo6yEax) · [BV1V23j6KE9G](https://www.bilibili.com/video/BV1V23j6KE9G)
 
 优势在于更完整的髋部/臀部锁定、背阔肌底座、肘驱动，以及杠过脸后“身体进入杠下”的顶端位置。杠铃的独特难点是双手被一根直杆固定，路径自由度更低。
 
@@ -429,9 +429,9 @@ S&S 通过少动作、频繁暴露、低疲劳来强化动作自动化和基础�
 
 ### 26. 5×5 与 Wave：长期进步本来就不是直线
 
-**教程视频：** BV1Gpuc6SEmg
+**教程视频：** [BV1Gpuc6SEmg](https://www.bilibili.com/video/BV1Gpuc6SEmg)
 
-!图 7-1｜示意：达到一轮高点后主动降载，再从更高底盘重新爬。
+![图 7-1｜示意：达到一轮高点后主动降载，再从更高底盘重新爬。](/images/posts/sfg-hardstyle/wave-periodization.png)
 
 *图 7-1｜示意：达到一轮高点后主动降载，再从更高底盘重新爬。*
 
@@ -454,23 +454,23 @@ S&S 通过少动作、频繁暴露、低疲劳来强化动作自动化和基础�
 
 #### Interleaving 交错练习
 
-**教程视频：** BV1Gpuc6SEmg
+**教程视频：** [BV1Gpuc6SEmg](https://www.bilibili.com/video/BV1Gpuc6SEmg)
 
 比如：Military Press 组间穿插 Swing、Bench 组间做单腿硬拉、Squat 组间做 Pistol。本质目的是让神经系统不断重新提取动作技能。
 
 ### 28. 训练系统：谁是主项，谁就拿最多恢复预算
 
-!图 7-2｜拳击优先的示意周。
+![图 7-2｜拳击优先的示意周。](/images/posts/sfg-hardstyle/boxing-priority-week.png)
 
 *图 7-2｜拳击优先的示意周。*
 
 ### 29. Step、Wave、Block：三个时间尺度，不是三套互斥计划
 
-**教程视频：** BV17iuV6bErW
+**教程视频：** [BV17iuV6bErW](https://www.bilibili.com/video/BV17iuV6bErW)
 
 > 阶梯式进阶（Step Cycle）、波浪负荷（Wave Loading）和板块周期（Block Periodization）回答的是不同时间尺度的问题，可以嵌套，而不是三选一。
 
-!图 7-3｜三个时间尺度可以嵌套：Block 里面安排 Wave，Wave 内部仍可以按 Step 升级。
+![图 7-3｜三个时间尺度可以嵌套：Block 里面安排 Wave，Wave 内部仍可以按 Step 升级。](/images/posts/sfg-hardstyle/periodization-nested-scales.jpg)
 
 *图 7-3｜Step 管升级门槛，Wave 管训练起伏，Block 管长期阶段重点。*
 
@@ -514,11 +514,11 @@ Peak / 峰值
 
 ### 28. Plan Strong
 
-**教程视频：** BV1G2uV6QEnm
+**教程视频：** [BV1G2uV6QEnm](https://www.bilibili.com/video/BV1G2uV6QEnm)
 
 > Plan Strong 不是一套新的固定课表，而是一套**优化已有计划的方法论**：目标具体化、一次只改一个变量、完整记录、跑完 4–6 周，再根据结果做下一轮微调。
 
-!图 7-4｜Plan Strong 七步法。
+![图 7-4｜Plan Strong 七步法。](/images/posts/sfg-hardstyle/plan-strong-seven-step-loop.jpg)
 
 *图 7-4｜“Evolution, not Revolution”：先让一套体系跑起来，再一点点进化。*
 
@@ -572,11 +572,11 @@ Peak / 峰值
 
 ### 31. 自重不是“无器械替代”：它练的是主动制造张力
 
-**教程视频：** BV1dTM16CEmU
+**教程视频：** [BV1dTM16CEmU](https://www.bilibili.com/video/BV1dTM16CEmU)
 
 > 绝对力量回答“你能移动多重的外物”；相对力量更关注“你能否用自己的力量精确控制自己的身体”。Naked Warrior 用三个标志性目标组织这件事：**手枪深蹲、单手俯卧撑、单臂引体向上。**
 
-!图 8-1｜Naked Warrior 三角：拉、推、单侧下肢。
+![图 8-1｜Naked Warrior 三角：拉、推、单侧下肢。](/images/posts/sfg-hardstyle/naked-warrior-triangle.jpg)
 
 *图 8-1｜三个动作不是为了凑齐“动作模式”，而是从三个方向检验相对力量和全身控制。*
 
@@ -594,11 +594,11 @@ Peak / 峰值
 
 ### 32. Tactical Pull-up：先把“悬挂”练成全身动作，再谈负重
 
-**教程视频：** BV1WGuE6JEHT
+**教程视频：** [BV1WGuE6JEHT](https://www.bilibili.com/video/BV1WGuE6JEHT)
 
 > 战术引体向上不是“背和手臂把身体拉起来”，而是从手掌—背阔—核心—臀腿一路连到脚的全身张力动作。
 
-!图 8-2｜从 0 到负重引体的渐进路线。
+![图 8-2｜从 0 到负重引体的渐进路线。](/images/posts/sfg-hardstyle/tactical-pullup-progression.jpg)
 
 *图 8-2｜先把姿势、悬挂和离心控制建立起来，再逐步提高专项拉力。*
 
@@ -637,11 +637,11 @@ Hollow body
 
 ### 33. OAPU：单手俯卧撑真正难的是抗旋转，而不是胸够不够强
 
-**教程视频：** BV13run6MEHE
+**教程视频：** [BV13run6MEHE](https://www.bilibili.com/video/BV13run6MEHE)
 
 > 单手俯卧撑是相对推力动作，但它首先是一场全身张力测试：手指抓地、肩带稳定、核心把左右身体连起来、臀腿锁住、脚趾把力量送进地面。
 
-!图 8-3｜OAPU 四条进阶路径在同一个周期里同步训练。
+![图 8-3｜OAPU 四条进阶路径在同一个周期里同步训练。](/images/posts/sfg-hardstyle/oapu-four-paths.jpg)
 
 *图 8-3｜不是先把第一个变式练“毕业”再碰第二个，而是用不同强度同时训练完整动作、专项力量和稳定。*
 
@@ -661,11 +661,11 @@ Hollow body
 
 ### 34. Pistol Squat：手枪深蹲首先是重心控制，其次才是单腿硬顶
 
-**教程视频：** BV1vWuN6eEDC
+**教程视频：** [BV1vWuN6eEDC](https://www.bilibili.com/video/BV1vWuN6eEDC)
 
 > 手枪深蹲不是“普通深蹲少用一条腿”，而是髋踝活动度、反平衡、单腿力量、核心控制和足底重心同时成立之后的综合结果。
 
-!图 8-4｜手枪深蹲七步进阶。
+![图 8-4｜手枪深蹲七步进阶。](/images/posts/sfg-hardstyle/pistol-seven-steps.jpg)
 
 *图 8-4｜先把底位“拥有”，再把下降和站起连接起来。*
 
