@@ -157,6 +157,13 @@ sectionSummaries: []
 - 4–6 组；
 - 注意力全部放在下肢。
 
+- <figure class="post-figure post-figure--medium">
+  <video controls playsinline preload="metadata" aria-label="训练实录">
+    <source src="/videos/punching_8_16/punching_8_16.mp4" type="video/mp4" />
+  </video>
+  <figcaption>训练记录——2026/8/16</figcaption>
+</figure>
+
 训练的目的不是折磨自己，而是强化：
 
 - 落地瞬间建立力量；
