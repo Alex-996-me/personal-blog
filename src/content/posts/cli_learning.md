@@ -42,7 +42,7 @@ for example:
 
 rg -l -i "chatgpt" (在整个项目里面搜索chatgpt，只需要具体的文件名不需要返回行号)
 
-![](public/images/posts/cli_learning/2.5.png)
+![](/images/posts/cli_learning/2.5.png)
 
 - fd -t(type) 以及 fd -e(extention): 前者用于返回筛选文件类型、后者用于筛选拓展名。可以使用 | fzf来进一步筛选需要的文件。
 
