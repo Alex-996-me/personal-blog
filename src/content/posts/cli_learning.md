@@ -8,22 +8,13 @@ tags:
   - vibecoding
   - 个人成长
 description: 更新CLI知识，按需学习每天积累一点点
-cover: /images/covers/cli gui.png
-
-sectionSummaries:
-  - heading: cli入门（更新时间：2026/8/26）
-    summary: 一些cli的基础操作。
-
-  - heading: 怎么读书？
-    summary:
-
-  - heading: 怎么内化？
-    summary:
+cover: /images/covers/cli_gui.png
 
 ---
 
+## cli入门
 
-## cli入门（更新时间：2026/8/26）
+（更新时间：2026/8/26）
 
 ### 先创建一个仓库，看看状态
 
