@@ -18,50 +18,67 @@ cover: /images/covers/cli_gui.png
 
 ### 先创建一个仓库，看看状态
 
-- `git init` ：把一个工作的文件夹变成代码仓库
+- 把一个工作的文件夹变成代码仓库
 
-- `git status --short --branch`: 用精简格式告诉我，<mark>发生了什么变化，以及分支情况如何</mark>。
+ ```bash
+git init
+``` 
+
+- 用精简格式告诉我，<mark>发生了什么变化，以及分支情况如何</mark>。
+```bash
+git status --short --branch
+```
+: 
 
 注意这里的XY状态。 X=【暂存区状态】 Y=【工作区状态】
-
 <img src="/images/posts/cli_learning/1.png" 
      alt="终端截图" 
      style="border: 2px solid #333; border-radius: 8px; box-shadow: 0 4px 12px rgba(109, 42, 42, 0.3); margin: 12px 0;" />
 
 ### 搜内容，搜文件，搜拓展名
 
-- `rg -n -i`：模糊搜索结果（内容），返回行号，忽略大小写。
-
-for example:
-
-`rg -n -i "openai|qwen|api"` (在整个项目里面搜索openai,qwen和api，不区分大小写。告诉我具体行号。)
-
+- 模糊搜索结果（内容），返回行号，忽略大小写。
+```bash
+rg -n -i
+```
+for example:在整个项目里面搜索openai,qwen和api，不区分大小写。告诉我具体行号。
+```bash
+rg -n -i "openai|qwen|api"
+ ```
 <img src="/images/posts/cli_learning/2.png" 
      alt="终端截图" 
      style="border: 2px solid #333; border-radius: 8px; box-shadow: 0 4px 12px rgba(109, 42, 42, 0.3); margin: 12px 0;" />
 
-- `rg -l -i`: 搜索模糊结果，只需要文件名，忽略大小写
+-  搜索模糊结果，只需要文件名，忽略大小写
+```bash
+rg -l -i
+```
 
-for example:
-
-`rg -l -i "chatgpt"` (在整个项目里面搜索chatgpt，只需要具体的文件名不需要返回行号)
-
+for example:在整个项目里面搜索chatgpt，只需要具体的文件名不需要返回行号.
+```bash
+rg -l -i "chatgpt"
+```
 <img src="/images/posts/cli_learning/2.5.png" 
      alt="终端截图" 
      style="border: 2px solid #333; border-radius: 8px; box-shadow: 0 4px 12px rgba(109, 42, 42, 0.3); margin: 12px 0;" />
 
-- `fd -t(type) 以及 fd -e(extention)`: 前者用于返回<mark>文件类型</mark>、后者用于筛选<mark>拓展名</mark>。可以使用 `| fzf`来进一步筛选需要的文件。
+- -t用于返回<mark>文件类型</mark>、-e用于筛选<mark>拓展名</mark>。可以使用 `| fzf`来进一步筛选需要的文件。
+```bash
+fd -t fd -e
+```
 
-for example:
-
-`fd -t f -e md` (找到一个文件，它的拓展名是.md)
-
+for example:找到一个文件，它的拓展名是.md
+```bash
+fd -t f -e md
+``` 
 <img src="/images/posts/cli_learning/3.png" 
      alt="终端截图" 
      style="border: 2px solid #333; border-radius: 8px; box-shadow: 0 4px 12px rgba(109, 42, 42, 0.3); margin: 12px 0;" />
 
-- `rg -n -i "chatgpt" -g "*.md" `: 用于寻找所有含有关键词“chatgpt”的文件里面是.md的文件
-
+-  用于寻找所有含有关键词“chatgpt”的文件里面是.md的文件
+```bash
+rg -n -i "chatgpt" -g "*.md" 
+```
 <img src="/images/posts/cli_learning/4.png" 
      alt="终端截图" 
      style="border: 2px solid #333; border-radius: 8px; box-shadow: 0 4px 12px rgba(109, 42, 42, 0.3); margin: 12px 0;" />
@@ -72,7 +89,6 @@ Get-Content "behavior\B7_AIC_robustness\B7D1b_AI_specific_calibration_random_int
 Select-Object -Skip 2 -First 3
 ```
 你先拿到这个运行说明.md的内容，跳过最前面的2行，然后给我3行正文内容。
-
 <img src="/images/posts/cli_learning/5.png" 
      alt="终端截图" 
      style="border: 2px solid #333; border-radius: 8px; box-shadow: 0 4px 12px rgba(109, 42, 42, 0.3); margin: 12px 0;" />
