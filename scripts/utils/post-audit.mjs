@@ -11,15 +11,16 @@ import {
 } from "./post-files.mjs";
 import { generateSummaryData } from "./summaries.mjs";
 
-export const VALID_CATEGORIES = ["日志", "读书", "健康", "训练", "脑科学", "工具"];
+export const VALID_CATEGORIES = ["日志", "自学", "体悟", "健康", "训练", "工具", "世界"];
 
 const CATEGORY_KEYWORDS = [
   { category: "健康", keywords: ["健康", "饮食", "营养", "体检", "睡眠", "恢复", "补剂", "代谢"] },
-  { category: "训练", keywords: ["训练", "壶铃", "力量", "跑步", "有氧", "肌肉", "健身"] },
-  { category: "脑科学", keywords: ["脑科学", "神经", "认知", "记忆", "注意力", "多巴胺", "大脑"] },
-  { category: "读书", keywords: ["读书", "阅读", "书单", "书摘", "书评", "播客", "课程笔记"] },
-  { category: "工具", keywords: ["工具", "workflow", "效率", "软件", "AI", "提示词", "自动化"] },
-  { category: "日志", keywords: ["日志", "日记", "大学", "生活", "迷茫", "阶段", "记录"] },
+  { category: "训练", keywords: ["训练", "壶铃", "力量", "跑步", "有氧", "肌肈9", "健身"] },
+  { category: "自学", keywords: ["自学", "英语", "雅思", "课程", "language", "english", "ielts"] },
+  { category: "体悟", keywords: ["读书", "阅读", "播客", "脑科学", "认知", "思考"] },
+  { category: "工具", keywords: ["workflow", "AI", "CLI", "工具", "自动化"] },
+  { category: "世界", keywords: ["世界", "社会", "行业", "经济", "现实"] },
+  { category: "日志", keywords: ["日志", "日记", "大学", "生活", "阶段"] },
 ];
 
 function extractDescription(markdown) {

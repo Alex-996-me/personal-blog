@@ -52,6 +52,11 @@ export const categories: CategoryDefinition[] = [
     hidden: true,
   },
   {
+    name: "自学",
+    slug: "self-learning",
+    description: "语言、技术、课程与长期自主学习项目的实践记录。",
+  },
+  {
     name: "体悟",
     slug: "insights",
     description: "读书、学习、注意力与认识世界之后的再思考。",
