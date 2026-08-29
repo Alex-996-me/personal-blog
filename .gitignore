@@ -26,6 +26,7 @@ pnpm-debug.log*
 
 # temporary document-import extraction workspace
 .tmp-docx-import/
+/tmp/
 
 # Daily English temporary files
 .english-inbox/

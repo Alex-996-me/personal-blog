@@ -10,6 +10,7 @@ import {
   getRelatedIdeasForPost,
   getRelatedWritingForPost,
   getSeriesNavigation,
+  getSeriesPosts,
   getSeriesSlug,
   getInspirationDetailHref,
   getPostSlug,
@@ -39,10 +40,14 @@ const isTrainingPost = post.data.category === "训练";
 const [allPosts, allInspirations] = await Promise.all([getAllPosts(), getAllInspirations()]);
 const relatedPosts = getRelatedWritingForPost(post, allPosts);
 const relatedIdeas = getRelatedIdeasForPost(post, allInspirations);
+const seriesPosts = post.data.series
+  ? getSeriesPosts(post.data.series, allPosts).filter((entry) => entry.id !== post.id)
+  : [];
 const continueReading = [
-  ...relatedIdeas.map((idea) => ({ href: withBasePath(getInspirationDetailHref(idea)), title: idea.data.title, meta: "灵感" })),
+  ...seriesPosts.map((entry) => ({ href: withBasePath(getPostHref(entry)), title: entry.data.title, meta: `系列 · 第 ${entry.data.seriesOrder ?? "—"} 篇` })),
   ...relatedPosts.map((entry) => ({ href: withBasePath(getPostHref(entry)), title: entry.data.title, meta: entry.data.category })),
-].slice(0, 3);
+  ...relatedIdeas.map((idea) => ({ href: withBasePath(getInspirationDetailHref(idea)), title: idea.data.title, meta: "灵感" })),
+].filter((entry, index, entries) => entries.findIndex((candidate) => candidate.href === entry.href) === index).slice(0, 3);
 const seriesNavigation = getSeriesNavigation(post, allPosts);
 const seriesHref = post.data.series ? withBasePath(`/series/${getSeriesSlug(post.data.series)}/`) : "";
 const sources = getSources(post.data.source);

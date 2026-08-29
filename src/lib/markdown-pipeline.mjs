@@ -56,6 +56,22 @@ function getMdastText(node) {
   return node.children.map((child) => getMdastText(child)).join("");
 }
 
+function getMdastLinks(node, links = []) {
+  if (!node || typeof node !== "object") {
+    return links;
+  }
+
+  if (node.type === "link" && typeof node.url === "string") {
+    links.push(node.url);
+  }
+
+  if (Array.isArray(node.children)) {
+    node.children.forEach((child) => getMdastLinks(child, links));
+  }
+
+  return links;
+}
+
 function getHastText(node) {
   if (!node || typeof node !== "object") {
     return "";
@@ -159,6 +175,40 @@ function createVideoEmbedNode(url) {
   };
 }
 
+function createTutorialVideoGridNode(node) {
+  if (!node || node.type !== "paragraph" || !/^教程视频\s*[：:]/u.test(getMdastText(node).trim())) {
+    return null;
+  }
+
+  const urls = getMdastLinks(node);
+  const videos = urls.map((url) => ({ url, embedUrl: getBilibiliEmbedUrl(url) }));
+  if (videos.length === 0 || videos.some((video) => !video.embedUrl)) {
+    return null;
+  }
+
+  const cards = videos.map(({ url, embedUrl }, index) => {
+    const bvid = url.match(/\/(BV[0-9A-Za-z]+)/i)?.[1] ?? `视频 ${index + 1}`;
+    return [
+      '<figure class="embedded-video-card">',
+      '<div class="video-embed">',
+      `<iframe src="${escapeHtml(embedUrl)}" title="Bilibili 教程视频 ${escapeHtml(bvid)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
+      "</div>",
+      `<figcaption><a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">Bilibili · ${escapeHtml(bvid)}</a></figcaption>`,
+      "</figure>",
+    ].join("");
+  }).join("");
+
+  return {
+    type: "html",
+    value: [
+      '<section class="tutorial-videos" aria-label="教程视频">',
+      '<p class="tutorial-videos__label">教程视频</p>',
+      `<div class="video-grid${videos.length === 1 ? " video-grid--single" : ""}">${cards}</div>`,
+      "</section>",
+    ].join(""),
+  };
+}
+
 function getStandaloneLinkHref(node) {
   if (!node || node.type !== "paragraph" || !Array.isArray(node.children)) {
     return "";
@@ -203,6 +253,12 @@ export function remarkEnhanceBlogMarkdown() {
     }
 
     for (const node of tree.children ?? []) {
+      const tutorialVideoGrid = createTutorialVideoGridNode(node);
+      if (tutorialVideoGrid) {
+        nextChildren.push(tutorialVideoGrid);
+        continue;
+      }
+
       const standaloneHref = getStandaloneLinkHref(node);
       if (standaloneHref) {
         const embedNode = createVideoEmbedNode(standaloneHref);
