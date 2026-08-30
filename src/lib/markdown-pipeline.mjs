@@ -299,6 +299,91 @@ function createElement(tagName, properties = {}, children = []) {
   };
 }
 
+const movementCategoryVariants = {
+  "热身": "warmup",
+  "初级": "beginner",
+  "进阶": "intermediate",
+  "高级": "advanced",
+};
+
+function getMovementCardMetadata(node) {
+  if (node?.type !== "comment") {
+    return null;
+  }
+
+  const match = String(node.value ?? "")
+    .trim()
+    .match(/^MOVEMENT_CARD_START\s+slug="([^"]+)"\s+category="([^"]+)"$/);
+
+  return match ? { slug: match[1], category: match[2] } : null;
+}
+
+function isMovementCardEnd(node) {
+  return node?.type === "comment" && String(node.value ?? "").trim() === "MOVEMENT_CARD_END";
+}
+
+function containsElement(node, tagName) {
+  if (!node || typeof node !== "object") {
+    return false;
+  }
+
+  if (node.type === "element" && node.tagName === tagName) {
+    return true;
+  }
+
+  return Array.isArray(node.children) && node.children.some((child) => containsElement(child, tagName));
+}
+
+function wrapMovementCards(node) {
+  if (!Array.isArray(node?.children)) {
+    return;
+  }
+
+  let index = 0;
+  while (index < node.children.length) {
+    const metadata = getMovementCardMetadata(node.children[index]);
+    if (!metadata) {
+      index += 1;
+      continue;
+    }
+
+    const endIndex = node.children.findIndex((child, childIndex) => (
+      childIndex > index && isMovementCardEnd(child)
+    ));
+    if (endIndex === -1) {
+      index += 1;
+      continue;
+    }
+
+    const cardChildren = node.children.slice(index + 1, endIndex);
+    const mediaIndex = cardChildren.findIndex((child) => containsElement(child, "img"));
+    if (mediaIndex === -1) {
+      index = endIndex + 1;
+      continue;
+    }
+
+    const [media] = cardChildren.splice(mediaIndex, 1);
+    const variant = movementCategoryVariants[metadata.category] ?? "default";
+    const card = createElement(
+      "section",
+      {
+        className: ["movement-card", `movement-card--${variant}`],
+        dataMovementSlug: metadata.slug,
+        dataCategory: metadata.category,
+      },
+      [
+        createElement("div", { className: ["movement-card__media"] }, [media]),
+        createElement("div", { className: ["movement-card__body"] }, cardChildren),
+      ],
+    );
+
+    node.children.splice(index, endIndex - index + 1, card);
+    index += 1;
+  }
+
+  node.children.forEach((child) => wrapMovementCards(child));
+}
+
 function getTableMetrics(tableNode) {
   const rows = [];
 
@@ -380,8 +465,13 @@ export function rehypeEnhanceBlogContent() {
   return (tree, file) => {
     const frontmatter = file?.data?.astro?.frontmatter ?? {};
     const hideToc = frontmatter.hideToc === true;
+    const isKettlebellDictionary = frontmatter.cover === "/images/posts/kettlebell-dictionary/dictionary-roadmap.webp";
     const makeSlug = createSlugger();
     const tocItems = [];
+
+    if (isKettlebellDictionary) {
+      wrapMovementCards(tree);
+    }
 
     const visit = (node, parent = null, index = -1) => {
       if (!node || typeof node !== "object") {
@@ -419,6 +509,21 @@ export function rehypeEnhanceBlogContent() {
             ...node.properties,
             target: "_blank",
             rel: "noopener noreferrer",
+          };
+        }
+      }
+
+      if (isKettlebellDictionary && node.type === "element" && node.tagName === "img") {
+        const src = typeof node.properties?.src === "string" ? node.properties.src : "";
+        if (src.includes("/images/posts/kettlebell-dictionary/")) {
+          const isRoadmap = src.endsWith("/dictionary-roadmap.webp");
+          node.properties = {
+            ...node.properties,
+            width: 1200,
+            height: 850,
+            loading: isRoadmap ? "eager" : "lazy",
+            decoding: "async",
+            ...(isRoadmap ? { fetchPriority: "high" } : {}),
           };
         }
       }

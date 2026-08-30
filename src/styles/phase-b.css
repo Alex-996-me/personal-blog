@@ -363,6 +363,49 @@ a { transition: color var(--motion-fast) ease; }
 .post-cover-hero { width: 100%; margin: 0 0 clamp(3rem, 7vw, 5.5rem); overflow: hidden; border-radius: var(--radius-small); background: var(--surface); }
 .post-cover-hero img { display: block; width: 100%; max-height: 76vh; margin-inline: auto; object-fit: contain; }
 .body--post article > .prose { margin-inline: auto; }
+
+.body--kettlebell-dictionary .prose { max-width: none; }
+.body--kettlebell-dictionary .prose > :not(.movement-card) { max-width: var(--width-reading); margin-inline: auto; }
+.body--kettlebell-dictionary .prose > a[id^="kb-"] { display: block; scroll-margin-top: 96px; }
+.body--kettlebell-dictionary .prose a[href^="#kb-"] {
+  display: inline-block;
+  margin: .2rem .08rem;
+  padding: .18rem .5rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--line));
+  border-radius: 999px;
+  text-decoration: none;
+  line-height: 1.45;
+}
+.body--kettlebell-dictionary .prose a[href^="#kb-"]:hover,
+.body--kettlebell-dictionary .prose a[href^="#kb-"]:focus-visible { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.body--kettlebell-dictionary .prose a[href="#快速索引"],
+.body--kettlebell-dictionary .prose a[href="#%E5%BF%AB%E9%80%9F%E7%B4%A2%E5%BC%95"] { display: inline-block; margin-top: .4rem; font: .76rem/1.4 var(--font-mono); letter-spacing: .04em; }
+.movement-card {
+  display: grid;
+  grid-template-columns: minmax(17rem, .9fr) minmax(0, 1.25fr);
+  gap: clamp(1.4rem, 3.5vw, 3rem);
+  align-items: start;
+  margin: 1.25rem 0 4.5rem;
+  padding: clamp(1rem, 2.2vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--movement-accent, var(--accent));
+  border-radius: var(--radius-medium);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+}
+.movement-card--warmup { --movement-accent: #6fa8a1; }
+.movement-card--beginner { --movement-accent: #d2a35c; }
+.movement-card--intermediate { --movement-accent: #c47c5b; }
+.movement-card--advanced { --movement-accent: #a66a78; }
+.movement-card__media { min-width: 0; overflow: hidden; border-radius: var(--radius-small); background: #f2efe8; }
+.movement-card__media > p { margin: 0; }
+.movement-card__media img { width: 100%; height: auto; margin: 0; object-fit: contain; }
+.movement-card__body { min-width: 0; }
+.movement-card__body > :first-child { margin-top: 0; }
+.movement-card__body > :last-child { margin-bottom: 0; }
+.movement-card__body p,
+.movement-card__body ul,
+.movement-card__body ol { margin-block: .9rem; }
+.movement-card__body li + li { margin-top: .35rem; }
 .post-tags { margin-top: 3rem; color: var(--muted); font-size: .78rem; }
 .content-sources, .series-navigation, .related-content { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--line); }
 .content-sources h2 { font-family: var(--font-serif); font-weight: 400; }
@@ -388,6 +431,9 @@ a { transition: color var(--motion-fast) ease; }
   .site-nav a { font-size: .82rem; }
   .site-header__controls { gap: .75rem; }
   .page-shell { padding-top: 2.25rem; }
+  .body--kettlebell-dictionary .prose > :not(.movement-card) { max-width: 100%; }
+  .movement-card { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; margin-bottom: 3.5rem; padding: .85rem; }
+  .movement-card__media { width: 100%; }
   .home-story > section { padding-block: 4.5rem; }
   .home-story > section:first-child { padding-top: 4rem; }
   .home-identity { min-height: 62vh; }

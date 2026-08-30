@@ -37,6 +37,7 @@ const updated = getUpdatedDate(post);
 const hasUpdated = updated.valueOf() !== post.data.date.valueOf();
 const categoryHref = withBasePath(getCategoryHref(post.data.category));
 const isTrainingPost = post.data.category === "训练";
+const isKettlebellDictionary = getPostSlug(post) === "kettlebell-action-dictionary";
 const [allPosts, allInspirations] = await Promise.all([getAllPosts(), getAllInspirations()]);
 const relatedPosts = getRelatedWritingForPost(post, allPosts);
 const relatedIdeas = getRelatedIdeasForPost(post, allInspirations);
@@ -59,7 +60,7 @@ const coverTransitionName = cover ? getPostCoverTransitionName(post) : undefined
   title={post.data.title}
   description={post.data.description}
   ogImage={post.data.cover}
-  bodyClass={["body--post", isTrainingPost && "body--post-training"].filter(Boolean).join(" ")}
+  bodyClass={["body--post", isTrainingPost && "body--post-training", isKettlebellDictionary && "body--kettlebell-dictionary"].filter(Boolean).join(" ")}
   shellClass={isTrainingPost ? "page-shell--post-training" : ""}
   panelClass={isTrainingPost ? "content-panel--post-training" : ""}
   searchType="ARTICLE"
