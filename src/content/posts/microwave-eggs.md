@@ -10,7 +10,7 @@ tags:
   - 烹饪实验
   - 饮食
 description: 从失败到定型，记录我连续几天用微波炉做鸡蛋的尝试、调整和最后得到的可复用做法。
-cover: /images/posts/microwave-eggs/image-01.jpg
+cover: /images/posts/microwave-eggs/image-01.webp
 youtube: ''
 fullSummary:
   - 这篇文章记录了一次很具体的厨房实验：怎么把“微波炉做鸡蛋”从一团乱糟糟的蛋液，慢慢调到一个可重复的早餐方案。
@@ -59,7 +59,7 @@ notionImport:
 6. 反复操作3-4次，直到鸡蛋基本定型
 
 <figure class="post-figure">
-<img src="/images/posts/microwave-eggs/image-01.jpg" alt="b251812d821458a24b3b8c3dc1f3b6ed.jpg" />
+<img src="/images/posts/microwave-eggs/image-01.webp" alt="b251812d821458a24b3b8c3dc1f3b6ed.jpg" />
 <figcaption>第一天的结果：边缘已经定型，中间还偏生，熟度很不均匀。</figcaption>
 </figure>
 

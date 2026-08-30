@@ -9,7 +9,7 @@ location:
   longitude: 121.4737
 images: []
 items:
-  - image: "/images/moments/sushi-yundan/image-01.png"
+  - image: "/images/moments/sushi-yundan/image-01.webp"
     title: ""
     description: ""
 hideToc: true

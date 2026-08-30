@@ -9,7 +9,7 @@ location:
   longitude: 121.4737
 images: []
 items:
-  - image: "/images/moments/zhihe/b566b82713eb3a7e9416043744eaabab.png"
+  - image: "/images/moments/zhihe/b566b82713eb3a7e9416043744eaabab.webp"
     title: "高性价比海鲜饭"
     description: "味道很棒，大爱三文鱼腩"
 

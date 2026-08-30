@@ -144,7 +144,7 @@ vector 是这么说的：
 - **超长休息**：在两组之间至少休息 10 分钟，甚至可以分散在全天的各个时段完成（例如每经过门框就做几个引体向上）。这能让神经系统在保持新鲜感的状态下，不断强化神经突触的连接（赫布机制），从而让你能更轻松地举起同样的重量。
 
 <figure class="post-figure post-figure--wide">
-<img src="/images/posts/training-philosophy/image-01.png" alt="高频练习模型示意图" />
+<img src="/images/posts/training-philosophy/image-01.webp" alt="高频练习模型示意图" />
 <figcaption>高频练习模型示意图</figcaption>
 </figure>
 

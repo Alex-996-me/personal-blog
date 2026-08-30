@@ -65,7 +65,7 @@ notionImport:
 鸡心是微量元素的宝库——它含有丰富的牛磺酸、辅酶 Q10（与线粒体功能维持有关，同时也有抗氧化作用）、维生素 B 族（尤其是维生素 B12）、矿物质（钾、镁、锌、血红素铁）以及左旋肉碱（脂肪运输的载体）。
 
 <figure class="post-figure post-figure--narrow">
-<img src="/images/posts/why-eat-organs/image-02.png" alt="鸡心和其他部位一起吃，更容易控制总量。" />
+<img src="/images/posts/why-eat-organs/image-02.webp" alt="鸡心和其他部位一起吃，更容易控制总量。" />
 <figcaption>鸡心和其他部位一起吃，更容易控制总量。</figcaption>
 </figure>
 

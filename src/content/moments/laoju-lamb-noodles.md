@@ -12,7 +12,7 @@ items:
   - image: "/images/moments/laoju-lamb-noodles/image-01.png"
     title: ""
     description: ""
-  - image: "/images/moments/laoju-lamb-noodles/image-02.png"
+  - image: "/images/moments/laoju-lamb-noodles/image-02.webp"
     title: ""
     description: ""
 hideToc: true

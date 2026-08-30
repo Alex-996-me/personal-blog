@@ -5,7 +5,7 @@ updated: '2026-07-14'
 category: 体悟
 tags: [心智模型, 决策, 学习, 认知]
 description: 从多元心智模型、理性分类与试错出发，讨论知识如何在真实情境中转化为判断和行动。
-cover: /images/posts/mental-models-and-judgment/image-01.png
+cover: /images/posts/mental-models-and-judgment/image-01.webp
 youtube: ''
 notionImport:
   source: notion
@@ -19,7 +19,7 @@ notionImport:
 **查理将只会自己领域知识的人比喻成“铁锤人”：手里握有铁锤，因此看什么都像是钉子。**
 
 <figure class="post-figure">
-<img src="/images/posts/mental-models-and-judgment/image-01.png" alt="" />
+<img src="/images/posts/mental-models-and-judgment/image-01.webp" alt="" />
 </figure>
 
 你当然不想做一个铁锤人。但是，这种跨领域学习，真的能让你做出更聪明的决策吗？学得多，就能避免在关键决策时候的本能和冲动吗？
@@ -58,7 +58,7 @@ notionImport:
 说一句题外话：我想，张雪峰也许一直讲的都是工具理性层面的内容。比如选什么专业好找工作，毕业之后应该继续读硕士还是考公考编，普通家庭的孩子应该如何提高人生下限……这在当今这个急功近利的时代固然没有错，甚至对很多人来说是非常必要的提醒。但如果一个人只剩下这种工具理性，他也只能永远困在一个地方坐井观天。
 
 <figure class="post-figure">
-<img src="/images/posts/mental-models-and-judgment/image-02.png" alt="" />
+<img src="/images/posts/mental-models-and-judgment/image-02.webp" alt="" />
 </figure>
 
 许多成功的商人没有读过商学院的 MBA，但他们依然凭借多年行走社会的经验和对人性的洞察，一步一步积累财富，最终实现商业上的成功。
@@ -191,7 +191,7 @@ $$
 专业知识不是不重要，但它们只是零散的原材料，如果没有一个完整的情景和具体的目标，就永远无法组成一个完整的建筑。真正能把这些材料组织起来的，是你在真实情境里形成的判断力。
 
 <figure class="post-figure">
-<img src="/images/posts/mental-models-and-judgment/image-03.png" alt="" />
+<img src="/images/posts/mental-models-and-judgment/image-03.webp" alt="" />
 </figure>
 
 ## 最后：回答开头的那个问题

@@ -12,10 +12,10 @@ items:
   - image: "/images/moments/benbenlao-hotpot/image-01.png"
     title: ""
     description: ""
-  - image: "/images/moments/benbenlao-hotpot/image-02.png"
+  - image: "/images/moments/benbenlao-hotpot/image-02.webp"
     title: ""
     description: ""
-  - image: "/images/moments/benbenlao-hotpot/image-03.png"
+  - image: "/images/moments/benbenlao-hotpot/image-03.webp"
     title: ""
     description: "无需多言，最夯的牛肉火锅，一个人不到100就能吃4盘肉。"
 hideToc: true

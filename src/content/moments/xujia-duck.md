@@ -9,10 +9,10 @@ location:
   longitude: 118.7969
 images: []
 items:
-  - image: "/images/moments/xujia-duck/image-01.png"
+  - image: "/images/moments/xujia-duck/image-01.webp"
     title: ""
     description: ""
-  - image: "/images/moments/xujia-duck/image-02.png"
+  - image: "/images/moments/xujia-duck/image-02.webp"
     title: "正宗南京烤鸭"
     description: "空口吃鸭皮会爆油，鸭肉本身并不是很好吃，味道远不如牛羊肉，食之无味。"
 hideToc: true

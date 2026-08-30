@@ -85,7 +85,7 @@ PRD 模型，中文常译作模式识别启动模型。
 
 PRD 的决策框架大概如下，红色部分是重复的模式匹配循环：
 
-![PRD 决策框架图](/images/posts/tacit-knowledge/prd-diagram.png)
+![PRD 决策框架图](/images/posts/tacit-knowledge/prd-diagram.webp)
 
 ## 怎么把专家的隐性知识复制到你的脑子里？
 

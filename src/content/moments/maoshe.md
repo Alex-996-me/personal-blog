@@ -9,7 +9,7 @@ location:
   longitude: 121.4737
 images: []
 items:
-  - image: "/images/moments/山猫舍/e1d66a98b9d80b28c480e2bdb76a5e6f.png"
+  - image: "/images/moments/山猫舍/e1d66a98b9d80b28c480e2bdb76a5e6f.webp"
     title: ""
     description: ""
   - image: "/images/moments/山猫舍/fc1b50431830bb049246f71b4e6d2f79.jpg"

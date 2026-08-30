@@ -10,7 +10,7 @@ tags:
   - 算法
   - 数字生活
 description: 在短视频、热搜和流媒体不断争夺注意力的时代，重新区分什么值得投入，以及怎样把控制权拿回自己手里。
-cover: /images/posts/attention-control/attention-eyes-cover.png
+cover: /images/posts/attention-control/attention-eyes-cover.webp
 youtube: ''
 fullSummary:
   - 这篇文章讨论的核心不是效率技巧，而是注意力到底应该投给什么。

@@ -9,10 +9,10 @@ location:
   longitude: 113.6254
 
 items:
-  - image: "/images/moments/jiugedong/cfe1a4f96e0564a63903aabf66a1427b.png"
+  - image: "/images/moments/jiugedong/cfe1a4f96e0564a63903aabf66a1427b.webp"
     title: ""
     description: "三文鱼腩非常肥美，日料店的怎么说也比超市的要好吃"
-  - image: "/images/moments/jiugedong/d8e091ecf17644f67eb2b2483100beb9.png"
+  - image: "/images/moments/jiugedong/d8e091ecf17644f67eb2b2483100beb9.webp"
     title: ""
     description: "两种寿司，中规中矩"
 hideToc: true

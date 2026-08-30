@@ -10,7 +10,7 @@ tags:
   - 主动学习
   - AI
 description: "多数阅读并不等于真正学习。理解阅读的本质不是记忆，而是主动加工、总结、内化，并为自己设计学习路径。"
-cover: /images/covers/blind-reading-cover.png
+cover: /images/covers/blind-reading-cover.webp
 youtube: ""
 ---
 

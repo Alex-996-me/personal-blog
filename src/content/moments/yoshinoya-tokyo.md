@@ -12,7 +12,7 @@ items:
   - image: "/images/moments/yoshinoya-tokyo/image-01.jpeg"
     title: ""
     description: ""
-  - image: "/images/moments/yoshinoya-tokyo/image-02.png"
+  - image: "/images/moments/yoshinoya-tokyo/image-02.webp"
     title: ""
     description: ""
 hideToc: true

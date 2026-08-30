@@ -5,7 +5,7 @@ updated: "2026-07-25"
 category: "世界"
 tags: ["两性经济学", "择业", "内卷", "认知"]
 description: "从婚恋、行业门槛与认知复利出发的短记。"
-cover: "/images/posts/world-economics/world-cover.png"
+cover: "/images/posts/world-economics/world-cover.webp"
 youtube: ""
 ---
 

@@ -9,16 +9,16 @@ location:
   longitude: 113.6254
 images: []
 items:
-  - image: "/images/moments/yixin-restaurant/image-01.png"
+  - image: "/images/moments/yixin-restaurant/image-01.webp"
     title: ""
     description: ""
-  - image: "/images/moments/yixin-restaurant/image-02.png"
+  - image: "/images/moments/yixin-restaurant/image-02.webp"
     title: ""
     description: ""
   - image: "/images/moments/yixin-restaurant/image-03.jpeg"
     title: ""
     description: ""
-  - image: "/images/moments/yixin-restaurant/image-04.png"
+  - image: "/images/moments/yixin-restaurant/image-04.webp"
     title: ""
     description: ""
   - image: "/images/moments/yixin-restaurant/image-05.jpeg"

@@ -12,7 +12,7 @@ items:
   - image: "/images/moments/yixing/image-01.jpeg"
     title: "海鲜大卷"
     description: "整体没有给我太多惊喜，份量上和口味上都和お箸差别不大。"
-  - image: "/images/moments/yixing/image-02.png"
+  - image: "/images/moments/yixing/image-02.webp"
     title: ""
     description: ""
   - image: "/images/moments/yixing/image-03.jpeg"

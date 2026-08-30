@@ -8,7 +8,7 @@ location:
   latitude: 31.2304
   longitude: 121.4737
 images:
-  - "/images/moments/duizhao/5c6cfec401f0ed9a415ad58322f67410.png"
+  - "/images/moments/duizhao/5c6cfec401f0ed9a415ad58322f67410.webp"
 hideToc: true
 description: "古北最难约到的海鲜饭"
 published: true

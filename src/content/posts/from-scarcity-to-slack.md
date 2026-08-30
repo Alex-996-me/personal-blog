@@ -10,7 +10,7 @@ tags:
   - 认知带宽
   - 时间管理
 description: "从《稀缺》谈注意力如何被缺口俘获、认知带宽如何被征税，以及为什么一个人必须主动给生活留下余闲。"
-cover: /images/covers/scarcity-cover.png
+cover: /images/covers/scarcity-cover.webp
 youtube: ""
 ---
 
