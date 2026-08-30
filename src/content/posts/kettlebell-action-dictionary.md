@@ -22,8 +22,6 @@ cover: "/images/posts/kettlebell-dictionary/dictionary-roadmap.webp"
 - **进阶**：在基础动作上增加速度、单侧、双壶或节奏；
 - **高级**：叠加不稳定、双壶过头或复杂组合。
 
-> **复杂 ≠ 高级。** TGU 动作步骤很多，但它本质上是基础整合技能，所以放在初级。高级动作也不等于“更值得练”；很多高级变式只是工具。
-
 ![图｜动作字典分级逻辑。](/images/posts/kettlebell-dictionary/dictionary-roadmap.webp)
 
 ## 快速索引
@@ -45,13 +43,13 @@ cover: "/images/posts/kettlebell-dictionary/dictionary-roadmap.webp"
 3. **最容易错**：最值得现场纠正的地方；
 4. **什么时候用**：它在训练里应该扮演什么角色。
 
-不要一边训练一边背十几个 Cue。**每次只挑 1–2 个最影响动作质量的问题修。**
+少就是多，指哪打哪，没苦硬吃，干就好了！
 
 ![图｜弹道动作最小进阶链。](/images/posts/kettlebell-dictionary/ballistic-progression-map.webp)
 
 ## 热身
 
-目的不是练累，而是让关节、握力和基本动作模式上线。每个动作只做够用的量。
+热开身体，防止受伤，让你的大号上线。
 
 <a id="kb-warmup-rotation"></a>
 ### 肩部 / 手臂旋转
@@ -241,8 +239,6 @@ cover: "/images/posts/kettlebell-dictionary/dictionary-roadmap.webp"
 [↑ 回到快速索引](#快速索引)
 
 ## 初级
-
-这里的“初级”指应该尽早掌握的基础技能，不代表动作看起来简单。TGU 就属于这一类。
 
 <a id="kb-one-arm-swing"></a>
 ### 单臂 Swing
@@ -1063,13 +1059,6 @@ cover: "/images/posts/kettlebell-dictionary/dictionary-roadmap.webp"
 
 ## 分类依据与资料来源
 
-这套等级**不是照搬原书章节名称**，而是按四件事重新归类：
-
-1. 前置动作是否已经稳定；
-2. 是否增加高速弹道要求；
-3. 是否增加单侧 / 双壶 / 过头稳定；
-4. 是否把多个困难因素同时叠加。
-
 StrongFirst 的公开资料中，壶铃硬拉被用来先建立 hinge，再进入 Swing；Swing、Get-Up、Goblet Squat 被反复作为基础技能。Snatch 的进阶则建立在 One-arm Swing、High Pull 等动作之上。因此这里把 **KB Deadlift → Swing → Clean / High Pull → Snatch** 看成更实用的技能链，而不是按“看起来炫不炫”决定等级。
 
 ### 主要外部参考
@@ -1085,4 +1074,4 @@ StrongFirst 的公开资料中，壶铃硬拉被用来先建立 hinge，再进�
 - StrongFirst — *A Program to Train for the Half-Bodyweight Kettlebell Press*<br>
   https://www.strongfirst.com/training-the-one-half-bodyweight-kettlebell-press/
 
-> 图片来自本次提供的原始扫描图。本字典只做裁切、统一尺寸和轻度清晰度处理，没有改变动作姿势，也没有移除原图中的水印 / 标记。
+
