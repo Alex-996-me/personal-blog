@@ -11,6 +11,9 @@ tags:
 description: "从胰岛素、氨基酸与酮体的分工出发，重新理解低碳饮食中的肌肉维持，也记录这次英语学习中真正值得留下的表达与思考。"
 youtube: "https://youtu.be/-CBH-R7DJ0o"
 series: "English Learning"
+seriesOrder: 2
+relatedPosts:
+  - "2026-08-28-discipline-freedom"
 ---
 
 > **One idea worth keeping**
@@ -84,5 +87,5 @@ It has saved me a surprising amount of money, and it reminds me that a small cha
 ## Speaking
 
 <audio controls preload="metadata">
-  <source src="/audio/english/2026-08-30/speaking.m4a" type="audio/mp4">
+  <source src="/audio/english/2026-08-30/final.m4a" type="audio/mp4">
 </audio>
