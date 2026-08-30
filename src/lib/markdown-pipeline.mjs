@@ -123,12 +123,12 @@ function getBilibiliEmbedUrl(value) {
     const url = new URL(value.trim());
     const bvidMatch = url.pathname.match(/\/video\/(BV[0-9A-Za-z]+)/i);
     if (bvidMatch) {
-      return `https://player.bilibili.com/player.html?bvid=${bvidMatch[1]}&page=1`;
+      return `https://player.bilibili.com/player.html?bvid=${bvidMatch[1]}&page=1&autoplay=0`;
     }
 
     const aidMatch = url.pathname.match(/\/video\/av(\d+)/i);
     if (aidMatch) {
-      return `https://player.bilibili.com/player.html?aid=${aidMatch[1]}&page=1`;
+      return `https://player.bilibili.com/player.html?aid=${aidMatch[1]}&page=1&autoplay=0`;
     }
   } catch {
     return "";
@@ -169,7 +169,7 @@ function createVideoEmbedNode(url) {
     type: "html",
     value: [
       '<div class="video-embed video-embed--inline">',
-      `<iframe src="${escapeHtml(embedUrl)}" title="${label}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
+      `<iframe src="${escapeHtml(embedUrl)}" title="${label}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
       "</div>",
     ].join(""),
   };
@@ -191,7 +191,7 @@ function createTutorialVideoGridNode(node) {
     return [
       '<figure class="embedded-video-card">',
       '<div class="video-embed">',
-      `<iframe src="${escapeHtml(embedUrl)}" title="Bilibili 教程视频 ${escapeHtml(bvid)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
+      `<iframe src="${escapeHtml(embedUrl)}" title="Bilibili 教程视频 ${escapeHtml(bvid)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
       "</div>",
       `<figcaption><a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">Bilibili · ${escapeHtml(bvid)}</a></figcaption>`,
       "</figure>",
