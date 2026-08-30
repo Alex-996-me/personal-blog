@@ -13,7 +13,11 @@
     "import:notion": "node scripts/import-notion.mjs",
     "publish:notion": "node scripts/import-notion.mjs",
     "summarize": "node scripts/generate-section-summaries.mjs",
-    "check:post": "node scripts/check-post.mjs"
+    "check:post": "node scripts/check-post.mjs",
+    "validate:content": "node scripts/validate-content.mjs",
+    "validate": "npm run validate:content && npm run build",
+    "smoke": "node scripts/smoke-site.mjs",
+    "optimize:media": "node scripts/optimize-media.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.12",
@@ -23,6 +27,7 @@
     "gray-matter": "^4.0.3",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
+    "sharp": "^0.34.5",
     "turndown": "^7.2.1",
     "turndown-plugin-gfm": "^1.0.2"
   },

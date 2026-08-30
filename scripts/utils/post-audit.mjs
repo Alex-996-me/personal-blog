@@ -15,7 +15,7 @@ export const VALID_CATEGORIES = ["日志", "自学", "体悟", "健康", "训练
 
 const CATEGORY_KEYWORDS = [
   { category: "健康", keywords: ["健康", "饮食", "营养", "体检", "睡眠", "恢复", "补剂", "代谢"] },
-  { category: "训练", keywords: ["训练", "壶铃", "力量", "跑步", "有氧", "肌肈9", "健身"] },
+  { category: "训练", keywords: ["训练", "壶铃", "力量", "跑步", "有氧", "肌肉", "健身"] },
   { category: "自学", keywords: ["自学", "英语", "雅思", "课程", "language", "english", "ielts"] },
   { category: "体悟", keywords: ["读书", "阅读", "播客", "脑科学", "认知", "思考"] },
   { category: "工具", keywords: ["workflow", "AI", "CLI", "工具", "自动化"] },
@@ -146,7 +146,7 @@ export async function auditAndFixPost(slug, options = {}) {
   const nextFile = serializePostFile(nextFrontmatter, content);
   const changed = current.raw !== nextFile;
 
-  if (changed) {
+  if (changed && options.writeChanges !== false) {
     await writePostFile(slug, nextFrontmatter, content);
   }
 

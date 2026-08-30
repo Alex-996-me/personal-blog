@@ -30,3 +30,11 @@ pnpm-debug.log*
 
 # Daily English temporary files
 .english-inbox/
+
+# Raw content dropped here is an inbox, not published source
+.content-inbox/
+
+# Keep only the documented Notion example under version control
+imports/notion/*
+!imports/notion/example/
+!imports/notion/example/**

@@ -64,21 +64,45 @@ export async function tryReadPostBySlug(slug) {
 }
 
 export function buildPostFrontmatter(frontmatter) {
-  return {
+  const normalized = {
     title: frontmatter.title ?? "",
     date: frontmatter.date ?? toIsoDate(),
     updated: frontmatter.updated ?? frontmatter.date ?? toIsoDate(),
     category: frontmatter.category ?? "日志",
     tags: Array.isArray(frontmatter.tags) ? frontmatter.tags : [],
     description: frontmatter.description ?? "",
-    cover: frontmatter.cover ?? "",
-    youtube: frontmatter.youtube ?? "",
     fullSummary: Array.isArray(frontmatter.fullSummary) ? frontmatter.fullSummary : [],
     sectionSummaries: Array.isArray(frontmatter.sectionSummaries)
       ? frontmatter.sectionSummaries
       : [],
-    ...(frontmatter.notionImport ? { notionImport: frontmatter.notionImport } : {}),
   };
+
+  // Keep every field accepted by src/content.config.ts. Several publishing
+  // commands rewrite frontmatter, so omitting a field here silently destroys
+  // series, relationship, featured, and source metadata.
+  const optionalFields = [
+    "cover",
+    "youtube",
+    "notionImport",
+    "featured",
+    "featuredRank",
+    "featuredHome",
+    "series",
+    "seriesOrder",
+    "relatedPosts",
+    "relatedNotes",
+    "relatedMoments",
+    "source",
+    "updatedAt",
+  ];
+
+  for (const key of optionalFields) {
+    if (frontmatter[key] !== undefined && frontmatter[key] !== null && frontmatter[key] !== "") {
+      normalized[key] = frontmatter[key];
+    }
+  }
+
+  return normalized;
 }
 
 export function serializePostFile(frontmatter, content) {

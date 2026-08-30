@@ -364,8 +364,8 @@ function normalizeCategory(value, fallbackTitle, markdown, previousCategory = ""
   const keywordMap = [
     ["健康", ["健康", "饮食", "营养", "体检", "睡眠", "恢复", "补剂"]],
     ["训练", ["训练", "力量", "壶铃", "健身", "跑步", "肌肉", "有氧"]],
-    ["脑科学", ["脑科学", "神经", "认知", "大脑", "记忆", "注意力"]],
-    ["读书", ["读书", "阅读", "书摘", "书评", "播客", "课程笔记"]],
+    ["体悟", ["脑科学", "神经", "认知", "大脑", "记忆", "注意力"]],
+    ["体悟", ["读书", "阅读", "书摘", "书评", "播客", "课程笔记"]],
     ["工具", ["工具", "工作流", "AI", "软件", "效率", "自动化"]],
   ];
 
@@ -436,6 +436,7 @@ async function main() {
   const summaryData = await generateSummaryData(content, { title });
 
   const frontmatter = {
+    ...previousData,
     title,
     date: serializeDateValue(previousData.date, today),
     updated: today,

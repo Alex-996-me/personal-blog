@@ -12,6 +12,7 @@ New-Item -ItemType Directory -Force -Path $Inbox | Out-Null
 New-Item -ItemType Directory -Force -Path $Recordings | Out-Null
 
 $Files = @(
+    "brief.md",
     "source-title.txt",
     "source-url.txt",
     "transcript.txt",
@@ -35,6 +36,7 @@ Write-Host "English workspace ready:"
 Write-Host "  $Inbox"
 Write-Host ""
 Write-Host "INPUT"
+Write-Host "  brief.md                  # what mattered, intended angle, constraints"
 Write-Host "  source-title.txt"
 Write-Host "  source-url.txt"
 Write-Host "  transcript.txt"
@@ -48,4 +50,6 @@ Write-Host "  recordings\final.*"
 Write-Host "  writing-original.md"
 Write-Host "  feedback.md"
 Write-Host "  writing-revised.md"
+Write-Host ""
+Write-Host "Next: attach this folder in Codex and invoke `$personal-blog-publisher."
 Write-Host ""

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Personal Blog Publisher"
+  short_description: "Curate and publish validated N=1 Lab blog content"
+  default_prompt: "Use $personal-blog-publisher to turn my attached notes and media into a polished, validated blog entry."

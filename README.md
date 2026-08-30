@@ -1,303 +1,58 @@
 # N=1 Lab
 
-一个基于 Astro 的中文个人博客，偏长期写作、生活记录与知识沉淀。现在分成三类内容：
+基于 Astro 的中文个人博客，用于沉淀长文、英文学习、短灵感与生活图文记录。线上地址：<https://alex-996-me.github.io/personal-blog/>。
 
-- `文章`：完整长文，按读书、健康、训练、脑科学、工具等分类归档
-- `每日灵感`：短想法、随手记、片段文字
-- `Moments`：地点、饮食和生活经历的图文记录
+## 最快的发文方式
 
-## 1. 安装依赖
+在 Codex 中打开本仓库，把文字、图片、音频或 Notion 导出文件直接附上，然后说：
 
-在项目目录打开 `cmd` 或 PowerShell，然后运行：
+> 使用 `$personal-blog-publisher`，把这些素材整理成一篇文章。先完成内容与验证，不要发布。
+
+Agent 会负责选题、编辑、资源归档、系列与关联文章、内容校验和构建。确认预览后，再说“发布这篇”，Agent 才会做聚焦提交并推送。完整流程见 [发布 SOP](docs/workflows/PUBLISHING_SOP.md)。
+
+## 常用命令
 
 ```bash
 npm install
-```
-
-## 2. 本地预览
-
-启动开发服务器：
-
-```bash
 npm run dev
+npm run validate
+npm run check:post -- your-slug
+npm run check:post -- your-slug --fix
+npm run publish:notion -- your-slug
+npm run optimize:media
 ```
 
-浏览器打开：
+- `npm run validate`：只读内容校验 + 完整生产构建，是发文前统一入口。
+- `npm run check:post -- slug`：只检查单篇文章，不再静默改文件。
+- `--fix`：明确授权规范化该文章，再重新验证。
+- `npm run optimize:media`：预览大图优化收益；添加 `-- --write` 才实际执行。
+
+## 内容与资源目录
 
 ```text
-http://localhost:4321/personal-blog/
-```
-
-## 3. 构建检查
-
-上线前建议先跑一遍：
-
-```bash
-npm run build
-```
-
-## 4. 项目里最常用的目录
-
-```text
-src/content/posts/          长文文章
-src/content/inspirations/   每日灵感
-src/content/moments/        Moments 图文记录
+src/content/posts/          长文、书评、学习文章、英文打卡
+src/content/inspirations/   短灵感
+src/content/moments/        生活与地点图文
 public/images/covers/       文章封面
 public/images/posts/        正文插图
-imports/notion/             Notion 导入源文件
+public/images/moments/      Moments 图片
+public/audio/               公开音频
+public/videos/              公开视频
+imports/notion/example/     Notion 导入格式示例
+.english-inbox/             本地英文原始素材（Git 忽略）
+.content-inbox/             其他本地原始素材（Git 忽略）
+.agents/skills/             仓库专用 Agent 技能
+scripts/                    导入、校验和媒体工具
 ```
 
-## 5. 新增一篇长文章
+完整文件夹职责与维护边界见 [发布 SOP](docs/workflows/PUBLISHING_SOP.md)。内容字段的唯一准则是 `src/content.config.ts`。
 
-去这里新建一个 Markdown 文件：
+## 内容模型要点
 
-```text
-src/content/posts/my-new-post.md
-```
+文章分类只有：`日志`、`自学`、`体悟`、`健康`、`训练`、`工具`、`世界`。
 
-最小模板：
+系列文章使用 `series` 和 `seriesOrder`；跨内容关联使用 `relatedPosts`、`relatedNotes`、`relatedMoments`。本地资源统一写成从 `/images/`、`/audio/` 或 `/videos/` 开始的站点路径。
 
-```md
----
-title: "文章标题"
-date: "2026-06-15"
-updated: "2026-06-15"
-category: "健康"
-tags:
-  - "饮食"
-  - "实验"
-description: "一句话摘要。"
-cover: "/images/covers/my-new-post-cover.jpg"
-youtube: ""
-fullSummary: []
-sectionSummaries: []
----
+## 部署
 
-正文从这里开始。
-```
-
-可用分类：
-
-- `日志`
-- `读书`
-- `健康`
-- `训练`
-- `脑科学`
-- `工具`
-
-说明：
-
-- `日志` 是旧分类，保留给历史文章
-- 首页和导航现在主推的是 `每日灵感`，不是旧日志栏目
-
-## 6. 给文章加图片
-
-先把图片放到：
-
-```text
-public/images/posts/你的文章-slug/
-```
-
-例如：
-
-```text
-public/images/posts/my-new-post/photo-01.jpg
-```
-
-然后在正文里这样写：
-
-```md
-![图片说明](/images/posts/my-new-post/photo-01.jpg)
-```
-
-如果你写了 `![图片说明]`，页面会把它当成图注显示。
-
-## 7. 设置文章封面
-
-把封面放到：
-
-```text
-public/images/covers/
-```
-
-例如：
-
-```text
-public/images/covers/my-new-post-cover.jpg
-```
-
-frontmatter 里写：
-
-```md
-cover: "/images/covers/my-new-post-cover.jpg"
-```
-
-封面只会出现在首页、搜索结果和列表页里。打开文章正文后，不再显示封面图。
-
-## 8. 插入链接、YouTube、Bilibili
-
-普通链接直接写：
-
-```md
-[参考资料](https://example.com)
-```
-
-外链会自动新标签页打开。
-
-如果你想在文章顶部嵌入 YouTube，可以在 frontmatter 里写：
-
-```md
-youtube: "https://www.youtube.com/watch?v=xxxxxxx"
-```
-
-如果正文里有单独一行的 YouTube 或 Bilibili 链接，系统也会自动渲染成播放器。
-
-## 9. 新增一条“每日灵感”
-
-去这里新建文件：
-
-```text
-src/content/inspirations/my-thought.md
-```
-
-模板：
-
-```md
----
-title: "今天的一句话"
-date: "2026-06-15"
-updated: "2026-06-15"
-tags:
-  - "灵感"
-description: "一句话摘要。"
-published: true
----
-
-这里写正文。可以很短，一段就够。
-```
-
-效果：
-
-- 会出现在首页的“每日灵感”区块
-- 会出现在 `/daily/`
-- 会参与搜索
-- 样式是短文本流，不会做成大文章卡片
-
-## 10. 搜索怎么用
-
-站点搜索现在会一起检索：
-
-- 文章标题
-- 文章正文
-- 标签
-- 摘要
-- 每日灵感内容
-- Moments 标题、地点与说明
-
-入口：
-
-- 右侧栏搜索框
-- `/search/`
-
-## 11. 目录是自动生成的
-
-每篇 Markdown 文章开头都会自动生成一个可折叠目录。
-
-规则：
-
-- 自动读取正文里的 `##` 和 `###`
-- 自动生成锚点
-- 默认折叠
-
-所以你只需要正常写标题层级：
-
-```md
-## 第一部分
-### 小节 A
-## 第二部分
-```
-
-## 12. 如果你从 Notion 导入
-
-把 Notion 导出的 `zip` 或文件夹放进：
-
-```text
-imports/notion/你的-slug.zip
-```
-
-或：
-
-```text
-imports/notion/你的-slug/
-```
-
-然后运行：
-
-```bash
-npm run publish:notion -- 你的-slug
-```
-
-这个命令会尽量自动完成：
-
-- 找主 Markdown / HTML
-- 复制图片到 `public/images/posts/`
-- 重写图片路径
-- 清理排版
-- 自动补 frontmatter
-- 自动跑构建
-
-## 13. 常用命令
-
-```bash
-npm install
-npm run dev
-npm run build
-npm run publish:notion -- slug
-npm run import:notion -- slug
-npm run summarize -- slug
-npm run check:post -- slug
-```
-
-## 14. 最简单的本地发文流程
-
-如果你只是想自己发一篇文章、加图片、然后推上 GitHub，可以按这个顺序来：
-
-1. 打开 `cmd`
-2. 进入项目目录
-
-```cmd
-cd /d C:\Users\栗海粟\Documents\Codex\2026-05-05\github-plugin-github-openai-curated-personal
-```
-
-3. 新建文章 Markdown
-4. 把图片放到 `public/images/posts/你的-slug/`
-5. 如果有封面，把封面放到 `public/images/covers/`
-6. 运行：
-
-```bash
-npm run build
-```
-
-7. 预览：
-
-```bash
-npm run dev
-```
-
-8. 确认没问题后提交并推送：
-
-```bash
-git add .
-git commit -m "add new content"
-git push origin main
-```
-
-## 15. 部署地址
-
-推到 `main` 后，GitHub Actions 会自动部署到 GitHub Pages。
-
-公网地址：
-
-```text
-https://alex-996-me.github.io/personal-blog/
-```
+推送到 `main` 后，`.github/workflows/deploy.yml` 会自动构建并部署 GitHub Pages。不要使用 `git add .`；只暂存本次发布涉及的精确文件。
