@@ -106,10 +106,10 @@ You have probably heard phrases such as “get things done” or “when challen
 
 I used to dismiss such phrases as empty encouragement. Yet after repeating and acting on them countless times, I noticed that they could change the way I approached difficult tasks. They did not make the challenges disappear; instead, they helped me start before I felt fully ready. That experience taught me that words become meaningful only when they are repeatedly translated into behaviour.
 
-<!--
+
 ## Speaking
 
 <audio controls preload="metadata">
   <source src="/audio/english/2026-09-01/final.m4a" type="audio/mp4">
 </audio>
--->
+
