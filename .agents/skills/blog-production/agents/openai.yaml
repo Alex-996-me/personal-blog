@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blog Production"
+  short_description: "Integrate approved writing, media, and metadata into the blog"
+  default_prompt: "Use $blog-production to integrate my final draft, validate it, and do not publish."

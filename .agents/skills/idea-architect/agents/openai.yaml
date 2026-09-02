@@ -1,0 +1,4 @@
+interface:
+  display_name: "Idea Architect"
+  short_description: "Turn raw material into a decision-ready editorial brief"
+  default_prompt: "Use $idea-architect to turn these notes into an editorial brief, then stop for my decision."

@@ -1,83 +1,75 @@
-# N=1 Lab Agent 发文 SOP
+# N=1 Lab Human × Agent Publishing System
 
-## 一句话入口
+这套流程的目的不是让 AI 替作者思考，而是把判断权与生产劳动分开：作者决定什么值得写、相信什么、怎样表达；Agent 负责把已授权的内容变成可发布的作品。
 
-仓库在 Codex 中打开后，直接拖入素材并说：
+## 人负责什么
 
-> 使用 `$personal-blog-publisher`，把附件整理为「英文打卡 / 长文 / 书评 / 灵感 / Moment」。先写入仓库并验证，不要发布。
+- 选真正值得写的问题
+- 价值判断与原创想法
+- 个人经验
+- 金句和有辨识度的表达
+- 最终风格判断
+- 发布决定
 
-不需要先在桌面整理一套正式目录，也不需要自己反复 `cd`、复制资源、写 frontmatter 或调路径。
+## AI 负责什么
+
+- 整理原料与发散文章角度
+- 结构设计
+- 初稿与编辑
+- Markdown/MDX 排版
+- schema、frontmatter、媒体管理
+- validation
+- Git publication mechanics
 
 ## 标准流程
 
-1. **投递原料**：直接附加笔记、DOCX、Markdown、图片、最终音频或 Notion 导出。说明内容类型；拿不准时让 Agent 判断。
-2. **编辑成稿**：Agent 选题、压缩重复、校对事实表述、组织标题与摘要，并保留作者观点和声音。
-3. **进入内容系统**：Agent 使用稳定 slug，归档媒体，补齐分类、标签、系列顺序和关联内容。
-4. **机器复核**：运行 `npm run validate`、`git diff --check`，检查资源、关系、系列编号与生产构建。
-5. **人工决策**：你只审阅主题、观点和最终呈现。需要修改就直接说意图，不必指出代码位置。
-6. **发布闸门**：只有你明确说“发布”后，Agent 才精确暂存本次文件、创建聚焦提交并推送 `main`。
+```text
+RAW MATERIAL
+↓
+idea-architect
+↓
+AUTHOR GATE 1
+↓
+voice-drafter
+↓
+AUTHOR GATE 2
+↓
+blog-production
+↓
+VALIDATION
+↓
+AUTHOR GATE 3
+↓
+PUBLISH
+```
 
-## 不同内容的最小输入
+1. `idea-architect` 把笔记、转录、阅读材料和金句整理为 editorial brief。它最多给出三个角度，但不会替你决定立场；输出结束于 `AUTHOR DECISION REQUIRED`。
+2. **Author Gate 1**：你选择核心问题、文章角度、必须保留的观点/金句，并删去不想写的方向。
+3. `voice-drafter` 基于已确认的方向和你提供的经历写初稿，优先保留你的表达，不会伪造事实或经验；输出附带 `AUTHOR PASS`。
+4. **Author Gate 2**：你修改那些不像你的段落，补上最重要的判断、经验或金句，并确认最终稿。
+5. `blog-production` 将最终稿接入站点：生成合法 frontmatter，处理分类、标签、摘要、关系、系列、媒体和排版；随后运行 `npm run validate`、`git diff --check` 并检查 `git status --short`。
+6. **Author Gate 3**：你审阅最终 diff，并决定是否发布。只有明确说“发布”后，Agent 才能精确 `git add -- <files>`、commit 和 push；绝不使用 `git add .`。
 
-| 类型 | 你提供 | Agent 交付 |
-| --- | --- | --- |
-| 英文打卡 | 来源、笔记/转录、个人反思、最终录音（有则附） | 主题化双价值文章、精选表达、精炼反思、Speaking、系列互链 |
-| 长文/总结/书评 | 原稿或零散笔记、核心立场、来源 | 结构化长文、准确归因、摘要、封面/插图、相关内容 |
-| 灵感 | 一句话或一段话 | 克制的短文、主题与标签、必要关联 |
-| Moment | 图片、地点、时间、简短感受 | 图文记录、图片优化、地点字段与相近记录 |
-| Notion | 导出 zip/目录与目标 slug | 导入、资源迁移、排版清理、元数据与构建校验 |
+## 日常最短提示词
 
-## 推荐提示词
+完整新文章，先停在 Gate 1：
 
-草拟但不发布：
+> 这是今天的素材。启动完整发文 workflow，先只做到 Gate 1。
 
-> 使用 `$personal-blog-publisher`。这是今天的素材，请判断最合适的内容类型，完成编辑、关联和验证；不要提交或推送。
+方向已定，继续初稿：
 
-修改现有文章：
+> 方向确定，继续到 Author Pass。
 
-> 使用 `$personal-blog-publisher`，让这篇文章更紧凑，保留我的观点，并与同系列前后文章互链。验证但不要发布。
+我已完成作者修改，进入生产但不发布：
+
+> 我已经完成作者修改。进入 production，但不要发布。
 
 确认发布：
 
-> 发布刚才这篇。只暂存本次相关文件，通过全部验证后提交并推送 main。
+> 发布。
 
-## 文件夹职责
+## 快捷入口
 
-- `.agents/`：仓库专用 Agent 技能；决定 Agent 如何理解和执行发文任务。
-- `.english-inbox/`：英文学习原料工作区，Git 忽略，可保留未整理素材。
-- `.github/`：GitHub Pages 自动部署工作流。
-- `.vscode/`：编辑器工作区配置。
-- `docs/`：面向人的长期流程文档。
-- `imports/`：临时导入入口；版本库只保留 `notion/example` 示例，真实导出完成后删除。
-- `public/`：原样复制到网站的图片、音频、视频、字体等静态资源。
-- `scripts/`：内容导入、摘要、校验和媒体优化工具。
-- `src/components/`：可复用界面组件。
-- `src/content/`：真正的文章、灵感、Moments 与内容 schema。
-- `src/data/`：站点标题、导航、分类、主题等配置数据。
-- `src/layouts/`：页面共同外壳与布局。
-- `src/lib/`：内容关联、路径和 Markdown 处理逻辑。
-- `src/pages/`：Astro 路由页面。
-- `src/styles/`：全局和页面样式。
-- `node_modules/`：安装依赖生成，不提交、不存放自定义规范。
-- `.astro/`、`dist/`：类型缓存与生产构建输出，均可随时重建。
-- `.git/`：本地版本历史，不属于站点内容。
-
-## 命令行兜底
-
-在 Agent 不可用时，最短安全流程是：
-
-```bash
-npm run validate
-git status --short
-git add -- <精确文件列表>
-git commit -m "content: concise topic"
-git push origin main
-```
-
-避免 `git add .`，它会把临时文件和不相关改动一起带入提交。
-
-## 可选自动化
-
-- 可让 Codex 定时任务定期扫描 `.english-inbox` 或 `.content-inbox`，生成“待审稿”，但默认不要自动推送。
-- 定时任务应优先在独立 worktree 中运行，避免与手头未提交修改冲突。
-- 真正发布仍保留人工确认闸门，适合个人博客这种需要作者判断的内容。
+- 已有完整终稿：直接使用 `$blog-production`。
+- 只想编辑现有稿件：从 `$voice-drafter` 开始。
+- 旧提示词仍可使用 `$personal-blog-publisher`；它会按素材所处阶段路由到上述三个 Skill。

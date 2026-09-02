@@ -1,0 +1,4 @@
+interface:
+  display_name: "Voice Drafter"
+  short_description: "Draft and edit while preserving the author's voice"
+  default_prompt: "Use $voice-drafter to turn my approved brief and source material into a draft with an AUTHOR PASS."

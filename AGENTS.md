@@ -22,7 +22,17 @@
 - Do not commit or push unless the user explicitly asks to publish.
 - For publication, stage only exact files, use one focused commit, and push only after validation passes.
 
-## Workflow
+## Publishing workflow
 
-- Use the repository skill `$personal-blog-publisher` for new or revised content.
-- Keep reusable process rules in `.agents/skills/personal-blog-publisher`; keep reader-facing instructions in `docs/workflows/PUBLISHING_SOP.md`.
+For a new article, use the full human-agent workflow:
+
+`$idea-architect` → **HUMAN GATE 1** → `$voice-drafter` → **HUMAN GATE 2** → `$blog-production` → validation → **HUMAN PUBLISH GATE**.
+
+- At Gate 1, the author chooses the core problem, angle, material to preserve, and directions to cut.
+- At Gate 2, the author reviews the draft and `AUTHOR PASS`, then supplies any necessary rewrites or distinctive language.
+- At the publish gate, the author explicitly decides whether to commit and push. Validation alone never authorizes publication.
+- If the user already has a complete final draft, start with `$blog-production`.
+- If the user only wants to edit an existing draft, start with `$voice-drafter`.
+- `$personal-blog-publisher` remains a backward-compatible orchestration wrapper for older prompts and documentation.
+
+Keep reusable workflow rules in `.agents/skills/`; keep reader-facing instructions in `docs/workflows/PUBLISHING_SOP.md`.

@@ -1,4 +1,4 @@
 interface:
-  display_name: "Personal Blog Publisher"
-  short_description: "Curate and publish validated N=1 Lab blog content"
-  default_prompt: "Use $personal-blog-publisher to turn my attached notes and media into a polished, validated blog entry."
+  display_name: "Personal Blog Publisher (Legacy)"
+  short_description: "Compatibility entry for the human-agent publishing workflow"
+  default_prompt: "Use $personal-blog-publisher to route my material to the right publishing stage."
