@@ -374,54 +374,11 @@ function getTableMetrics(tableNode) {
   return { rowCount, columnCount, textLength };
 }
 
-function buildTocList(items) {
-  const rootItems = [];
-  let currentParent = null;
-
-  for (const item of items) {
-    const listItem = createElement("li", {}, [
-      createElement("a", { href: `#${item.id}` }, [createTextNode(item.text)]),
-    ]);
-
-    if (item.depth === 2 || !currentParent) {
-      rootItems.push(listItem);
-      currentParent = item.depth === 2 ? listItem : currentParent;
-      continue;
-    }
-
-    let sublist = currentParent.children.find(
-      (child) => child.type === "element" && child.tagName === "ul",
-    );
-
-    if (!sublist) {
-      sublist = createElement("ul", { className: ["article-toc__sublist"] }, []);
-      currentParent.children.push(sublist);
-    }
-
-    sublist.children.push(listItem);
-  }
-
-  return createElement("ul", { className: ["article-toc__list"] }, rootItems);
-}
-
-function createTocBlock(items) {
-  if (!Array.isArray(items) || items.length === 0) {
-    return null;
-  }
-
-  return createElement("details", { className: ["article-toc"] }, [
-    createElement("summary", { className: ["article-toc__summary"] }, [createTextNode("目录")]),
-    createElement("div", { className: ["article-toc__body"] }, [buildTocList(items)]),
-  ]);
-}
-
 export function rehypeEnhanceBlogContent() {
   return (tree, file) => {
     const frontmatter = file?.data?.astro?.frontmatter ?? {};
-    const hideToc = frontmatter.hideToc === true;
     const isKettlebellDictionary = frontmatter.cover === "/images/posts/kettlebell-dictionary/dictionary-roadmap.webp";
     const makeSlug = createSlugger();
-    const tocItems = [];
 
     if (isKettlebellDictionary) {
       wrapMovementCards(tree);
@@ -435,7 +392,6 @@ export function rehypeEnhanceBlogContent() {
       if (node.type === "element" && /^h[2-4]$/.test(node.tagName)) {
         const headingText = getHastText(node).replace(/\s+/g, " ").trim();
         if (headingText) {
-          const depth = Number(node.tagName.replace("h", ""));
           const id =
             typeof node.properties?.id === "string" && node.properties.id.trim()
               ? node.properties.id.trim()
@@ -445,14 +401,6 @@ export function rehypeEnhanceBlogContent() {
             ...node.properties,
             id,
           };
-
-          if (depth <= 3) {
-            tocItems.push({
-              id,
-              text: headingText,
-              depth,
-            });
-          }
         }
       }
 
@@ -518,10 +466,5 @@ export function rehypeEnhanceBlogContent() {
     };
 
     visit(tree);
-
-    const tocBlock = createTocBlock(tocItems);
-    if (tocBlock && !hideToc) {
-      tree.children.unshift(tocBlock);
-    }
   };
 }

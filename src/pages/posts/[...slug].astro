@@ -3,6 +3,7 @@ import { render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getAllPosts, getPostSlug, getSources, getUpdatedDate, getYoutubeEmbedUrl } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
+import "../../styles/essay-reading.css";
 
 export async function getStaticPaths() {
   return (await getAllPosts()).map((post) => ({ params: { slug: getPostSlug(post) }, props: { post } }));
@@ -28,7 +29,10 @@ const youtubeEmbedUrl = getYoutubeEmbedUrl(post.data.youtube);
       </div>
     </header>
     {youtubeEmbedUrl && <div class="video-embed"><iframe src={youtubeEmbedUrl} title={`${post.data.title} YouTube 视频`} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>}
-    <div class="prose"><Content /></div>
+    <div class="reading-progress" data-reading-progress aria-hidden="true" hidden></div>
+    <div class="essay-reading" data-essay-reading>
+      <div class="prose" data-essay-body><Content /></div>
+    </div>
     {sources.length > 0 && (
       <section class="content-sources" aria-labelledby="content-sources-title">
         <h2 id="content-sources-title">参考</h2>
@@ -38,3 +42,6 @@ const youtubeEmbedUrl = getYoutubeEmbedUrl(post.data.youtube);
     <nav class="content-ending" aria-label="文章导航" data-pagefind-ignore><a href={withBasePath("/articles/")}>所有文章</a></nav>
   </article>
 </BaseLayout>
+<script>
+  import "../../scripts/essay-reading";
+</script>

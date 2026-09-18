@@ -37,7 +37,12 @@
 - 详情：分类 → 标题 → 摘要 → 发布/更新日期 → 正文。同日只显示一组日期，语义保留两者。
 - 不再重复输出 frontmatter 封面；正文原有图文保留。
 - 结尾只留“所有文章”；不叠加相关推荐、上一篇/下一篇。
-- 保留长文章的可折叠目录、参考来源与数据表格能力。
+- 正文顶部固定 2px 进度线：正文到达阅读起点时为 0，正文末尾进入视口时为 100%；不计 Footer。缓存几何数据，passive scroll + rAF 更新。
+- ≥3 个有效 H2 才生成章节侧栏；≥1200px 显示在阅读列左侧，sticky 限于正文区域，不改变 680px 阅读宽度；窄屏只保留进度线。
+- 侧栏使用实际标题和既有 ID，排除参考资料/参考文献等支持性标题；原生 hash 跳转，H2 scroll-margin-top 为 2rem，当前章节轻量高亮。无移动目录或百分比文本。
+- 移除正文前的大目录及 Markdown TOC 生成器；保留标题 ID、作者手写引用和数据表格能力。引用继续使用现有链接/列表样式与长 URL 换行，不自动编号。
+- Phase 2.2 文件：`posts/[...slug].astro`、`essay-reading.ts`、`essay-reading.css`、`markdown-pipeline.mjs`、本 handoff。
+- Phase 2.2 验证：validate / smoke / diff-check 通过；定向浏览器确认 1440px 侧栏、390px 隐藏、正文起中末进度、上下滚动高亮、点击/直达 hash、reduced-motion；已查看桌面/移动截图。
 - 不自动插入 frontmatter 的全文/分节摘要面板；原有字段与 Markdown 正文保留。
 - 构建时为公开正文的本地图片补真实尺寸和 lazy/async 属性，不改 Markdown 源文。
 
