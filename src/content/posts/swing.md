@@ -12,6 +12,7 @@ cover: "/images/covers/swing-cover.jpg"
 youtube: ""
 fullSummary: []
 sectionSummaries: []
+status: archive
 ---
 
 摆荡是高翻和抓举的母动作。这一篇先把动作要点和参考视频收拢到一起，后面再继续补训练复盘。

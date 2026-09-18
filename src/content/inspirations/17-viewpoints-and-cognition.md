@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["观点", "认知"]
 description: "好的观点不带情绪，有独特内容，不把事说死。"
 published: true
+status: archive
 ---
 
 好的观点不带情绪，有独特内容，不把事说死。

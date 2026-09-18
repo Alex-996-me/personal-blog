@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["特长", "助人"]
 description: "帮助他人，然后成就自己"
 published: true
+status: archive
 ---
 
 为别人扫清障碍，从而让他们专注于自己的特长。

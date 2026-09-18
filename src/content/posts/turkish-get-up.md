@@ -12,6 +12,7 @@ cover: "/images/covers/turkish-get-up-cover.jpg"
 youtube: ""
 fullSummary: []
 sectionSummaries: []
+status: archive
 ---
 
 这一篇整理土耳其起立的动作控制、分段节奏和参考视频，后续继续补自己的训练复盘。

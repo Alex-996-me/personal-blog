@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["学习", "起步"]
 description: "学习起步阶段只能生学硬练"
 published: true
+status: archive
 ---
 
 学习的起步阶段不讲技巧。

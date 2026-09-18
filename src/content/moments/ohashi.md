@@ -15,6 +15,7 @@ images:
 hideToc: true
 description: "古北三巨头之一。"
 published: true
+status: published
 ---
 
 作为古北三巨头之一，お箸绝对无愧它的名号。

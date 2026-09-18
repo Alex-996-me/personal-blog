@@ -31,15 +31,15 @@ export type InspirationThemeDefinition = {
 
 export const siteConfig = {
   title: "N=1 Lab",
-  description: "记录身体、营养、训练、脑科学、学习与生活意义的中文个人博客。",
+  description: "海粟的个人实验：从生活与实践中形成判断，留下经过选择的文章与生活记录。",
   tagline: "要实践，不要幻想；要思考，不要盲从。",
   author: {
     name: "海粟",
     handle: "@n1lab",
     avatarLabel: "N1",
     portrait: "/images/home/author-life.jpg",
-    shortBio: "大二学生。关心身体、营养、训练、脑科学、学习和生活意义，也会把还没想明白的问题慢慢记下来。",
-    bio: "这个博客不是自媒体，也不是作品集。它更像一个公开日记本，用来记录读书、播客、训练、饮食实验、大学迷茫、保研或留学的犹豫、AI 工具，以及一些我暂时还没有想明白的问题。我不保证自己永远正确，但希望自己持续诚实。",
+    shortBio: "数学与数理基础科学背景的学生。关心身体、训练、学习，以及怎样过好日常生活。",
+    bio: "N=1 Lab 是我持续进行的个人实验。认真的思考来自生活与实践，这里留下经过选择的文章，也留下一些想记住的日常。判断会随经验修正，但公开之前，我希望先把它想清楚。",
   },
   defaultOgImage: "/images/og-default.svg",
 };
@@ -149,11 +149,6 @@ export const inspirationThemes: InspirationThemeDefinition[] = [
 
 export const modules: ModuleDefinition[] = [
   {
-    name: "explained",
-    href: "/daily/",
-    description: "用一个短标题和一句解释，留下值得反复看的想法。",
-  },
-  {
     name: "生活记录",
     href: "/moments/",
     description: "日常生活的图文记录。",
@@ -162,7 +157,6 @@ export const modules: ModuleDefinition[] = [
 
 export const navigation = [
   { label: "文章", href: "/articles/" },
-  { label: "灵感", href: "/daily/" },
   { label: "生活", href: "/moments/" },
   { label: "关于", href: "/about/" },
 ];

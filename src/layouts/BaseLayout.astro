@@ -1,11 +1,9 @@
 ﻿---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import SearchDialog from "../components/SearchDialog.astro";
 import { siteConfig } from "../data/site";
 import { withBasePath } from "../lib/paths";
 import "../styles/global.css";
-import "../styles/phase-b.css";
 
 interface Props {
   title?: string;
@@ -18,8 +16,10 @@ interface Props {
   headerSearch?: boolean;
   headerSearchQuery?: string;
   headerSearchPlaceholder?: string;
-  searchType?: "ARTICLE" | "IDEA" | "MOMENT";
+  searchType?: "ARTICLE" | "MOMENT";
+  noindex?: boolean;
   searchSection?: string;
+  searchDate?: string;
   absoluteTitle?: boolean;
 }
 
@@ -33,7 +33,9 @@ const {
   panelClass = "",
   searchType,
   searchSection = "",
+  searchDate = "",
   absoluteTitle = false,
+  noindex = false,
 } = Astro.props;
 
 const pageTitle = absoluteTitle || title === siteConfig.title ? title : `${title} | ${siteConfig.title}`;
@@ -49,6 +51,7 @@ const ogImageUrl = new URL(withBasePath(ogImage), site).toString();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href={withBasePath("/favicon.svg")} />
     <link rel="icon" href={withBasePath("/favicon.ico")} />
@@ -60,23 +63,22 @@ const ogImageUrl = new URL(withBasePath(ogImage), site).toString();
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={ogImageUrl} />
-    {searchType && <meta data-pagefind-meta="type" content={searchType} />}
-    {searchSection && <meta data-pagefind-meta="section" content={searchSection} />}
-    {searchType && <meta data-pagefind-meta="title" content={title} />}
-    {searchType && <meta data-pagefind-meta="description" content={description} />}
+    {searchType && <meta data-pagefind-meta="type[content]" content={searchType} />}
+    {searchSection && <meta data-pagefind-meta="section[content]" content={searchSection} />}
+    {searchType && <meta data-pagefind-meta="title[content]" content={title} />}
+    {searchType && <meta data-pagefind-meta="description[content]" content={description} />}
+    {searchDate && <meta data-pagefind-meta="date[content]" content={searchDate} />}
   </head>
   <body class={bodyClass}>
+    <a class="skip-link" href="#main-content">跳至正文</a>
     <Header />
     <div class:list={["page-shell", "page-shell--single", shellClass]}>
-      <main class="content-column" data-pagefind-body={searchType ? true : undefined} data-pagefind-ignore={!searchType ? true : undefined}>
-        {searchType && <span class="pagefind-meta" data-pagefind-meta="type">{searchType}</span>}
-        {searchSection && <span class="pagefind-meta" data-pagefind-meta="section">{searchSection}</span>}
+      <main id="main-content" tabindex="-1" class="content-column" data-pagefind-body={searchType ? true : undefined} data-pagefind-ignore={!searchType ? true : undefined}>
         <div class:list={["content-panel", wideContent && "content-panel--wide", panelClass]}>
           <slot />
         </div>
       </main>
     </div>
-    <SearchDialog />
     <Footer />
   </body>
 </html>

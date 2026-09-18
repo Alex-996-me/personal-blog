@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["学费", "价格"]
 description: "学习真正的代价是时间，不是钱"
 published: true
+status: archive
 ---
 
 学习新事物，金钱成本微不足道，真正贵的是时间。

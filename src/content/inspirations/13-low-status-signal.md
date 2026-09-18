@@ -6,6 +6,7 @@ theme: "生活"
 tags: ["社交", "边界"]
 description: "过度解释、讨好、模糊边界、情绪不稳、被评价或被提问。"
 published: true
+status: archive
 ---
 
 过度解释、讨好、模糊边界、情绪不稳、被评价或被提问。

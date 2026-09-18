@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["时间", "安排"]
 description: "大块完整的时间"
 published: true
+status: archive
 ---
 
 大块、完整的时间是产生创造的必要条件。

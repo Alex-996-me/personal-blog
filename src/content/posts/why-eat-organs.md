@@ -50,6 +50,7 @@ notionImport:
   source: notion
   importedAt: '2026-05-31'
   originalFile: 为什么吃内脏 37156991a5818071a557d58cfd6827d9.md
+status: archive
 ---
 自然界里，狮子把猎物扑倒、咬断脖子后，往往会优先从腹腔这些柔软的部位开始吃；某种意义上，这也在提示我们——内脏并不是边角料，而是动物性食物中营养密度很高的一部分。
 

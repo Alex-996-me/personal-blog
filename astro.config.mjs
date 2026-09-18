@@ -2,6 +2,8 @@
 import { defineConfig } from "astro/config";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
+import sharp from "sharp";
+import path from "node:path";
 import {
   rehypeEnhanceBlogContent,
   remarkEnhanceBlogMarkdown,
@@ -30,13 +32,23 @@ function prefixBasePath(value) {
 }
 
 function rehypePrefixBasePaths() {
-  return (tree) => {
+  return async (tree, file) => {
+    const imageTasks = [];
+    const publicRoot = path.resolve("public");
     const visit = (node) => {
       if (!node || typeof node !== "object") {
         return;
       }
 
       if ("properties" in node && node.properties) {
+        const source = node.properties.src;
+        if (file.data.astro?.frontmatter?.status === "published" && node.tagName === "img" && typeof source === "string" && source.startsWith("/images/")) {
+          const imagePath = path.resolve(publicRoot, `.${source}`);
+          if (!imagePath.startsWith(publicRoot + path.sep)) throw new Error(`Invalid image path: ${source}`);
+          imageTasks.push(sharp(imagePath).metadata().then(({ width, height }) => {
+            Object.assign(node.properties, { width, height, loading: "lazy", decoding: "async" });
+          }));
+        }
         for (const attribute of ["href", "src", "poster"]) {
           const currentValue = node.properties[attribute];
           if (typeof currentValue === "string") {
@@ -51,6 +63,7 @@ function rehypePrefixBasePaths() {
     };
 
     visit(tree);
+    await Promise.all(imageTasks);
   };
 }
 

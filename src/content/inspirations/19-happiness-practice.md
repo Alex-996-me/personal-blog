@@ -6,6 +6,7 @@ theme: "生活"
 tags: ["幸福", "意义"]
 description: "自娱自乐。"
 published: true
+status: archive
 ---
 
 自娱自乐。最大化避免痛苦，尽可能创造意义。

@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["学习", "专注"]
 description: "专注：用注意力填满3小时"
 published: true
+status: archive
 ---
 
 用注意力填充大段时间，只能做一件重要的事。

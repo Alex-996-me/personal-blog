@@ -15,6 +15,7 @@ seriesOrder: 3
 relatedPosts:
   - "2026-08-30-ketones-insulin-muscle"
   - "2026-08-28-discipline-freedom"
+status: archive
 ---
 
 > **One idea worth keeping**

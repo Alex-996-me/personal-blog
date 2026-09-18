@@ -23,6 +23,7 @@ sectionSummaries:
       - 用固定结构编写 Prompt，并将复杂任务拆为 Prompt 链。
       - 用 AGENTS.md、Skill 与 Workflow 固化长期协作规则。
       - 区分 Git 工作区、暂存区、本地分支和远端跟踪引用。
+status: archive
 ---
 
 ## CLI 入门

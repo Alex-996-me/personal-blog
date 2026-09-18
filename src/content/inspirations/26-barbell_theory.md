@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["优先级", "原则"]
 description: "要么全部，要么全不"
 published: true
+status: archive
 ---
 
 要么全部投入，要么全部拒绝。中间地带往往才是最要命的。

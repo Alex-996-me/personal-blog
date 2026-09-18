@@ -29,7 +29,7 @@ export type SearchEntry = {
   date: string;
   updated: string;
   section: string;
-  kind: "ARTICLE" | "IDEA" | "MOMENT";
+  kind: "ARTICLE" | "MOMENT";
   tags: string[];
   cover: string;
   text: string;
@@ -267,10 +267,7 @@ export function getSelectedPosts(posts: Post[], limit = 6) {
 }
 
 export function getHomepageWriting(posts: Post[], limit = 3) {
-  const candidates = posts.filter((post) => post.data.featuredHome).sort(compareFeatured);
-  if (candidates.length === 0) return posts.slice(0, limit);
-  const lead = candidates[0];
-  return [lead, ...posts.filter((post) => post.id !== lead.id).slice(0, limit - 1)];
+  return posts.filter((post) => post.data.featuredHome).sort(compareFeatured).slice(0, limit);
 }
 
 function sortDatedEntries<T extends DatedEntry>(entries: T[]) {
@@ -283,11 +280,6 @@ function sortDatedEntries<T extends DatedEntry>(entries: T[]) {
 
 export function getPostSlug(post: Post) {
   return getEntrySlug(post);
-}
-
-export function getPostCoverTransitionName(post: Post) {
-  const safeSlug = getPostSlug(post).replace(/[^a-zA-Z0-9_-]/g, "-");
-  return `post-cover-${safeSlug}`;
 }
 
 export function getInspirationSlug(inspiration: Inspiration) {
@@ -351,7 +343,7 @@ export function getInspirationThemeHref(theme: InspirationTheme) {
 }
 
 export function getUpdatedDate(post: Post) {
-  return getEntryUpdatedDate(post);
+  return post.data.updated ?? post.data.date;
 }
 
 export function getInspirationUpdatedDate(inspiration: Inspiration) {
@@ -359,21 +351,18 @@ export function getInspirationUpdatedDate(inspiration: Inspiration) {
 }
 
 export async function getAllPosts() {
-  const posts = await getCollection("posts");
+  const posts = await getCollection("posts", ({ data }) => data.status === "published");
   return sortPosts(posts);
 }
 
 export async function getAllInspirations() {
-  const inspirations = await getCollection("inspirations");
-  // 首页灵感是按首次发布顺序翻阅，编辑旧灵感不会改变它在队列中的位置。
-  return [...inspirations]
-    .filter((entry) => entry.data.published !== false)
-    .sort((left, right) => right.data.date.valueOf() - left.data.date.valueOf());
+  // Inspirations are source material, never a public collection in the barbell model.
+  return [] as Inspiration[];
 }
 
 export async function getAllMoments() {
   const moments = await getCollection("moments");
-  return sortDatedEntries(moments.filter((entry) => entry.data.published !== false));
+  return sortDatedEntries(moments.filter((entry) => entry.data.status === "published" && entry.data.published !== false));
 }
 
 export function sortPosts(posts: Post[]) {
@@ -461,18 +450,6 @@ function buildPostSearchText(post: Post) {
   ).toLowerCase();
 }
 
-function buildInspirationSearchText(inspiration: Inspiration) {
-  return stripMarkdownToText(
-    [
-      inspiration.data.title,
-      inspiration.data.description,
-      inspiration.data.theme,
-      inspiration.data.tags.join(" "),
-      inspiration.body,
-    ].join("\n\n"),
-  ).toLowerCase();
-}
-
 function buildMomentSearchText(moment: Moment) {
   const location = getMomentLocation(moment);
   const itemText = (moment.data.items ?? [])
@@ -493,9 +470,8 @@ function resolveSearchCover(value?: string) {
 }
 
 export async function getSearchEntries() {
-  const [posts, inspirations, moments] = await Promise.all([
+  const [posts, moments] = await Promise.all([
     getAllPosts(),
-    getAllInspirations(),
     getAllMoments(),
   ]);
 
@@ -514,23 +490,6 @@ export async function getSearchEntries() {
     sortTime: getUpdatedDate(post).valueOf(),
   }));
 
-  const inspirationEntries: (SearchEntry & { sortTime: number })[] = inspirations.map(
-    (inspiration) => ({
-      title: inspiration.data.title,
-      description: inspiration.data.description,
-      date: inspiration.data.date.toISOString().slice(0, 10),
-      updated: getInspirationUpdatedDate(inspiration).toISOString().slice(0, 10),
-      section: `explained / ${inspiration.data.theme}`,
-      kind: "IDEA",
-      tags: inspiration.data.tags,
-      cover: "",
-      text: buildInspirationSearchText(inspiration),
-      snippet: buildSearchSnippet(inspiration.body),
-      url: withBasePath(getInspirationDetailHref(inspiration)),
-      sortTime: getInspirationUpdatedDate(inspiration).valueOf(),
-    }),
-  );
-
   const momentEntries: (SearchEntry & { sortTime: number })[] = moments.map((moment) => ({
     title: moment.data.title || "生活记录",
     description: moment.data.description,
@@ -546,7 +505,7 @@ export async function getSearchEntries() {
     sortTime: getEntryUpdatedDate(moment).valueOf(),
   }));
 
-  return [...postEntries, ...inspirationEntries, ...momentEntries]
+  return [...postEntries, ...momentEntries]
     .sort((left, right) => right.sortTime - left.sortTime)
     .map(({ sortTime: _sortTime, ...entry }) => entry);
 }

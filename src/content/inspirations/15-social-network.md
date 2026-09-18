@@ -6,6 +6,7 @@ theme: "生活"
 tags: ["社交", "弱连接"]
 description: "关注弱连接和差异化。"
 published: true
+status: archive
 ---
 
 关注弱连接和差异化。

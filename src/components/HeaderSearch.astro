@@ -1,0 +1,14 @@
+---
+import { withBasePath } from "../lib/paths";
+---
+<div class="header-search" role="search" data-search-root data-pagefind-url={withBasePath("/pagefind/pagefind.js")} data-fallback-index={withBasePath("/search-index.json")}>
+  <label class="sr-only" for="header-search-input">搜索文章与生活</label>
+  <input id="header-search-input" data-search-input type="search" placeholder="搜索…" autocomplete="off" spellcheck="false" aria-expanded="false" aria-controls="header-search-panel" />
+  <div id="header-search-panel" class="header-search__panel" data-search-panel hidden>
+    <p class="search-status" data-search-status role="status"></p>
+    <div data-search-results></div>
+  </div>
+</div>
+<script>
+  import "../scripts/search";
+</script>

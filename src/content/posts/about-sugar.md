@@ -51,6 +51,7 @@ notionImport:
   source: notion
   importedAt: '2026-05-19'
   originalFile: 糖 36556991a58180f58c87eb34ab047092.md
+status: archive
 ---
 
 两个月之前，我严格限制每天的净碳水，看着血糖仪上 4.0 的数字，我满意睡去，然后在凌晨 4:30 带着心悸惊醒。我终于意识到：

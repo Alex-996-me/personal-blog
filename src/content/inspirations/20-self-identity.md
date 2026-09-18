@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["自我", "认知"]
 description: "经历、行为和外界环境的产物。"
 published: true
+status: archive
 ---
 
 经历、行为和外界环境的产物。

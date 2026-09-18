@@ -1,36 +1,10 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ArticleVisual from "../../components/ArticleVisual.astro";
-import { visibleCategories } from "../../data/site";
-import { getAllPosts, getSelectedPosts, getUpdatedDate } from "../../lib/blog";
-import { withBasePath } from "../../lib/paths";
-
-const posts = await getAllPosts();
-const selectedPosts = getSelectedPosts(posts, 4);
-const selectedPostIds = new Set(selectedPosts.map((post) => post.id));
-const yearGroups = Object.entries(Object.groupBy(posts, (post) => String(getUpdatedDate(post).getFullYear())))
-  .sort(([left], [right]) => Number(right) - Number(left));
+import { getAllPosts, getUpdatedDate } from "../../lib/blog";
+const posts = (await getAllPosts()).sort((a, b) => getUpdatedDate(b).valueOf() - getUpdatedDate(a).valueOf());
 ---
-
-<BaseLayout title="文章" description="N=1 Lab 的长文、实验记录与主题文章。" wideContent={true} bodyClass="body--archive" shellClass="page-shell--archive" panelClass="content-panel--archive">
-  <header class="editorial-page-header"><a class="post-backlink" href={withBasePath("/")}>← 返回首页</a><h1>文章</h1></header>
-  <nav class="article-category-links" aria-label="文章分类">
-    {visibleCategories.map((category, index) => (<>{index > 0 && <span aria-hidden="true">·</span>}<a href={withBasePath(`/categories/${category.slug}/`)}>{category.name}</a></>))}
-  </nav>
-
-  {selectedPosts.length > 0 && (
-    <section class="selected-writing" aria-labelledby="selected-writing-title">
-      <h2 id="selected-writing-title">推荐阅读</h2>
-      <div class="selected-writing__grid">{selectedPosts.map((post, index) => <ArticleVisual post={post} variant="grid" index={index} />)}</div>
-    </section>
-  )}
-
-  <div class="writing-archive">
-    {yearGroups.map(([year, yearPosts]) => (
-      <section class="writing-year" aria-labelledby={`writing-year-${year}`}>
-        <h2 id={`writing-year-${year}`}>{year}</h2>
-        <div class="writing-year__entries">{yearPosts?.map((post) => <ArticleVisual post={post} variant="row" sharedTransition={!selectedPostIds.has(post.id)} />)}</div>
-      </section>
-    ))}
-  </div>
+<BaseLayout title="文章" description="经过选择的判断、经验与长期思考。" wideContent={true} bodyClass="body--archive">
+  <header class="editorial-page-header"><h1>文章</h1></header>
+  <div class="essay-index">{posts.map((post) => <ArticleVisual post={post} heading="h2" />)}</div>
 </BaseLayout>

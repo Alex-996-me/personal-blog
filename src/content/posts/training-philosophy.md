@@ -70,6 +70,7 @@ notionImport:
   source: notion
   importedAt: '2026-06-19'
   originalFile: 分享训练哲学 38456991a581802d9dbce764f4fb1c4e.md
+status: archive
 ---
 今天，我想介绍一种全新的训练体系。这个训练体系来自壶铃大师 Pavel，我也非常推崇他的训练哲学。
 

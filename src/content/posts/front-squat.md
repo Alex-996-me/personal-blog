@@ -12,6 +12,7 @@ cover: "/images/covers/front-squat-cover.jpg"
 youtube: ""
 fullSummary: []
 sectionSummaries: []
+status: archive
 ---
 
 这一篇对应双壶铃前架位前蹲。原始笔记创建于 2026 年 4 月 17 日。

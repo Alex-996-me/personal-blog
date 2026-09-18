@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["复利", "成长"]
 description: "复利可以改变一切。"
 published: true
+status: archive
 ---
 
 复利可以改变一切。

@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["学习", "神经"]
 description: "自学的本质就是建立脑体连接"
 published: true
+status: archive
 ---
 
 一切重要的知识都必须自学，也只能自学。

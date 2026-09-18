@@ -12,6 +12,7 @@ cover: ""
 youtube: ""
 fullSummary: []
 sectionSummaries: []
+status: archive
 ---
 
 这一篇先把深蹲的视频资料保留下来，后面我会继续补自己的训练细节、节奏和常见错误。

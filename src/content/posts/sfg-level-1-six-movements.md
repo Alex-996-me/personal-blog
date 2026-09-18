@@ -12,6 +12,7 @@ cover: ""
 youtube: ""
 fullSummary: []
 sectionSummaries: []
+status: archive
 ---
 
 这一篇是 SFG 一级六大动作的总览入口，不针对单一动作，而是先把整体标准和视频留在这里，方便后面继续拆开补充。

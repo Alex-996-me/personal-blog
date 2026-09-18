@@ -6,6 +6,7 @@ category: "体悟"
 tags: ["政治", "权力", "统治", "社会"]
 description: "少数人如何统治多数人，以及暴力、联盟、沉默与叙事如何共同维持秩序。"
 cover: "/images/posts/governance/cover.webp"
+status: archive
 ---
 
 少数人为什么能够统治多数人，而且让这种统治长久维持？这个问题困扰了我很久。

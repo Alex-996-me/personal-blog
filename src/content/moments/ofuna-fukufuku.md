@@ -24,4 +24,5 @@ items:
 hideToc: true
 description: ""
 published: true
+status: published
 ---

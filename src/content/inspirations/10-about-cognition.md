@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["信息", "行动"]
 description: "不改变行动的信念只是谈资。"
 published: true
+status: archive
 ---
 
 不改变行动的信念只是谈资。

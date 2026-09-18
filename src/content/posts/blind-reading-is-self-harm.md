@@ -12,6 +12,7 @@ tags:
 description: "多数阅读并不等于真正学习。理解阅读的本质不是记忆，而是主动加工、总结、内化，并为自己设计学习路径。"
 cover: /images/covers/blind-reading-cover.webp
 youtube: ""
+status: archive
 ---
 
 1. <strong class="point-lead">书籍和讲课都是低效的知识学习方式</strong> 因为它们根本就没有理解人类认知是如何工作的。

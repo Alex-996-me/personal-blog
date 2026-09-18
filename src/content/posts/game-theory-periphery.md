@@ -37,6 +37,7 @@ notionImport:
   source: notion
   importedAt: '2026-06-08'
   originalFile: 博弈论：边缘地带的崛起 37956991a581802383c9c2ec9db6dc2a.md
+status: archive
 ---
 [Game Theory #5: The World Game](https://youtu.be/ybufqRY77PQ?list=PLREQ8S3NPaQtA5_qIEiThLuhoFhssfcTV)
 

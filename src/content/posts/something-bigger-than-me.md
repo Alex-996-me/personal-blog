@@ -11,6 +11,7 @@ cover: /images/covers/reading-cover.svg
 youtube: ''
 fullSummary: []
 sectionSummaries: []
+status: archive
 ---
 
 最近读书时，我反复被一个问题击中：人到底要靠什么，才能穿过那些没有即时答案的阶段？

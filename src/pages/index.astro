@@ -1,32 +1,20 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ArticleVisual from "../components/ArticleVisual.astro";
-import KineticIdeaStage from "../components/KineticIdeaStage.astro";
+import LifePhoto from "../components/LifePhoto.astro";
 import { siteConfig } from "../data/site";
 import {
-  formatDate,
-  getAllInspirations,
   getAllMoments,
   getAllPosts,
-  getInspirationDetailHref,
   getMomentHref,
   getMomentLocation,
   getHomepageWriting,
-  stripMarkdownToText,
+  getMomentDate,
 } from "../lib/blog";
 import { withBasePath } from "../lib/paths";
 
-const [posts, inspirations, moments] = await Promise.all([getAllPosts(), getAllInspirations(), getAllMoments()]);
-const latestPosts = getHomepageWriting(posts, 3);
-const truncateIdeaExcerpt = (value: string, limit = 180) => value.length > limit ? `${value.slice(0, limit).trimEnd()}…` : value;
-const ideaItems = inspirations.map((inspiration) => ({
-  title: inspiration.data.title,
-  excerpt: truncateIdeaExcerpt(inspiration.data.description.trim() || stripMarkdownToText(inspiration.body)),
-  date: formatDate(inspiration.data.date),
-  datetime: inspiration.data.date.toISOString(),
-  href: withBasePath(getInspirationDetailHref(inspiration)),
-  theme: inspiration.data.theme ?? "思考",
-}));
+const [posts, moments] = await Promise.all([getAllPosts(), getAllMoments()]);
+const selectedPosts = getHomepageWriting(posts, 3);
 const recentMoments = moments.slice(0, 3).map((moment) => ({
   moment,
   location: getMomentLocation(moment),
@@ -39,54 +27,37 @@ const recentMoments = moments.slice(0, 3).map((moment) => ({
     <section class="home-identity" aria-labelledby="home-identity-title">
       <h1 id="home-identity-title">{siteConfig.title}</h1>
       <p class="home-identity__tagline">{siteConfig.tagline}</p>
-      <p class="home-identity__note">海粟的写作、思考与生活记录。</p>
+      <p class="home-identity__note">一个人的长期实验。从生活与实践中形成判断，留下经过选择的文章与日常。</p>
     </section>
 
-    {ideaItems.length > 0 && (
-      <section class="home-ideas" aria-labelledby="home-ideas-title">
-        <div class="home-section-heading">
-          <h2 id="home-ideas-title">灵感</h2>
-          <a href={withBasePath("/daily/")}>所有灵感 <span aria-hidden="true">→</span></a>
-        </div>
-        <KineticIdeaStage items={ideaItems} />
-      </section>
-    )}
+    <section class="home-journal" aria-labelledby="home-journal-title">
+      <div class="home-section-heading">
+        <h2 id="home-journal-title">精选文章</h2>
+        <a href={withBasePath("/articles/")}>所有文章</a>
+      </div>
+      {selectedPosts.length > 0 && (
+        <div class="essay-index">{selectedPosts.map((post) => <ArticleVisual post={post} />)}</div>
+      )}
+    </section>
 
     {recentMoments.length > 0 && (
       <section class="home-moments" aria-labelledby="home-moments-title">
         <div class="home-section-heading">
           <h2 id="home-moments-title">生活</h2>
-          <a href={withBasePath("/moments/")}>所有记录 <span aria-hidden="true">→</span></a>
+          <a href={withBasePath("/moments/")}>所有记录</a>
         </div>
         <div class="home-moments__grid">
-          {recentMoments.map(({ moment, image, location }, index) => (
-            <a class:list={["home-moment", index === 0 && "home-moment--lead"]} href={withBasePath(getMomentHref(moment))}>
+          {recentMoments.map(({ moment, image, location }) => (
+            <a class="home-moment" href={withBasePath(getMomentHref(moment))} aria-label={moment.data.title || `${getMomentDate(moment).toISOString().slice(0, 10)} 的照片`}>
               <div class="home-moment__media">
-                {image ? <img src={withBasePath(image)} alt="" width="1200" height="800" loading={index === 0 ? "eager" : "lazy"} decoding="async" /> : <div class="home-moment__fallback" aria-hidden="true"></div>}
+                {image && <LifePhoto src={image} alt="" sizes="(max-width: 760px) calc(100vw - 40px), 300px" />}
               </div>
-              <div><span>{location?.city ?? "生活"}</span><h3>{moment.data.title}</h3></div>
+              <div>{moment.data.title && <h3>{moment.data.title}</h3>}<span>{location?.city}</span></div>
             </a>
           ))}
         </div>
       </section>
     )}
-
-    <section class="home-journal" aria-labelledby="home-journal-title">
-      <div class="home-section-heading">
-        <h2 id="home-journal-title">最近在写</h2>
-        <a href={withBasePath("/articles/")}>所有文章 <span aria-hidden="true">→</span></a>
-      </div>
-      {latestPosts.length > 0 && (
-        <div class="home-writing-visuals">
-          <ArticleVisual post={latestPosts[0]} variant="hero" eager={true} />
-          {latestPosts.length > 1 && (
-            <div class="home-writing-visuals__secondary">
-              {latestPosts.slice(1).map((post) => <ArticleVisual post={post} variant="grid" />)}
-            </div>
-          )}
-        </div>
-      )}
-    </section>
   </div>
 
 </BaseLayout>

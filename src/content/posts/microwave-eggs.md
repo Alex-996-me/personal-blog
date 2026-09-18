@@ -42,6 +42,7 @@ notionImport:
   source: notion
   importedAt: '2026-06-07'
   originalFile: 如何用微波炉烹饪鸡蛋？ 37456991a58180baa69ee29f6ebbb82f.md
+status: archive
 ---
 再一个把水煮蛋剥的坑坑洼洼早晨，痛定思痛，我决定用微波炉烹饪鸡蛋。
 

@@ -6,6 +6,7 @@ theme: "生活"
 tags: ["余闲", "系统"]
 description: "生活要保留余闲，做人要维持满秩。"
 published: true
+status: archive
 ---
 
 生活要保留余闲，做人要维持满秩。

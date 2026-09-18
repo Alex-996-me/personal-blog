@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["意义", "人生"]
 description: "不是名词而是动词。"
 published: true
+status: archive
 ---
 
 不是名词而是动词。

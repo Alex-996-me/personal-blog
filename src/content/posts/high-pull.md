@@ -12,6 +12,7 @@ cover: "/images/covers/high-pull-cover.jpg"
 youtube: ""
 fullSummary: []
 sectionSummaries: []
+status: archive
 ---
 
 这一篇整理高翻的动作笔记和视频资料。原始笔记创建于 2026 年 4 月 17 日。

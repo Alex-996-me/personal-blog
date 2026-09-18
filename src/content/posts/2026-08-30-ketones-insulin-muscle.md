@@ -14,6 +14,7 @@ series: "English Learning"
 seriesOrder: 2
 relatedPosts:
   - "2026-08-28-discipline-freedom"
+status: archive
 ---
 
 > **One idea worth keeping**

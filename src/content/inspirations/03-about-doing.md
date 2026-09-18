@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["学习", "行动"]
 description: "认知上精准，表达上粗鄙。"
 published: true
+status: archive
 ---
 
 认知上精准，表达上粗鄙。输出倒逼输入，结果强迫行动。

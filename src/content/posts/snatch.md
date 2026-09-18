@@ -12,6 +12,7 @@ cover: "/images/covers/snatch-cover.jpg"
 youtube: ""
 fullSummary: []
 sectionSummaries: []
+status: archive
 ---
 
 这一篇整理抓举的动作笔记和演示视频。原始笔记创建于 2026 年 4 月 17 日。

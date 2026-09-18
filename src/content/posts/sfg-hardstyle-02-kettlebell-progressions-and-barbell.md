@@ -14,6 +14,7 @@ description: "SFG / Hardstyle 个人训练手册第二分册：S&S、壶铃进�
 cover: "/images/posts/sfg-hardstyle/ss-loop-step.png"
 series: "SFG / HARDSTYLE 个人训练手册"
 seriesOrder: 2
+status: archive
 ---
 
 ## 第四篇｜Simple & Sinister：把力量当“技能”高频练

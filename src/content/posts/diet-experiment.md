@@ -44,6 +44,7 @@ notionImport:
   source: notion
   importedAt: '2026-05-09'
   originalFile: 2 低碳高脂，animal-based：我的饮食 35a56991a58180bb87dfd501055018da.md
+status: archive
 ---
 ## 0. 个人情况
 

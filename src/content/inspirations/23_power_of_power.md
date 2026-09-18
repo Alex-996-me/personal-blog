@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["权力", "恐惧"]
 description: "权力凌驾一切之上"
 published: true
+status: archive
 ---
 
 凌驾在所有人、所有制度，包括法律之上的，是权力。

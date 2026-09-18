@@ -11,6 +11,7 @@ cover: /images/covers/training-cover.svg
 youtube: 'https://www.youtube.com/watch?v=YSxHifyIrv0'
 fullSummary: []
 sectionSummaries: []
+status: archive
 ---
 
 我喜欢壶铃，不只是因为它“有效”，还因为它很诚实。

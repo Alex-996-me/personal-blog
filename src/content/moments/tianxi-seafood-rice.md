@@ -12,6 +12,7 @@ images:
 hideToc: true
 description: "一次关于究极缤纷海鲜饭的体验。"
 published: true
+status: published
 ---
 
 ## 究极缤纷海鲜饭

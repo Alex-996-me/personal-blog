@@ -1,147 +1,40 @@
-﻿---
+---
 import { render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import RelatedContent from "../../components/RelatedContent.astro";
-import {
-  formatDate,
-  getAllInspirations,
-  getAllPosts,
-  getCategoryHref,
-  getRelatedIdeasForPost,
-  getRelatedWritingForPost,
-  getSeriesNavigation,
-  getSeriesPosts,
-  getSeriesSlug,
-  getInspirationDetailHref,
-  getPostSlug,
-  getPostCoverTransitionName,
-  getPostHref,
-  getSources,
-  getUpdatedDate,
-  getYoutubeEmbedUrl,
-} from "../../lib/blog";
+import { getAllPosts, getPostSlug, getSources, getUpdatedDate, getYoutubeEmbedUrl } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
 
 export async function getStaticPaths() {
-  const posts = await getAllPosts();
-  return posts.map((post) => ({
-    params: { slug: getPostSlug(post) },
-    props: { post },
-  }));
+  return (await getAllPosts()).map((post) => ({ params: { slug: getPostSlug(post) }, props: { post } }));
 }
-
 const { post } = Astro.props;
 const { Content } = await render(post);
+const published = post.data.date.toISOString().slice(0, 10);
+const updated = getUpdatedDate(post).toISOString().slice(0, 10);
+const sameDate = published === updated;
+const sources = getSources(post.data.source).map((text) => ({ text, isLink: /^https?:\/\//i.test(text) }));
 const youtubeEmbedUrl = getYoutubeEmbedUrl(post.data.youtube);
-const updated = getUpdatedDate(post);
-const hasUpdated = updated.valueOf() !== post.data.date.valueOf();
-const categoryHref = withBasePath(getCategoryHref(post.data.category));
-const isTrainingPost = post.data.category === "训练";
-const isKettlebellDictionary = getPostSlug(post) === "kettlebell-action-dictionary";
-const [allPosts, allInspirations] = await Promise.all([getAllPosts(), getAllInspirations()]);
-const relatedPosts = getRelatedWritingForPost(post, allPosts);
-const relatedIdeas = getRelatedIdeasForPost(post, allInspirations);
-const seriesPosts = post.data.series
-  ? getSeriesPosts(post.data.series, allPosts).filter((entry) => entry.id !== post.id)
-  : [];
-const continueReading = [
-  ...seriesPosts.map((entry) => ({ href: withBasePath(getPostHref(entry)), title: entry.data.title, meta: `系列 · 第 ${entry.data.seriesOrder ?? "—"} 篇` })),
-  ...relatedPosts.map((entry) => ({ href: withBasePath(getPostHref(entry)), title: entry.data.title, meta: entry.data.category })),
-  ...relatedIdeas.map((idea) => ({ href: withBasePath(getInspirationDetailHref(idea)), title: idea.data.title, meta: "灵感" })),
-].filter((entry, index, entries) => entries.findIndex((candidate) => candidate.href === entry.href) === index).slice(0, 3);
-const seriesNavigation = getSeriesNavigation(post, allPosts);
-const seriesHref = post.data.series ? withBasePath(`/series/${getSeriesSlug(post.data.series)}/`) : "";
-const sources = getSources(post.data.source);
-const cover = post.data.cover?.trim();
-const coverTransitionName = cover ? getPostCoverTransitionName(post) : undefined;
 ---
-
-<BaseLayout
-  title={post.data.title}
-  description={post.data.description}
-  ogImage={post.data.cover}
-  bodyClass={["body--post", isTrainingPost && "body--post-training", isKettlebellDictionary && "body--kettlebell-dictionary"].filter(Boolean).join(" ")}
-  shellClass={isTrainingPost ? "page-shell--post-training" : ""}
-  panelClass={isTrainingPost ? "content-panel--post-training" : ""}
-  searchType="ARTICLE"
-  searchSection={post.data.category}
->
-  <article>
-    <a class="post-backlink" href={categoryHref}>← 返回{post.data.category}</a>
-
+<BaseLayout title={post.data.title} description={post.data.description} ogImage={post.data.cover}
+  bodyClass="body--post" searchType="ARTICLE" searchSection={post.data.category} searchDate={updated}>
+  <article class="essay">
     <header class="post-header">
-      <p class="post-header__eyebrow">
-        <a href={categoryHref}>{post.data.category}</a>
-        {post.data.series && <><span aria-hidden="true">/</span><a href={seriesHref}>{post.data.series}</a></>}
-      </p>
+      <p class="post-header__eyebrow">{post.data.category}</p>
       <h1>{post.data.title}</h1>
       <p class="post-header__description">{post.data.description}</p>
       <div class="post-meta">
-        <span>{formatDate(post.data.date)}</span>
-        {hasUpdated && <span>更新于 {formatDate(updated)}</span>}
-        {post.data.series && <a href={seriesHref}>{post.data.series}{seriesNavigation.index >= 0 && ` · 第 ${seriesNavigation.index + 1} 篇`}</a>}
+        <span>{sameDate ? "发布 / 更新" : "发布"} · <time datetime={published} itemprop="datePublished">{published.replaceAll("-", ".")}</time></span>
+        <span class:list={[sameDate && "sr-only"]}>更新 · <time datetime={updated} itemprop="dateModified">{updated.replaceAll("-", ".")}</time></span>
       </div>
     </header>
-
-    {cover && (
-      <figure class="post-cover-hero" style={`view-transition-name: ${coverTransitionName};`}>
-        <img
-          src={withBasePath(cover)}
-          alt=""
-          width="1600"
-          height="1000"
-          loading="eager"
-          fetchpriority="high"
-          decoding="async"
-        />
-      </figure>
-    )}
-
-    {youtubeEmbedUrl && (
-      <div class="video-embed">
-        <iframe
-          src={youtubeEmbedUrl}
-          title={`${post.data.title} YouTube 视频`}
-          loading="lazy"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-        ></iframe>
-      </div>
-    )}
-
-    <div class="prose">
-      <Content />
-    </div>
-
-    {post.data.tags.length > 0 && <p class="post-tags" aria-label="标签">{post.data.tags.map((tag) => `#${tag}`).join(" · ")}</p>}
-
+    {youtubeEmbedUrl && <div class="video-embed"><iframe src={youtubeEmbedUrl} title={`${post.data.title} YouTube 视频`} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>}
+    <div class="prose"><Content /></div>
     {sources.length > 0 && (
       <section class="content-sources" aria-labelledby="content-sources-title">
         <h2 id="content-sources-title">参考</h2>
-        <ul>
-          {sources.map((source) => (
-            <li>
-              {/^https?:\/\//i.test(source)
-                ? <a href={source} target="_blank" rel="noopener noreferrer">{source}</a>
-                : <span>{source}</span>}
-            </li>
-          ))}
-        </ul>
+        <ul>{sources.map((source) => <li>{source.isLink ? <a href={source.text} target="_blank" rel="noopener noreferrer">{source.text}</a> : <span>{source.text}</span>}</li>)}</ul>
       </section>
     )}
-
-    {post.data.series && (seriesNavigation.previous || seriesNavigation.next) && (
-      <nav class="series-navigation" aria-label="系列文章导航">
-        <header><a href={seriesHref}>{post.data.series}</a></header>
-        <div>
-          {seriesNavigation.previous
-            ? <a href={withBasePath(getPostHref(seriesNavigation.previous))}><span>← 上一篇</span><strong>{seriesNavigation.previous.data.title}</strong></a>
-            : <span></span>}
-          {seriesNavigation.next && <a href={withBasePath(getPostHref(seriesNavigation.next))}><span>下一篇 →</span><strong>{seriesNavigation.next.data.title}</strong></a>}
-        </div>
-      </nav>
-    )}
-
-    <RelatedContent items={continueReading} />
+    <nav class="content-ending" aria-label="文章导航" data-pagefind-ignore><a href={withBasePath("/articles/")}>所有文章</a></nav>
   </article>
 </BaseLayout>

@@ -1,41 +1,18 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import { getSearchEntries } from "../lib/blog";
 import { withBasePath } from "../lib/paths";
-
-const searchEntries = await getSearchEntries();
-const currentQuery = Astro.url.searchParams.get("q") ?? "";
+const home = withBasePath("/");
 ---
-
-<BaseLayout title="搜索" description="搜索文章、灵感与生活记录。" wideContent={true} bodyClass="body--hub-search" shellClass="page-shell--hub-search" panelClass="content-panel--hub-search">
-  <section class="lab-search">
-    <a class="post-backlink" href={withBasePath("/")}>← 返回首页</a>
-    <header><h1>搜索</h1></header>
-    <label class="lab-search__input-wrap" for="lab-search-input"><span class="sr-only">搜索站内内容</span><input id="lab-search-input" type="search" value={currentQuery} placeholder="输入关键词" autocomplete="off" spellcheck="false" autofocus /></label>
-    <p id="lab-search-results-summary" class="lab-search__summary">输入关键词开始搜索。</p>
-    <div id="lab-search-results" class="lab-search__results"></div>
-  </section>
-  <script define:vars={{ searchEntries, initialQuery: currentQuery }}>
-    const entries = searchEntries;
-    const input = document.querySelector("#lab-search-input");
-    const results = document.querySelector("#lab-search-results");
-    const summary = document.querySelector("#lab-search-results-summary");
-    const escapeHtml = (value = "") => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
-    const labels = { ARTICLE: "文章", IDEA: "灵感", MOMENT: "生活" };
-    const render = (value) => {
-      const words = value.trim().toLowerCase().split(/\s+/).filter(Boolean);
-      if (!words.length) { results.innerHTML = ""; summary.textContent = "输入关键词开始搜索。"; history.replaceState(null, "", window.location.pathname); return; }
-      const ranked = entries.map((entry) => {
-        const title = entry.title.toLowerCase();
-        const haystack = `${entry.title} ${entry.description} ${entry.tags.join(" ")} ${entry.text}`.toLowerCase();
-        if (!words.every((word) => haystack.includes(word))) return null;
-        return { entry, score: words.reduce((score, word) => score + (title.includes(word) ? 10 : 1), 0) };
-      }).filter(Boolean).sort((a, b) => b.score - a.score).slice(0, 20);
-      summary.textContent = `${ranked.length} 条结果`;
-      history.replaceState(null, "", `${window.location.pathname}?q=${encodeURIComponent(value.trim())}`);
-      results.innerHTML = ranked.map(({ entry }) => `<a href="${entry.url}"><span>${labels[entry.kind] ?? entry.kind}</span><strong>${escapeHtml(entry.title)}</strong><p>${escapeHtml(entry.description)}</p></a>`).join("");
-    };
-    input?.addEventListener("input", (event) => render(event.currentTarget.value));
-    render(initialQuery);
-  </script>
-</BaseLayout>
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, follow" />
+    <title>搜索入口已移至页头 | N=1 Lab</title>
+    <link rel="canonical" href={new URL(home, Astro.site)} />
+    <script is:inline define:vars={{ home }}>
+      location.replace(home + location.search + "#header-search-input");
+    </script>
+  </head>
+  <body><p>搜索已移至页头。<a href={home + "#header-search-input"}>返回 N=1 Lab</a></p></body>
+</html>

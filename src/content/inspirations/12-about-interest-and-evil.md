@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["善恶", "判断"]
 description: "价值判断，不是事实判断。"
 published: true
+status: archive
 ---
 
 价值判断，不是事实判断。

@@ -1,0 +1,24 @@
+---
+import { getCollection } from "astro:content";
+import RetiredContent from "../components/RetiredContent.astro";
+import { getPostHref, getMomentHref, getSeriesSlug } from "../lib/blog";
+
+// Preserve former URLs without shipping archived titles, bodies or media references.
+// Drafts (including legacy published:false entries) get no route at all.
+export async function getStaticPaths() {
+  const [posts, moments] = await Promise.all([getCollection("posts"), getCollection("moments")]);
+  const paths = [
+    ...posts.filter(({ data }) => data.status === "archive").map(getPostHref),
+    ...moments.filter(({ data }) => data.status === "archive" && data.published !== false).map(getMomentHref),
+  ];
+  const publicSeries = new Set(posts.filter(({ data }) => data.status === "published" && data.series).map(({ data }) => data.series));
+  for (const post of posts) {
+    if (post.data.status === "archive" && post.data.series && !publicSeries.has(post.data.series)) {
+      paths.push(`/series/${getSeriesSlug(post.data.series)}/`);
+    }
+  }
+  return [...new Set(paths)].map((route) => ({ params: { retired: route.replace(/^\/+|\/+$/g, "") } }));
+}
+---
+
+<RetiredContent />

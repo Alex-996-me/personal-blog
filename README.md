@@ -1,6 +1,6 @@
 # N=1 Lab
 
-基于 Astro 的中文个人博客，用于沉淀长文、英文学习、短灵感与生活图文记录。线上地址：<https://alex-996-me.github.io/personal-blog/>。
+基于 Astro 的中文个人网站，公开经过选择的成熟文章（Essays）与生活记录（Life）。未完成的思考留在私人系统。线上地址：<https://alex-996-me.github.io/personal-blog/>。
 
 ## 最快的发文方式
 
@@ -30,8 +30,8 @@ npm run optimize:media
 ## 内容与资源目录
 
 ```text
-src/content/posts/          长文、书评、学习文章、英文打卡
-src/content/inspirations/   短灵感
+src/content/posts/          成熟文章与暂时归档的旧文章
+src/content/inspirations/   暂存的旧灵感源文件，不公开
 src/content/moments/        生活与地点图文
 public/images/covers/       文章封面
 public/images/posts/        正文插图
@@ -50,6 +50,10 @@ scripts/                    导入、校验和媒体工具
 ## 内容模型要点
 
 文章分类只有：`日志`、`自学`、`体悟`、`健康`、`训练`、`工具`、`世界`。
+
+公开状态以 `src/content.config.ts` 为准：`status: published | archive | draft`。文章必须显式填写 status；公开 Essay 还须具备 title、date、updated、category、description，且 updated 不早于 date。生活缺省 published；旧灵感缺省 draft，且整体退出公开集合。archive 只保留无正文的旧 URL 提示，draft 不生成页面。公开列表、搜索均只使用 published 内容；RSS 只含 published Essays。新增内容应显式填写 status，写作中使用 draft。源文件仍在仓库，status 不等于访问控制。
+
+当前选择和后续处置见 [内容审计](docs/PUBLIC_CONTENT_AUDIT.md)，视觉交接见 [DESIGN_HANDOFF](docs/DESIGN_HANDOFF.md)。
 
 系列文章使用 `series` 和 `seriesOrder`；跨内容关联使用 `relatedPosts`、`relatedNotes`、`relatedMoments`。本地资源统一写成从 `/images/`、`/audio/` 或 `/videos/` 开始的站点路径。
 

@@ -12,6 +12,7 @@ cover: "/images/covers/kettlebell-military-press-cover.jpg"
 youtube: ""
 fullSummary: []
 sectionSummaries: []
+status: archive
 ---
 
 这一篇把军推的文字笔记、本地视频和参考链接统一收在一起。原始笔记创建于 2026 年 4 月 17 日。

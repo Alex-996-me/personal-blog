@@ -12,6 +12,7 @@ tags:
 description: "方法论读得越多，越容易陷入显性知识的幻觉。真正决定你能不能把事情做成的，往往是无法靠语言完整传授的隐性知识。"
 cover: /images/covers/tacit-knowledge-iceberg.jpg
 youtube: ""
+status: archive
 ---
 
 - **为什么读：** 解决你对“方法论疲劳”的问题。真正有用的能力，常常不是显性知识。

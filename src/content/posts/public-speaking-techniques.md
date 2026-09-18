@@ -12,6 +12,7 @@ tags:
 description: "关于当众讲话、表达和说服的 16 条提醒：说人话、讲重点、有边界，也要有根据。"
 cover: /images/covers/speaking-skills-cover.jpg
 youtube: ""
+status: archive
 ---
 
 下面这些提醒，主要是关于当众讲话、表达和说服。我只做了少量措辞整理，核心意思不变。

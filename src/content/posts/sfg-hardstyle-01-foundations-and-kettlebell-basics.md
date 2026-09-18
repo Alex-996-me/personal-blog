@@ -14,6 +14,7 @@ description: "SFG / Hardstyle 个人训练手册第一分册：训练哲学、�
 cover: "/images/posts/sfg-hardstyle/practice-feat-lift.png"
 series: "SFG / HARDSTYLE 个人训练手册"
 seriesOrder: 1
+status: archive
 ---
 
 从训练哲学 → 张力与呼吸 → 壶铃六大基础 → S&S → 进阶壶铃 → 杠铃补充 → 周期化

@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["决策", "快慢"]
 description: "重要决策必须慢，越重要就越得慢"
 published: true
+status: archive
 ---
 
 慢半拍，从而更好在时候评估自己决策的质量。

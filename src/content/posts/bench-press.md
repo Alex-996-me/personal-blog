@@ -12,6 +12,7 @@ cover: "/images/covers/bench-press-cover.jpg"
 youtube: ""
 fullSummary: []
 sectionSummaries: []
+status: archive
 ---
 
 这一篇先把卧推的动作视频保留下来，后面我会继续补自己的训练细节、握距选择和发力体会。

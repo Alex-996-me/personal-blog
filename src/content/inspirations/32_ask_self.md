@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["反思", "自省"]
 description: "做任何事前必须考虑的五个问题"
 published: true
+status: archive
 ---
 
 1. 这件事必须现在做吗？

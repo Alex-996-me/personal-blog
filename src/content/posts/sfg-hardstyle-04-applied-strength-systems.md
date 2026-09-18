@@ -16,6 +16,7 @@ description: "SFG / Hardstyle 个人训练手册第四分册：高频微量、�
 cover: "/images/posts/sfg-hardstyle/gtg-daily-dose-loop.png"
 series: "SFG / HARDSTYLE 个人训练手册"
 seriesOrder: 4
+status: archive
 ---
 
 ## 第九篇｜应用训练系统：把力量放进真实任务里

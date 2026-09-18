@@ -12,6 +12,7 @@ cover: "/images/covers/conventional-deadlift-cover.jpg"
 youtube: ""
 fullSummary: []
 sectionSummaries: []
+status: archive
 ---
 
 这一篇先把传统硬拉的视频保留下来，后面我会继续补自己的起拉站位、锁定节奏和训练复盘。

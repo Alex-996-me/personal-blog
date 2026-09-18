@@ -15,6 +15,7 @@ description: "SFG / Hardstyle 个人训练手册第三分册：周期化、Plan 
 cover: "/images/posts/sfg-hardstyle/wave-periodization.png"
 series: "SFG / HARDSTYLE 个人训练手册"
 seriesOrder: 3
+status: archive
 ---
 
 ## 第七篇｜周期化、恢复与拳击优先的执行系统

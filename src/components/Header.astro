@@ -1,9 +1,9 @@
 ﻿---
 import { navigation, siteConfig } from "../data/site";
 import { withBasePath } from "../lib/paths";
+import HeaderSearch from "./HeaderSearch.astro";
 
 const pathname = Astro.url.pathname;
-const searchHref = withBasePath("/search/");
 
 function isActive(href: string) {
   const target = withBasePath(href);
@@ -13,7 +13,6 @@ function isActive(href: string) {
   return pathname.startsWith(target);
 }
 
-const isSearchActive = pathname.startsWith(searchHref);
 ---
 
 <header class="site-header">
@@ -23,26 +22,13 @@ const isSearchActive = pathname.startsWith(searchHref);
     <div class="site-header__controls">
       <nav class="site-nav" aria-label="顶部导航">
         {navigation.map((item) => (
-          <a href={withBasePath(item.href)} class={isActive(item.href) ? "is-active" : undefined}>
+          <a href={withBasePath(item.href)} aria-current={isActive(item.href) ? "page" : undefined}>
             {item.label}
           </a>
         ))}
       </nav>
 
-      <div class="site-header__actions">
-        <a
-          class:list={["site-search-link", isSearchActive && "is-active"]}
-          href={searchHref}
-          data-search-open
-          aria-label="打开站内搜索"
-          title="搜索"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="6.5"></circle>
-            <path d="M16 16l4.5 4.5"></path>
-          </svg>
-        </a>
-      </div>
+      <HeaderSearch />
     </div>
   </div>
 </header>

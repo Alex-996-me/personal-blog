@@ -6,6 +6,7 @@ theme: "生活"
 tags: ["工作", "决策"]
 description: "能外包花钱外包。"
 published: true
+status: archive
 ---
 
 能外包花钱外包，高可逆快速试错，剩下的要亲自做。

@@ -1,6 +1,7 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 import { inspirationThemeNames } from "./data/site";
+import { essayPublicationErrors } from "./lib/essay-contract.mjs";
 
 const sectionSummarySchema = z.object({
   heading: z.string(),
@@ -22,10 +23,11 @@ const relationshipFields = {
 };
 
 const postSchema = z.object({
+  status: z.enum(["published", "archive", "draft"]),
   title: z.string(),
   date: z.coerce.date(),
   updated: z.coerce.date().optional(),
-  category: z.enum(["日志", "自学", "体悟", "健康", "训练", "工具", "世界"]),
+  category: z.string().trim().min(1, "category must not be empty").max(24, "category must be at most 24 characters"),
   tags: z.array(z.string()).default([]),
   description: z.string(),
   cover: z.string().optional(),
@@ -39,9 +41,15 @@ const postSchema = z.object({
   series: z.string().optional(),
   seriesOrder: z.number().int().positive().optional(),
   ...relationshipFields,
+}).superRefine((data, ctx) => {
+  for (const [field, message] of essayPublicationErrors(data)) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: [field], message });
+  }
 });
 
 const inspirationSchema = z.object({
+  // Legacy sources are retained, but new fragments are private by default.
+  status: z.enum(["published", "archive", "draft"]).default("draft"),
   title: z.string(),
   date: z.coerce.date(),
   updated: z.coerce.date().optional(),
@@ -53,6 +61,7 @@ const inspirationSchema = z.object({
 });
 
 const momentSchema = z.object({
+  status: z.enum(["published", "archive", "draft"]).default("published"),
   title: z.string().default(""),
   slug: z.string().optional(),
   date: z.coerce.date(),

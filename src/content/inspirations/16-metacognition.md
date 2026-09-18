@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["元认知", "学习"]
 description: "调方向，不是调准头。"
 published: true
+status: archive
 ---
 
 调方向，不是调准头。

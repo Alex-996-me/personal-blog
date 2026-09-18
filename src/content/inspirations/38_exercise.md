@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["练习", "方法"]
 description: "刻意练习就是不断重复"
 published: true
+status: archive
 ---
 
 量必须足够大。重复的次数必须足够多。

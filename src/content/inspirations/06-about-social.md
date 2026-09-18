@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["伟大", "创造"]
 description: "不是贪心算法，而是妙手偶得。"
 published: true
+status: archive
 ---
 
 不是贪心算法，而是妙手偶得。

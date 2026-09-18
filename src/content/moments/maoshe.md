@@ -19,6 +19,7 @@ items:
 hideToc: true
 description: ""
 published: true
+status: published
 ---
 
 不用去楼上的SAOYA，在山猫舍花88元也能够吃到品质绝对一流的琉球丼

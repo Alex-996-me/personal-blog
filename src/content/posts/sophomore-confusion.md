@@ -11,6 +11,7 @@ cover: /images/covers/journal-cover-2.svg
 youtube: ''
 fullSummary: []
 sectionSummaries: []
+status: archive
 ---
 
 大二像一个尴尬的路口。

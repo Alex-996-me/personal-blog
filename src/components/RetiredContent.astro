@@ -1,0 +1,12 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { withBasePath } from "../lib/paths";
+---
+
+<BaseLayout title="内容已收起" description="这篇内容已不再公开展示。" noindex={true}>
+  <article class="prose" data-retired-content>
+    <h1>内容已收起</h1>
+    <p>这里曾经有一篇记录。现在，N=1 Lab 只留下经过选择的文章与生活。</p>
+    <p><a href={withBasePath("/articles/")}>阅读文章</a> · <a href={withBasePath("/moments/")}>看看生活</a></p>
+  </article>
+</BaseLayout>

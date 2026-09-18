@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["要求", "合理"]
 description: "提任何要求前先考虑合不合理"
 published: true
+status: archive
 ---
 
 合理的要求必须有理由的正当性，时间的紧迫性，以及实现的可能性。

@@ -6,10 +6,6 @@ function escapeHtml(value) {
     .replaceAll('"', "&quot;");
 }
 
-function normalizeSummaryHeading(value) {
-  return String(value).trim().replace(/\s+/g, " ");
-}
-
 function normalizeAnchorSlug(value) {
   const normalized = String(value)
     .trim()
@@ -137,23 +133,6 @@ function getBilibiliEmbedUrl(value) {
   return "";
 }
 
-function renderSummaryBlock(items, title, variant) {
-  if (!Array.isArray(items) || items.length === 0) {
-    return "";
-  }
-
-  const list = items.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
-
-  return [
-    `<!-- ${variant}-summary:start -->`,
-    `<section class="section-summary section-summary--${variant}">`,
-    `<p class="section-summary__title">${escapeHtml(title)}</p>`,
-    `<ul>${list}</ul>`,
-    "</section>",
-    `<!-- ${variant}-summary:end -->`,
-  ].join("");
-}
-
 function createVideoEmbedNode(url) {
   const youtubeEmbedUrl = getYoutubeEmbedUrl(url);
   const bilibiliEmbedUrl = youtubeEmbedUrl ? "" : getBilibiliEmbedUrl(url);
@@ -234,23 +213,8 @@ function getStandaloneLinkHref(node) {
 }
 
 export function remarkEnhanceBlogMarkdown() {
-  return (tree, file) => {
-    const frontmatter = file?.data?.astro?.frontmatter ?? {};
-    const sectionSummaries = new Map(
-      (frontmatter.sectionSummaries ?? []).map((entry) => [
-        normalizeSummaryHeading(entry.heading),
-        Array.isArray(entry.summary) ? entry.summary : [],
-      ]),
-    );
-    const fullSummary = Array.isArray(frontmatter.fullSummary) ? frontmatter.fullSummary : [];
+  return (tree) => {
     const nextChildren = [];
-
-    if (fullSummary.length > 0) {
-      nextChildren.push({
-        type: "html",
-        value: renderSummaryBlock(fullSummary, "全文要点", "full"),
-      });
-    }
 
     for (const node of tree.children ?? []) {
       const tutorialVideoGrid = createTutorialVideoGridNode(node);
@@ -270,16 +234,6 @@ export function remarkEnhanceBlogMarkdown() {
 
       nextChildren.push(node);
 
-      if (node.type === "heading" && node.depth === 2) {
-        const heading = normalizeSummaryHeading(getMdastText(node));
-        const summary = sectionSummaries.get(heading);
-        if (summary && summary.length > 0) {
-          nextChildren.push({
-            type: "html",
-            value: renderSummaryBlock(summary, "本节要点", "section"),
-          });
-        }
-      }
     }
 
     tree.children = nextChildren;

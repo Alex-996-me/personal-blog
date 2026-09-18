@@ -11,6 +11,7 @@ cover: /images/covers/journal-cover.svg
 youtube: ''
 fullSummary: []
 sectionSummaries: []
+status: archive
 ---
 
 我想重新拥有一个自己的空间。

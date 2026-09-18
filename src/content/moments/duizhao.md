@@ -12,6 +12,7 @@ images:
 hideToc: true
 description: "古北最难约到的海鲜饭"
 published: true
+status: published
 ---
 
 对照料理在古北显得比较低调，但是服务非常好，即使只是一份海鲜饭也有提前写好的欢迎牌，让整顿饭非常有仪式感。

@@ -6,6 +6,7 @@ theme: "生活"
 tags: ["幸福", "生活"]
 description: "无法量化，没有指标。"
 published: true
+status: archive
 ---
 
 无法量化，没有指标。

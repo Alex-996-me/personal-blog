@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["决策", "信息"]
 description: "不轻易下结论。"
 published: true
+status: archive
 ---
 
 不轻易下结论，外包低价值思考，慢半拍做反应，关注新信息。

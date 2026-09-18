@@ -1,117 +1,29 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import {
-  formatDate,
-  getAllMoments,
-  getMomentDate,
-  getMomentHref,
-  getMomentLocation,
-  getMomentSlug,
-} from "../../lib/blog";
+import LifePhoto from "../../components/LifePhoto.astro";
+import { getAllMoments, getMomentDate, getMomentHref, getMomentLocation } from "../../lib/blog";
 import { withBasePath } from "../../lib/paths";
 import "../../styles/moments.css";
-
-const monthNames = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
-const allMoments = (await getAllMoments()).sort((left, right) => getMomentDate(right).valueOf() - getMomentDate(left).valueOf());
-
-const moments = allMoments.map((moment) => ({
-  moment,
-  slug: getMomentSlug(moment),
-  href: withBasePath(getMomentHref(moment)),
-  date: getMomentDate(moment),
-  location: getMomentLocation(moment),
-  image: moment.data.items[0]?.image ?? moment.data.images[0] ?? "",
-}));
-
-type MomentEntry = (typeof moments)[number];
-const years = [...moments.reduce((yearMap, entry) => {
-  const year = entry.date.getFullYear();
-  const month = entry.date.getMonth();
-  if (!yearMap.has(year)) yearMap.set(year, new Map<number, MomentEntry[]>());
-  const monthMap = yearMap.get(year)!;
-  monthMap.set(month, [...(monthMap.get(month) ?? []), entry]);
-  return yearMap;
-}, new Map<number, Map<number, MomentEntry[]>>()).entries()]
-  .sort(([left], [right]) => right - left)
-  .map(([year, monthMap]) => ({
-    year,
-    months: [...monthMap.entries()]
-      .sort(([left], [right]) => right - left)
-      .map(([month, entries]) => ({ month, entries })),
-  }));
-
+const moments = (await getAllMoments()).sort((a, b) => getMomentDate(b).valueOf() - getMomentDate(a).valueOf());
 ---
-
-<BaseLayout
-  title="生活"
-  description="想留下来的地方、食物和日常。"
-  wideContent={true}
-  bodyClass="body--moments"
-  shellClass="page-shell--moments"
-  panelClass="content-panel--moments"
->
-  <main class="moments-journal">
-    <header class="moments-journal__header">
-      <h1>生活</h1>
-      <p>想留下来的地方、食物和日常。</p>
-    </header>
-
+<BaseLayout title="生活" description="想留下来的地方、食物和日常。" wideContent={true} bodyClass="body--moments" shellClass="page-shell--moments">
+  <div class="moments-journal">
+    <header class="editorial-page-header"><h1>生活</h1><p>想留下来的地方、食物和日常。</p></header>
     <div class="moments-chronology">
-      {years.map(({ year, months }, yearIndex) => (
-        <section class="moments-year" aria-labelledby={`moments-year-${year}`}>
-          <h2 id={`moments-year-${year}`}>{year}</h2>
-          <div class="moments-year__months">
-            {months.map(({ month, entries }, monthIndex) => (
-              <section class="moments-month" aria-labelledby={`moments-month-${year}-${month + 1}`}>
-                <h3 id={`moments-month-${year}-${month + 1}`}>{monthNames[month]}</h3>
-                <article class="moment-entry moment-entry--featured" id={`moment-${entries[0].slug}`}>
-                  <a href={entries[0].href}>
-                    <div class="moment-entry__media">
-                      {entries[0].image
-                        ? <img
-                            src={withBasePath(entries[0].image)}
-                            alt={entries[0].moment.data.title}
-                            width="1440"
-                            height="960"
-                            loading={yearIndex === 0 && monthIndex === 0 ? "eager" : "lazy"}
-                            fetchpriority={yearIndex === 0 && monthIndex === 0 ? "high" : "auto"}
-                            decoding="async"
-                          />
-                        : <span aria-hidden="true">N=1</span>}
-                    </div>
-                    <div class="moment-entry__copy">
-                      <p>{entries[0].location?.city ?? "生活"} · <time datetime={entries[0].date.toISOString()}>{formatDate(entries[0].date)}</time></p>
-                      <h4>{entries[0].moment.data.title}</h4>
-                      {entries[0].moment.data.description && <p>{entries[0].moment.data.description}</p>}
-                    </div>
-                  </a>
-                </article>
-
-                {entries.length > 1 && (
-                  <div class="moments-month__grid">
-                    {entries.slice(1).map((entry) => (
-                      <article class="moment-entry" id={`moment-${entry.slug}`}>
-                        <a href={entry.href}>
-                          <div class="moment-entry__media">
-                            {entry.image
-                              ? <img src={withBasePath(entry.image)} alt={entry.moment.data.title} width="960" height="720" loading="lazy" decoding="async" />
-                              : <span aria-hidden="true">N=1</span>}
-                          </div>
-                          <div class="moment-entry__copy">
-                            <p>{entry.location?.city ?? "生活"} · <time datetime={entry.date.toISOString()}>{formatDate(entry.date)}</time></p>
-                            <h4>{entry.moment.data.title}</h4>
-                            {entry.moment.data.description && <p>{entry.moment.data.description}</p>}
-                          </div>
-                        </a>
-                      </article>
-                    ))}
-                  </div>
-                )}
-              </section>
-            ))}
-          </div>
-        </section>
-      ))}
+      {moments.map((moment, index) => {
+        const image = moment.data.items[0]?.image ?? moment.data.images[0];
+        const date = getMomentDate(moment).toISOString().slice(0, 10);
+        const location = getMomentLocation(moment);
+        return <article class="moment-entry">
+          <a href={withBasePath(getMomentHref(moment))} aria-label={moment.data.title || `${date} 的照片`}>
+            {image && <div class="moment-entry__media"><LifePhoto src={image} alt="" eager={index === 0} sizes="(max-width: 760px) calc(100vw - 40px), (max-width: 1008px) calc((100vw - 80px) / 2), 464px" /></div>}
+            <div class="moment-entry__copy">
+              {moment.data.title && <h2>{moment.data.title}</h2>}
+              <p><time datetime={date}>{date.replaceAll("-", ".")}</time>{location?.city && <span>{location.city}</span>}{moment.data.place && <span>{moment.data.place}</span>}</p>
+            </div>
+          </a>
+        </article>;
+      })}
     </div>
-  </main>
+  </div>
 </BaseLayout>

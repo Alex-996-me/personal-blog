@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["知识", "学习"]
 description: "局部聚类，远程连接。"
 published: true
+status: archive
 ---
 
 局部聚类，远程连接。

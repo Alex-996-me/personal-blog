@@ -2,6 +2,18 @@
 
 这套流程的目的不是让 AI 替作者思考，而是把判断权与生产劳动分开：作者决定什么值得写、相信什么、怎样表达；Agent 负责把已授权的内容变成可发布的作品。
 
+## 公开边界
+
+N=1 Lab 只公开成熟文章（Essays）和生活记录（Life）。教程、练习、碎片和临时判断默认留在私人系统；Life 无须提炼教训。原 Inspirations 不再是公开内容类型。完整审计见 [PUBLIC_CONTENT_AUDIT.md](../PUBLIC_CONTENT_AUDIT.md)。
+
+新增文章显式填写 `status: draft`，作者确认终稿后才改为 `published`；`archive` 保留源文件和无原文的旧 URL 提示，不进入搜索或 RSS。生活使用同样状态，旧 `published: false` 仍有效。首页只用 `featuredHome` 与 `featuredRank` 指定 2–5 篇代表文章，不按日期自动补位。状态字段不改变 commit / push 的作者发布门槛，也不能把仓库或 public 媒体变成私有存储。
+
+## Essay 发布字段
+
+每篇公开 Essay 必须显式填写 `title`、`date`、`updated`、`category`、`description`、`status: published`。`date` 是首次发表日期；`updated` 是最近一次实质修订日期，未修订时仍须由作者明确填写与 `date` 相同的日期，且不得早于 `date`。仅调整页面样式不更新文章日期。
+
+`category` 由作者选择；`description` 简洁表达文章主旨。不得由脚本猜测、补造或用 `updatedAt` 代替 `updated`。缺失信息先向作者核实。`tags` 可选。`npm run validate` 会给出文件名与无效字段；archive/draft 不强制 `updated`。验证通过不代表获得发布授权。
+
 ## 人负责什么
 
 - 选真正值得写的问题

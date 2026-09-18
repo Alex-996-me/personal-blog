@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["失败", "反思"]
 description: "知道自己会死在哪里，然后永远不去那个地方"
 published: true
+status: archive
 ---
 
 与其知道别人怎么成功，不如学习别人怎么失败。

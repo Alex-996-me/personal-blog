@@ -2,7 +2,7 @@
 title: 关于多元心智模型：跨领域学习，判断就更准？
 date: '2026-07-14'
 updated: '2026-07-14'
-category: 体悟
+category: 心智模型
 tags: [心智模型, 决策, 学习, 认知]
 description: 从多元心智模型、理性分类与试错出发，讨论知识如何在真实情境中转化为判断和行动。
 cover: /images/posts/mental-models-and-judgment/image-01.webp
@@ -11,6 +11,10 @@ notionImport:
   source: notion
   importedAt: '2026-07-14'
   originalFile: 关于多元心智模型：跨领域学习，判断就更准？ 39c56991a58180f19d62e13b17d372fb.md
+status: published
+featured: true
+featuredHome: true
+featuredRank: 1
 ---
 查理·芒格曾在南加州大学发表过名为《基本的世俗智慧》的演讲，强调了建立多元心智模型的重要性。其核心思想不是简单地背下一堆跨学科概念，而是要在头脑里建立一张由多个学科模型构成的“格栅”，然后把自己的直接经验和间接经验都挂在这张格栅上。
 

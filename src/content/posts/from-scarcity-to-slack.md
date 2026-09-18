@@ -2,7 +2,7 @@
 title: "从稀缺到余闲：不把自己塞满的智慧"
 date: "2026-06-29"
 updated: "2026-06-30"
-category: "体悟"
+category: "生活哲学"
 tags:
   - 稀缺
   - 余闲
@@ -12,6 +12,10 @@ tags:
 description: "从《稀缺》谈注意力如何被缺口俘获、认知带宽如何被征税，以及为什么一个人必须主动给生活留下余闲。"
 cover: /images/covers/scarcity-cover.webp
 youtube: ""
+status: published
+featured: true
+featuredHome: true
+featuredRank: 3
 ---
 
 稀缺（scarcity）是一种拥有少于需要的感觉，这种感觉会俘获大脑、占据注意力。作者在书里有一句话说得很直接：“Scarcity captures the mind.” 稀缺会抓住你的大脑。

@@ -12,6 +12,7 @@ cover: ""
 youtube: ""
 fullSummary: []
 sectionSummaries: []
+status: archive
 ---
 
 这一篇先把站姿推举的视频资料保留下来，后面我会继续补自己的训练细节、路径控制和身体稳定性体会。

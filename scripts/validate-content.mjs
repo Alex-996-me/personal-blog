@@ -1,6 +1,7 @@
 import { access, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
+import { essayPublicationErrors } from "../src/lib/essay-contract.mjs";
 
 const rootDir = process.cwd();
 const contentRoot = path.join(rootDir, "src", "content");
@@ -83,6 +84,12 @@ const relationTargets = {
 for (const group of Object.values(entries)) {
   for (const entry of group) {
     const label = entry.relative;
+    if (label.startsWith("src/content/posts/")) {
+      for (const [field, message] of essayPublicationErrors(entry.data)) errors.push(`${label}: ${field}: ${message}`);
+    }
+    if (entry.data.status !== undefined && !["published", "archive", "draft"].includes(entry.data.status)) {
+      errors.push(`${label}: invalid content status "${entry.data.status}"`);
+    }
     if (!String(entry.data.title ?? "").trim() && !label.includes("/moments/")) {
       errors.push(`${label}: missing title`);
     }

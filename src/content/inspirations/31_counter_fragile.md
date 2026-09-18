@@ -6,6 +6,7 @@ theme: "思考"
 tags: ["风险", "脆弱"]
 description: "安全感来自于抗风险能力。"
 published: true
+status: archive
 ---
 
 反脆弱的能力=安全感的底气

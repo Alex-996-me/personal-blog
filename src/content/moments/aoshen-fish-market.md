@@ -30,4 +30,5 @@ items:
 hideToc: true
 description: "无数次出现在相册里的经典美味，海鲜饭在我心中永远是第一，大学生活最美好的回忆，无数次做梦梦到的那碗饭……"
 published: true
+status: published
 ---

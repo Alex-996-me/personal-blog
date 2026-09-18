@@ -6,6 +6,7 @@ theme: "科学"
 tags: ["大脑", "预测"]
 description: "大脑是预测机器。"
 published: true
+status: archive
 ---
 
 大脑是预测机器，天然排斥一切会使预测失效的东西。

@@ -6,6 +6,7 @@ theme: "生活"
 tags: ["社交", "表达"]
 description: "获得高地位的一种可行方式。"
 published: true
+status: archive
 ---
 
 获得高地位的一种可行方式。

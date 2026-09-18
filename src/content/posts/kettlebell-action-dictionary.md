@@ -11,6 +11,7 @@ tags:
   - "力量训练"
 description: "按热身、初级、进阶、高级整理的壶铃动作速查：怎么做、练什么、最容易错在哪里。"
 cover: "/images/posts/kettlebell-dictionary/dictionary-roadmap.webp"
+status: archive
 ---
 
 这不是一套固定课表，而是一份**训练现场可以直接查的动作字典**。
