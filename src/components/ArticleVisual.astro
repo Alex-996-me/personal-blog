@@ -9,8 +9,61 @@ const updated = getUpdatedDate(post).toISOString().slice(0, 10);
 <article class="essay-row">
   <span class="essay-row__category">{post.data.category}</span>
   <div class="essay-row__copy">
-    <Heading><a href={withBasePath(getPostHref(post))}>{post.data.title}</a></Heading>
+    <Heading><a href={withBasePath(getPostHref(post))}><span class="essay-row__title">{post.data.title}</span></a></Heading>
     <p>{post.data.description}</p>
   </div>
   <time class="essay-row__date" datetime={updated}><span class="sr-only">更新于 </span>{updated.replaceAll("-", ".")}</time>
 </article>
+
+<style>
+  .essay-row {
+    --row-background: transparent;
+    --row-title: var(--text);
+    --row-copy: var(--muted);
+    --row-meta: var(--muted);
+    --row-shift: 0px;
+    position: relative;
+    background-color: var(--row-background);
+    transition: background-color 200ms var(--ease);
+  }
+
+  /* Keep the title link's accessible name and stretch its target over the row. */
+  .essay-row__copy a { color: inherit; }
+  .essay-row__copy a::after { content: ""; position: absolute; inset: 0; }
+  .essay-row__copy a:focus-visible { outline: none; }
+  .essay-row__copy a:focus-visible::after {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+  .essay-row__title {
+    display: inline-block;
+    color: var(--row-title);
+    transform: translateX(var(--row-shift));
+    transition: color 200ms var(--ease), transform 240ms var(--ease);
+  }
+  .essay-row__copy p { color: var(--row-copy); transition: color 200ms var(--ease); }
+  .essay-row__category, .essay-row__date { color: var(--row-meta); transition: color 200ms var(--ease); }
+
+  .essay-row:focus-within {
+    --row-background: var(--text);
+    /* The dark surface's pale accent needs a deeper shade on the light surface. */
+    --row-title: color-mix(in srgb, var(--accent) 50%, var(--bg));
+    --row-copy: var(--line);
+    --row-meta: color-mix(in srgb, var(--muted) 50%, var(--bg));
+    --row-shift: 5px;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .essay-row:hover {
+      --row-background: var(--text);
+      --row-title: color-mix(in srgb, var(--accent) 50%, var(--bg));
+      --row-copy: var(--line);
+      --row-meta: color-mix(in srgb, var(--muted) 50%, var(--bg));
+      --row-shift: 5px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .essay-row__title { transform: none; }
+    .essay-row, .essay-row__title, .essay-row__copy p,
+    .essay-row__category, .essay-row__date { transition: none; }
+  }
+</style>
