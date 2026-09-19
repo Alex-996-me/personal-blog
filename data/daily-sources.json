@@ -1,0 +1,50 @@
+[
+  {
+    "id": "predictive-history",
+    "name": "Predictive History",
+    "type": "feed",
+    "feed": "https://predictivehistory.com/rss/",
+    "enabled": true,
+    "access": "public"
+  },
+  {
+    "id": "experimental-history",
+    "name": "Experimental History",
+    "type": "feed",
+    "feed": "https://www.experimental-history.com/feed",
+    "enabled": true,
+    "access": "public"
+  },
+  {
+    "id": "kevin-kelly",
+    "name": "Kevin Kelly",
+    "type": "feed",
+    "feed": "https://feedpress.me/thetechnium",
+    "enabled": true,
+    "access": "public"
+  },
+  {
+    "id": "overcoming-bias",
+    "name": "Overcoming Bias / Robin Hanson",
+    "type": "feed",
+    "feed": "https://www.overcomingbias.com/feed",
+    "enabled": true,
+    "access": "public"
+  },
+  {
+    "id": "nassim-taleb",
+    "name": "Nassim Nicholas Taleb",
+    "type": "feed",
+    "feed": "https://nassimtaleb.org/feed/",
+    "enabled": true,
+    "access": "public"
+  },
+  {
+    "id": "works-in-progress",
+    "name": "Works in Progress",
+    "type": "feed",
+    "feed": "https://worksinprogress.co/rss.xml",
+    "enabled": true,
+    "access": "public"
+  }
+]

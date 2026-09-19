@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { getDailyEntries, getReadingEditions } from "../../../lib/daily";
+import { withBasePath } from "../../../lib/paths";
+export async function getStaticPaths() {
+  return (await getDailyEntries()).flatMap((entry) => getReadingEditions(entry).map((edition) => ({
+    params: { date: entry.id, slug: edition.id }, props: { entry, edition },
+  })));
+}
+const { entry, edition } = Astro.props;
+---
+<BaseLayout title={edition.title} description={edition.hook || edition.title} noindex={entry.data.status === "draft"}>
+  <article class="daily-edition">
+    <a class="daily-edition__back" href={withBasePath(`/daily/${entry.id}/`)}>邮报 · {entry.data.date.replaceAll("-", ".")}</a>
+    <header>
+      <p class="daily-edition__source">{edition.sourceName} · {edition.minutes} min</p>
+      <h1>{edition.title}</h1>
+      {edition.hook && <p class="daily-edition__hook">{edition.hook}</p>}
+    </header>
+    <div class="prose">{edition.paragraphs.map((paragraph) => <p>{paragraph}</p>)}</div>
+    <footer>
+      {edition.sourceUrl && <a href={edition.sourceUrl} rel="noreferrer">查看原文 →</a>}
+      <a href={withBasePath(`/daily/${entry.id}/`)}>返回本期邮报</a>
+    </footer>
+  </article>
+</BaseLayout>
+<style>
+  .daily-edition__back, .daily-edition__source { font-size: var(--type-meta); color: var(--muted); }
+  header { margin-block: 2.5rem 3rem; }
+  .daily-edition__source { margin-bottom: 1rem; }
+  h1 { margin: 0; font: 400 var(--type-h1)/1.5 var(--font-serif); overflow-wrap: anywhere; }
+  .daily-edition__hook { margin-top: 1.5rem; color: var(--muted); font-size: var(--type-lead); line-height: 1.85; }
+  footer { display: flex; flex-wrap: wrap; gap: 1rem 2rem; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line); font-size: var(--type-small); }
+  footer a:first-child { color: var(--accent); }
+</style>

@@ -7,6 +7,8 @@
   },
   "scripts": {
     "dev": "astro dev",
+    "daily": "node --env-file-if-exists=.env scripts/daily.mjs",
+    "daily:publish": "node scripts/daily-publish.mjs",
     "build": "astro build --force && pagefind --site dist --force-language zh",
     "preview": "astro preview",
     "astro": "astro",
@@ -15,7 +17,7 @@
     "summarize": "node scripts/generate-section-summaries.mjs",
     "check:post": "node scripts/check-post.mjs",
     "validate:content": "node scripts/validate-content.mjs",
-    "validate": "npm run validate:content && npm run build",
+    "validate": "node --test scripts/daily.test.mjs scripts/daily-presentation.test.mjs && npm run validate:content && npm run build",
     "smoke": "node scripts/smoke-site.mjs",
     "optimize:media": "node scripts/optimize-media.mjs"
   },
@@ -24,6 +26,7 @@
     "astro": "^6.2.2",
     "csv-parse": "^6.1.0",
     "extract-zip": "^2.0.1",
+    "fast-xml-parser": "^5.7.2",
     "gray-matter": "^4.0.3",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",

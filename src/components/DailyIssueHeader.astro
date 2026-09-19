@@ -1,0 +1,29 @@
+---
+import { getReadingEditions } from "../lib/daily";
+import { withBasePath } from "../lib/paths";
+const { entry, landing = false } = Astro.props;
+const editions = getReadingEditions(entry);
+const minutes = editions.reduce((sum, edition) => sum + edition.minutes, 0);
+---
+<header class="daily-masthead">
+  <div>
+    {!landing && <a class="daily-masthead__label" href={withBasePath("/daily/")}>邮报</a>}
+    <h1>{landing ? "邮报" : <time datetime={entry.data.date}>{entry.data.date.replaceAll("-", ".")}</time>}</h1>
+  </div>
+  <p>
+    {landing && <a class="daily-masthead__date" href={withBasePath(`/daily/${entry.id}/`)}><time datetime={entry.data.date}>{entry.data.date.replaceAll("-", ".")}</time></a>}
+    <span>{editions.length} 篇{editions.length > 0 && ` · 约 ${minutes} min`}{entry.data.status === "draft" && " · 本地草稿"}</span>
+  </p>
+</header>
+<style>
+  .daily-masthead { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 2rem; }
+  h1 { margin: .3rem 0 0; font: 400 var(--type-h1)/1.3 var(--font-serif); }
+  p { margin: 0 0 .25rem; font-size: var(--type-meta); color: var(--muted); text-align: right; }
+  .daily-masthead__label { color: var(--muted); font-size: var(--type-small); }
+  .daily-masthead__date { display: block; margin-bottom: .4rem; font-variant-numeric: tabular-nums; color: var(--text); }
+  @media (max-width: 520px) {
+    .daily-masthead { display: block; }
+    p { text-align: left; margin-top: 1rem; }
+    .daily-masthead__date { display: inline; margin-right: 1rem; }
+  }
+</style>

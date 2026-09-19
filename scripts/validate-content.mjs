@@ -2,6 +2,7 @@ import { access, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
 import { essayPublicationErrors } from "../src/lib/essay-contract.mjs";
+import { dailyDocumentErrors } from "../src/lib/daily-contract.mjs";
 
 const rootDir = process.cwd();
 const contentRoot = path.join(rootDir, "src", "content");
@@ -11,6 +12,7 @@ const collections = {
   posts: path.join(contentRoot, "posts"),
   inspirations: path.join(contentRoot, "inspirations"),
   moments: path.join(contentRoot, "moments"),
+  daily: path.join(contentRoot, "daily"),
 };
 
 async function walkMarkdown(directory) {
@@ -61,6 +63,7 @@ for (const [name, directory] of Object.entries(collections)) {
         relative: path.relative(rootDir, file).replaceAll(path.sep, "/"),
         slug: fileSlug(file),
         raw,
+        content: parsed.content,
         data: parsed.data ?? {},
       };
     }),
@@ -84,6 +87,10 @@ const relationTargets = {
 for (const group of Object.values(entries)) {
   for (const entry of group) {
     const label = entry.relative;
+    if (label.startsWith("src/content/daily/")) {
+      for (const [field, message] of dailyDocumentErrors(entry.data, entry.content, path.basename(entry.file))) errors.push(`${label}: ${field}: ${message}`);
+      continue;
+    }
     if (label.startsWith("src/content/posts/")) {
       for (const [field, message] of essayPublicationErrors(entry.data)) errors.push(`${label}: ${field}: ${message}`);
     }

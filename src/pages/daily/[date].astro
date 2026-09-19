@@ -1,0 +1,19 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import DailyGrid from "../../components/DailyGrid.astro";
+import DailyIssueHeader from "../../components/DailyIssueHeader.astro";
+import { getDailyEntries } from "../../lib/daily";
+import { withBasePath } from "../../lib/paths";
+export async function getStaticPaths() {
+  return (await getDailyEntries()).map((entry) => ({ params: { date: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+<BaseLayout title={`邮报 · ${entry.data.date}`} description={entry.data.description ?? "从选定的信息环境中，编成今天的阅读。"} noindex={entry.data.status === "draft"} wideContent>
+  <DailyIssueHeader entry={entry} />
+  <DailyGrid entry={entry} />
+  <nav class="daily-ending" aria-label="邮报导航"><a href={withBasePath("/daily/")}>所有邮报</a></nav>
+</BaseLayout>
+<style>
+  .daily-ending { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line); font-size: var(--type-small); color: var(--muted); }
+</style>

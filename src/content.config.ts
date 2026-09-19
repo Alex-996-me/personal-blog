@@ -2,6 +2,7 @@ import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 import { inspirationThemeNames } from "./data/site";
 import { essayPublicationErrors } from "./lib/essay-contract.mjs";
+import { dailyMetadataErrors } from "./lib/daily-contract.mjs";
 
 const sectionSummarySchema = z.object({
   heading: z.string(),
@@ -111,4 +112,15 @@ export const collections = {
   posts,
   inspirations,
   moments,
+  daily: defineCollection({
+    loader: glob({ pattern: "*.md", base: "./src/content/daily" }),
+    schema: z.object({
+      date: z.string(),
+      status: z.enum(["draft", "published", "archive"]),
+      itemCount: z.number().int(),
+      description: z.string().optional(),
+    }).superRefine((data, ctx) => {
+      for (const [field, message] of dailyMetadataErrors(data)) ctx.addIssue({ code: z.ZodIssueCode.custom, path: [field], message });
+    }),
+  }),
 };

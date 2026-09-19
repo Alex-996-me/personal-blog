@@ -3,7 +3,7 @@
 ## Source of truth
 
 - Treat `src/content.config.ts` as the canonical content schema.
-- Published Markdown belongs only in `src/content/posts`, `src/content/inspirations`, or `src/content/moments`.
+- Published Markdown belongs only in `src/content/posts`, `src/content/inspirations`, `src/content/moments`, or `src/content/daily`.
 - Published media belongs under `public/images`, `public/audio`, or `public/videos` and must use root-relative URLs.
 - Raw source material belongs in ignored `.content-inbox` or `.english-inbox`, never in Git.
 
@@ -36,3 +36,5 @@ For a new article, use the full human-agent workflow:
 - `$personal-blog-publisher` remains a backward-compatible orchestration wrapper for older prompts and documentation.
 
 Keep reusable workflow rules in `.agents/skills/`; keep reader-facing instructions in `docs/workflows/PUBLISHING_SOP.md`.
+
+Daily uses [daily-publisher](.agents/skills/daily-publisher/SKILL.md) for `$daily-publisher`, “执行今天的 Daily”, “生成今天的邮报”, and “批准发布” in Daily context. GENERATE stops for review; PUBLISH requires explicit approval of the exact draft. `daily/inbox/`, `daily/.local/`, and `daily/profile.local.md` are private local data and must never be staged. See `docs/DAILY.md`.

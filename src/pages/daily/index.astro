@@ -1,5 +1,27 @@
 ---
-import RetiredContent from '../../components/RetiredContent.astro';
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import DailyGrid from "../../components/DailyGrid.astro";
+import DailyIssueHeader from "../../components/DailyIssueHeader.astro";
+import { getDailyEntries } from "../../lib/daily";
+import { withBasePath } from "../../lib/paths";
+const [latest, ...older] = await getDailyEntries();
 ---
 
-<RetiredContent />
+<BaseLayout title="邮报" description="从选定的信息环境中，编成今天的阅读。" wideContent noindex={latest?.data.status === "draft"}>
+  {latest ? <><DailyIssueHeader entry={latest} landing /><DailyGrid entry={latest} /></> : <><h1>邮报</h1><p>还没有公开的邮报。</p></>}
+  {older.length > 0 && <section class="daily-archive" aria-labelledby="archive-title">
+    <h2 id="archive-title">往期邮报</h2>
+    <ol>{older.map((entry) => <li>
+      <a href={withBasePath(`/daily/${entry.id}/`)}><time datetime={entry.data.date}>{entry.data.date.replaceAll("-", ".")}</time></a>
+      <span>{entry.data.itemCount} 篇{entry.data.status === "draft" ? " · 本地草稿" : ""}</span>
+    </li>)}</ol>
+  </section>}
+</BaseLayout>
+<style>
+  .daily-archive { margin-top: var(--space-section); border-top: 1px solid var(--line); padding-top: 2rem; }
+  h2 { font: 400 var(--type-h3)/1.5 var(--font-serif); }
+  ol { padding: 0; list-style: none; }
+  li { padding-block: 1rem; display: flex; gap: 2rem; align-items: baseline; }
+  a { font-variant-numeric: tabular-nums; }
+  span { color: var(--muted); font-size: var(--type-meta); }
+</style>

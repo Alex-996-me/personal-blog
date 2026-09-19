@@ -1,0 +1,59 @@
+---
+import { withBasePath } from "../lib/paths";
+import { getReadingEditions } from "../lib/daily";
+const { entry } = Astro.props;
+const editions = getReadingEditions(entry);
+---
+<section class="daily-grid" aria-label="本期阅读" style={`--support-span: ${editions.length > 5 ? 4 : 6}`}>
+  {editions.map((edition, index) => (
+    <article class:list={["daily-block", index === 0 ? "daily-block--lead" : index < 3 ? "daily-block--secondary" : "daily-block--supporting", { "daily-block--compact": index === 2 }]}>
+      <a class="daily-block__link" href={withBasePath(`/daily/${entry.id}/${edition.id}/`)} aria-labelledby={`edition-${edition.id}`}>
+        {edition.coverImage && <div class="daily-block__image">
+          <img src={edition.coverImage} alt={edition.coverAlt} width="900" height="600" loading={index < 2 ? "eager" : "lazy"} decoding="async" referrerpolicy="no-referrer" />
+        </div>}
+        <div class="daily-block__copy">
+          <p class="daily-block__source"><span class="daily-block__number">{String(index + 1).padStart(2, "0")}</span> {edition.sourceName}</p>
+          <h2 id={`edition-${edition.id}`}>{edition.title}</h2>
+          {edition.hook && <p class="daily-block__hook">{edition.hook}</p>}
+          <span class="daily-block__time">{edition.minutes} min</span>
+        </div>
+      </a>
+    </article>
+  ))}
+  {editions.length === 0 && <p>今天没有值得占用注意力的新信息。</p>}
+</section>
+<style>
+  .daily-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 2rem; }
+  .daily-block { min-width: 0; border-top: 1px solid var(--line); padding-block: 1.5rem; }
+  .daily-block--lead { grid-column: span 7; grid-row: span 2; }
+  .daily-block--secondary { grid-column: span 5; }
+  .daily-block--supporting { grid-column: span var(--support-span); }
+  .daily-block__link { display: block; height: 100%; color: var(--text); }
+  .daily-block__image { overflow: hidden; margin-bottom: 1.25rem; }
+  img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+  .daily-block--lead img { aspect-ratio: 3 / 2; }
+  .daily-block--supporting .daily-block__image, .daily-block--compact .daily-block__image { float: right; width: 34%; margin: .25rem 0 1rem 1.25rem; }
+  .daily-block--supporting img, .daily-block--compact img { aspect-ratio: 4 / 3; }
+  .daily-block__copy { min-width: 0; }
+  .daily-block__source { margin: 0 0 .7rem; color: var(--muted); font-size: var(--type-meta); line-height: 1.5; }
+  .daily-block__number { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: .5rem; }
+  h2 { margin: 0; font: 400 var(--type-h3)/1.5 var(--font-serif); overflow-wrap: anywhere; transition: color 200ms var(--ease), transform 240ms var(--ease); }
+  .daily-block--lead h2 { font-size: clamp(1.65rem, 2.6vw, 2rem); line-height: 1.45; }
+  .daily-block__hook { margin: .8rem 0; font-size: var(--type-small); line-height: 1.85; color: var(--muted); }
+  .daily-block__time { display: block; margin-top: 1rem; color: var(--muted); font-size: var(--type-meta); }
+  .daily-block__link:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; }
+  .daily-block__link:focus-visible h2 { color: var(--accent); transform: translateX(4px); }
+  @media (hover: hover) and (pointer: fine) {
+    .daily-block__link:hover h2 { color: var(--accent); transform: translateX(4px); }
+  }
+  @media (max-width: 760px) {
+    .daily-grid { grid-template-columns: minmax(0, 1fr); }
+    .daily-block { grid-column: 1; grid-row: auto; padding-block: 1.5rem; }
+    .daily-block--supporting .daily-block__image, .daily-block--compact .daily-block__image { float: none; width: auto; margin: 0 0 1.25rem; }
+    img, .daily-block--supporting img, .daily-block--compact img { aspect-ratio: 16 / 9; }
+    .daily-block--lead h2 { font-size: var(--type-h2); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .daily-block__link h2 { transition: none; transform: none !important; }
+  }
+</style>

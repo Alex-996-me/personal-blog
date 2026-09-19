@@ -88,3 +88,23 @@
 - /search/ 仅兼容旧 URL：客户端 replace 到首页，保留 query 并聚焦页头搜索；无 JS 时保留返回链接，noindex。
 - 移除 SearchDialog.astro、独立 Search 页面布局/样式、modal JS，以及 Life 列表交错宽度/自然比例规则。
 - Phase 2.1 验证：validate / smoke / diff-check 通过；130 页面、351 本地地址。定向浏览器确认 1440px 双列与 390px 单列 4:3、原比例详情、三篇分类/updated、内联键盘搜索、旧 URL 兼容与仅 30 条公开索引。
+
+## Daily v1 — Personal Reading Edition（2026-09-19）
+
+- 最终产品契约：每个保留来源通常形成一篇连贯个人阅读版；目标 5–6 篇、每篇 1200–1800 汉字、整期 8000–12000 字，不凑数。编辑规则只在 `daily/EDITORIAL.md`，真实读者资料仅 `daily/profile.local.md`；操作见 `docs/DAILY.md` 与 `.agents/skills/daily-publisher/SKILL.md`。
+- 固定链路：获准来源／14 天未读 reservoir／今日 inbox → 短卡 gate → 每批最多两篇的有界深读笔记 → 一次全局编辑（只发笔记）→ JSON 校验／确定性 Markdown。72 KB 深读、48 KB 最终请求预算；阶段最多一次 transient retry，成功笔记可续跑。最终长文采用标准 SSE，避免网关等待完整响应；未完整接收和验证不写草稿。
+- 最终前端：Daily 首页和当期共用非对称 editorial grid；主稿 7 栏跨两行，两篇次稿在右侧，其余以较小的文字／图文块承接。保留站点深底、暖色、字体、宽度和细线，无卡片视觉或新依赖。手机 760px 以下按编辑次序单列。导航加入「邮报」，首页主体不变。
+- 来源封面：`src/data/daily-covers.json` 保存公共原文元数据，feed media/enclosure 优先，再查 og:image、twitter:image。四张真实封面可用；Kevin Kelly 的网站默认图被排除，保留纯文字块。原始 URL 加载、显示框裁切，私人图片不进入前端。
+- 阅读入口：整块链接到 `/daily/YYYY-MM-DD/<source-id>/`，复用 `.prose` 和原始段落，末尾可返回本期或查看原文。网格只含标题、hook、来源及整数阅读时间（250 汉字／分钟，拉丁文字按词计）；标题 hover／focus 右移 4px，reduced motion 不位移。生成文件及 schema 未改变。
+- 隐私／发布：私人材料只允许高层短心得或排除，长文目标不适用；inbox、profile、原始快照、notes、运行状态和 `.env` 均 ignored。GENERATE 只产草稿；批准后发布同一审核 hash，再 validate、精确 staging、commit/push 当前分支。
+- 本次真实验收：复用当日 5 条已采集公共候选（手动 inbox 为空），5 条深读、3 批笔记、5 篇最终阅读版，共 6687 个正文汉字。非流式最终请求两次 504；改为标准流式后 HTTP 200，149.8 秒完成，未重复深读。估计约 22–30 分钟，低于整期长度目标。
+- 内容 QA：段落式阅读、机制和例子已保留；仍有偏多的限定段落，个别新增解释需作者核对是否超出源材料。未为验收重写。当前状态为 **实现验证通过，作者已批准发布**。
+- 验证：13 项 Daily 测试、`npm run validate`、`npm run smoke`（130 页面／351 地址）、`git diff --check` 与 skill validator 通过。独立临时 Chrome 仅检查今日页 1440px／390px，5 篇初始折叠、点击展开／收起、桌面 Enter 操作、段落渲染与无横向溢出通过，截图留 ignored `.local`。`daily:publish` 明确提示，取消后文件 hash 不变。无私人运行路径被 Git 跟踪。
+- 修改范围：Daily orchestration/adapter/selection、content contract、详情局部 disclosure 样式、针对性测试、EDITORIAL、skill 和两份现有文档。无 commit/push；作者验收后按 v1 冻结，正常变更限于来源、编辑/profile 与 bug 修复，不继续架构迭代。
+
+### 2026-09-19 最终前端验收与发布状态
+
+- 本轮只改前端呈现、公共封面元数据、导航及相应验证；五篇正文逐段比对一致，原 Markdown hash 未变，未调用 LLM、未改变生成链。16 项自动测试及 `validate` 通过，`smoke` 通过（130 个生产页面／351 个地址；草稿仍被排除），`diff --check` 通过。
+- 定向 Chrome 检查：Daily 首页／当期桌面与 390px 单列、四张原图加载、完整阅读页及全部五篇正文一致性、键盘焦点、hover 无布局位移、reduced motion、无横向溢出均通过。截图只在 ignored 本地工作区。
+- 已单独提交并推送文章行交互补丁 `e7f03c4`（main）。Daily 核查确认 repository **PUBLIC**、Pages **public**。作者随后审核并批准 6 篇版本（5 auto-subscribe + 1 manual）；发布命令已执行，正文与审核 hash 对应的草稿一致。manual 归属已接入发布校验，原料、截图、profile 和运行数据不提交。
+- 正式地址：`https://alex-996-me.github.io/personal-blog/daily/`、`https://alex-996-me.github.io/personal-blog/daily/2026-09-19/`。本地验收：`http://127.0.0.1:4328/personal-blog/daily/`。

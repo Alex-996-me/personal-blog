@@ -83,7 +83,7 @@ const selected = publicEntries.filter((entry) => entry.collection === "posts" &&
 if (JSON.stringify([...new Set(homePosts)]) !== JSON.stringify(selected) || selected.length < 2 || selected.length > 5) failures.push("Homepage Essays are not the explicit editorial selection");
 const homeLife = [...new Set([...home.matchAll(/href="([^"]*\/moments\/[^"/]+\/)"/g)].map((match) => match[1]))];
 if (homeLife.length < 2 || homeLife.length > 4) failures.push("Homepage Life must contain 2–4 entries");
-if (home.includes("/daily/") || home.includes("kinetic-idea")) failures.push("Homepage still exposes Inspirations");
+if (home.includes("kinetic-idea")) failures.push("Homepage still exposes Inspirations");
 
 const rss = await (await fetchChecked(new URL("rss.xml", baseUrl))).text();
 const rssItems = [...rss.matchAll(/<item>[\s\S]*?<link>([^<]+)<\/link>[\s\S]*?<\/item>/g)].map((match) => new URL(match[1]).pathname).sort();
@@ -96,7 +96,7 @@ for (const file of htmlFiles) {
   const html = await readFile(file, "utf8");
   if (/data-pagefind-body(?:[ =>])/.test(html)) indexedUrls.push(routeForHtml(file));
   const header = html.match(/<header class="site-header">[\s\S]*?<\/header>/)?.[0] ?? "";
-  if (header.includes("/daily/")) failures.push(file + ": navigation exposes Inspirations");
+  if (header && !header.includes('href="/personal-blog/daily/"')) failures.push(file + ": navigation is missing Daily");
   if (html.includes("data-retired-content")) {
     retiredPages++;
     if (!html.includes('content="noindex, follow"') || html.includes("data-pagefind-body") || html.includes('class="prose"><')) failures.push(file + ": retired content is indexable or renders original content");
@@ -118,6 +118,16 @@ for (const entry of sourceEntries.filter((entry) => entry.collection !== "inspir
   }
 }
 for (const route of ["articles/", "moments/", "about/", "search/", "daily/", "series/english-learning/"]) await fetchChecked(new URL(route, baseUrl));
+
+const dailyArchive = await (await fetchChecked(new URL("daily/", baseUrl))).text();
+for (const file of (await walk(path.join(rootDir, "src/content/daily"))).filter((file) => file.endsWith(".md"))) {
+  const { data } = matter(await readFile(file, "utf8"));
+  const url = new URL(`daily/${path.basename(file, ".md")}/`, baseUrl);
+  const response = await fetch(url);
+  if (data.status === "published") {
+    if (response.status !== 200 || !dailyArchive.includes(url.pathname)) failures.push(`${url}: published Daily missing`);
+  } else if (response.status !== 404 || dailyArchive.includes(url.pathname)) failures.push(`${url}: private Daily leaked into production`);
+}
 
 if (failures.length) {
   console.error(`FAIL: ${failures.length} smoke-test failure(s)`);
